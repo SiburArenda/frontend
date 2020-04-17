@@ -1,0 +1,102 @@
+#application-form{
+    width: 500px;
+    background-color: #1a1a1a;
+    position: absolute;
+    padding: 20px;
+    z-index: 5;
+    line-height: 1.7em;
+    font-weight: normal;
+    color: #efefef;
+}
+
+#close-btn{
+    background: center no-repeat url("../img/closeAppFormBtn.png");
+    width: 20px;
+    height: 20px;
+    border: none;
+    position: absolute;
+    top: 15px;
+    right: 30px;
+}
+
+#close-btn:hover{
+    background-image: url("../img/closeAppFormBtnHover.png");
+}
+
+input[type='text']{
+    background: transparent;
+    border: none;
+    border-bottom: #efefef solid 1px;
+    color: #efefef;
+    padding-left: 5px;
+}
+
+.small-text-input{
+    width: 80px;
+}
+
+.medium-text-input{
+    width: 180px;
+}
+
+label{
+    margin-right: 10px
+}
+
+select{
+    background: transparent;
+    border: none;
+    color: #efefef;
+}
+
+#picked-rooms-display{
+    display: flex;
+}
+
+.room-span{
+    background-color: #237570;
+    border: none;
+    border-radius: 10px;
+    padding: 2px 7px;
+    margin-right: 8px;
+    position: relative;
+    display: flex;
+}
+
+.remove-room-btn{
+    width: 15px;
+    height: 15px;
+    border: none;
+    margin: auto 2px auto 8px;
+    background: center no-repeat url("../img/removeRoomBtn.png");
+}
+
+#pick-room{
+    cursor: pointer;
+}
+
+.placeholder{
+    color: #575757;
+}
+
+#room-select-popup{
+    position: absolute;
+    z-index: 5;
+    background: #1a1a1a;
+    border: white 1px solid;
+    color: #efefef;
+    text-align: center;
+    padding: 2px 10px;
+}
+
+.big-text-input{
+    background: transparent;
+    padding: 5px 10px;
+    border: #efefef solid 1px;
+    color: #efefef;
+    max-width: 440px;
+    min-width: 440px;
+    resize: none;
+    min-height: 40px;
+    max-height: 80px;
+}
