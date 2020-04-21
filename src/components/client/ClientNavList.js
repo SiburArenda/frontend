@@ -1,12 +1,19 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import {Link} from "react-router-dom";
+import {Link, BrowserRouter as Router} from "react-router-dom";
+import Hint from "./Hint";
 
 class ClientNavList extends Component {
 
+    state = {
+        hintX: 0,
+        hintY: 0,
+        showAppFormHint: false
+    };
+
     render() {
         return (
-            <React.Fragment>
+            <Router>
                 <li>
                     <Link to='/' className='hover-text'>О сервисе</Link>
                 </li>
@@ -23,12 +30,30 @@ class ClientNavList extends Component {
                     <button
                         onClick={() => this.props.openApplicationForm()}
                         className='hover-text'
+                        onMouseEnter={e => this.showHint(e)}
+                        onMouseLeave={() => this.setState({showAppFormHint: false})}
                     >
                         Оформить заявку
                     </button>
+                    {this.state.showAppFormHint
+                        ? <Hint
+                            hintText={'Окно заполнения заявки откроется параллельно с остальным содержимым сервиса' +
+                        ' - Вы сможете переходить по разделам, не закрывая его и не заполняя заново!'}
+                            x={this.state.hintX}
+                            y={this.state.hintY}/>
+                        : null}
                 </li>
-            </React.Fragment>
+            </Router>
         );
+    }
+
+
+    showHint = (e) => {
+        this.setState({
+            hintX: +e.clientX,
+            hintY: +e.clientY,
+            showAppFormHint: true
+        })
     }
 }
 

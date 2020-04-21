@@ -64,7 +64,7 @@ class TimeSelectDialogue extends Component {
                     onChange={(e) => {this.props.setForAll(e)}}
                     ref={checkBoxRef}
                 />
-                <label>Установить такие временные рамки для всех выбранных дней</label><br/>
+                <label>Установить такие временные рамки для всех выбранных дат</label><br/>
                 <button onClick={()=> {this.props.closeTimeSelectDialogue()}}>OK</button>
             </div>
         );

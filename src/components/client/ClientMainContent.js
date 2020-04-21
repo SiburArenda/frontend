@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import {Route} from "react-router-dom";
+import {Route, BrowserRouter as Router} from "react-router-dom";
 import About from "./About";
 import Rooms from "./Rooms";
 import Contacts from "./Contacts";
@@ -18,7 +18,7 @@ class ClientMainContent extends Component {
 
     render() {
         return (
-            <React.Fragment>
+            <Router>
                 <Route
                     path="/"
                     exact
@@ -48,7 +48,7 @@ class ClientMainContent extends Component {
                     ? <LogIn closeLogInForm={this.props.closeLogInForm} storeResponse={this.storeResponse}/>
                     : null
                 }
-            </React.Fragment>
+            </Router>
         );
     }
 

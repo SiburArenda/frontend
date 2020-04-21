@@ -1,5 +1,10 @@
+*{
+    overflow: visible;
+}
+
 #application-form{
     min-height: 120px;
+    max-height: 90%;
     width: 510px;
     background-color: #1a1a1a;
     position: absolute;
@@ -8,7 +13,8 @@
     font-weight: normal;
     color: #efefef;
     resize: vertical;
-    overflow: auto;
+    overflow: hidden scroll;
+    display: inline-block;
 }
 
 #close-btn{
@@ -92,13 +98,13 @@ select{
 
 .big-text-input{
     background: transparent;
-    padding: 5px 10px;
+    alignment: center;
+    padding: 5px 2%;
     border: #efefef solid 1px;
     color: #efefef;
-    width: 438px;
     resize: none;
+    width: 96%;
     height: 60px;
-    margin: auto;
 }
 
 #send-btn{
@@ -122,4 +128,17 @@ select{
 
 .block-container{
     margin: 0 auto 12px auto;
+}
+
+#minimize-btn{
+    background: center no-repeat url("../img/appFormMinBtn.png");
+    width: 20px;
+    height: 20px;
+    border: none;
+    margin-top: 15px;
+    margin-right: 20px;
+}
+
+#minimize-btn:hover{
+    background-image: url("../img/appFormMinBtnHvr.png");
 }

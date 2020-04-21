@@ -46,6 +46,7 @@ nav li{
 
 body{
     background-color: #c4c4c4;
+    overflow: hidden;
 }
 
 header{
@@ -76,4 +77,17 @@ footer{
     padding-left: 32%;
     padding-top: 30px;
     height: 100%;
+}
+
+.hint{
+    z-index: 6;
+    position: fixed;
+    padding: 5px 8px;
+    background-color: #efefef;
+    color: #1a1a1a;
+    font-size: 12px;
+    width: fit-content;
+    max-width: 250px;
+    line-height: 1.4em;
+    text-align: left;
 }
