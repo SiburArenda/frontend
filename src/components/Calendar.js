@@ -328,7 +328,7 @@ class Calendar extends React.Component {
         });
 
         return (
-            <div id='calendar-container' className='drag-detector'>
+            <div id='calendar-container' className='drag-detector block-container'>
                 <table id='calendar-table' className='transparent-element drag-detector'>
                     <thead id='calendar-head'>
                     <tr>
