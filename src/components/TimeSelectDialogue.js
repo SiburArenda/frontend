@@ -59,12 +59,17 @@ class TimeSelectDialogue extends Component {
                     ref={endMRef}
                 />
                 <label> мин</label><br/>
-                <input
-                    type='checkbox'
-                    onChange={(e) => {this.props.setForAll(e)}}
-                    ref={checkBoxRef}
-                />
-                <label>Установить такие временные рамки для всех выбранных дат</label><br/>
+                <div id='checkbox-aligner'>
+                    <input
+                        type='checkbox'
+                        onChange={(e) => {this.props.setForAll(e)}}
+                        ref={checkBoxRef}
+                        id='hidden-check'
+                    />
+                    <label htmlFor='hidden-check'>
+                    </label>
+                    <label>Установить такие временные рамки для всех выбранных дат</label><br/>
+                </div>
                 <button onClick={()=> {this.props.closeTimeSelectDialogue()}}>OK</button>
             </div>
         );

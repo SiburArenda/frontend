@@ -15,18 +15,38 @@
     resize: vertical;
     overflow: hidden scroll;
     display: inline-block;
+    top: 50px;
+    left: 400px
 }
 
-#close-btn{
-    background: center no-repeat url("../img/closeAppFormBtn.png");
+#expand-btn,
+.close-btn,
+#minimize-btn,
+#send-btn{
+    border: none;
+    margin-right: 20px;
+    margin-bottom: 15px;
+}
+
+#expand-btn,
+.close-btn,
+#minimize-btn{
+    background: center no-repeat;
     width: 20px;
     height: 20px;
-    border: none;
-    margin-top: 15px;
-    margin-right: 20px;
 }
 
-#close-btn:hover{
+.close-btn,
+#expand-btn,
+#minimize-btn{
+    margin-top: 14px;
+}
+
+.close-btn{
+    background-image: url("../img/closeAppFormBtn.png");
+}
+
+.close-btn:hover{
     background-image: url("../img/closeAppFormBtnHover.png");
 }
 
@@ -109,11 +129,6 @@ select{
 
 #send-btn{
     background: transparent;
-    border: none;
-    margin-right: 20px;
-    margin-bottom: 15px;
-    bottom: 0;
-    color: #efefef;
 }
 
 .btn-pusher{
@@ -131,14 +146,27 @@ select{
 }
 
 #minimize-btn{
-    background: center no-repeat url("../img/appFormMinBtn.png");
-    width: 20px;
-    height: 20px;
-    border: none;
-    margin-top: 15px;
-    margin-right: 20px;
+    background-image: url("../img/appFormMinBtn.png");
 }
 
 #minimize-btn:hover{
     background-image: url("../img/appFormMinBtnHvr.png");
+}
+
+#expand-btn{
+    background-image: url("../img/expandAppFormBtn.png");
+}
+
+#expand-btn:hover{
+    background-image: url("../img/expandAppFormBtnHvr.png");
+}
+
+#minimized-app-form{
+    background-color: #1a1a1a;
+    width: 105px;
+    display: flex;
+    flex-direction: row-reverse;
+    position: absolute;
+    z-index: 6;
+    border-radius: 0 0 0 20px;
 }

@@ -5,12 +5,51 @@ import ClientNavList from "./components/client/ClientNavList";
 import AdminNavList from "./components/admin/AdminNavList";
 import ClientMainContent from "./components/client/ClientMainContent";
 import AdminMainContent from "./components/admin/AdminMainContent";
+import Hint from "./components/client/Hint";
 
 class App extends Component {
 
     state = {
         logInFormVisible: false,
-        applicationFormVisible: false
+        applicationFormVisible: false,
+        showHint: false,
+        whichHint: '',
+        hintX: 0,
+        hintY: 0
+    };
+
+    getHintText = () => {
+        switch (this.state.whichHint) {
+            case 'closeAppFormBtn':
+                return 'Если Вы закроете неотправленную заявку, введённая информация не сохранится';
+            case 'minAppFormBtn':
+                return 'Свернуть';
+            case 'expAppFormBtn':
+                return 'Открыть форму';
+            case 'openAppFormBtn':
+                return 'Окно заполнения заявки откроется параллельно с остальным содержимым сервиса' +
+                    ' - Вы сможете переходить по разделам, не закрывая его и не заполняя заново!';
+            case 'sendAppBtn':
+                return 'Заявка будет отправлена, но Вы всегда сможете отредактировать её:' +
+                    ' просто отыщите её в Отправленных Заявках в Вашем профиле.';
+            default:
+                return '';
+        }
+    };
+
+    showHint = (e, which) => {
+        this.setState({
+            showHint: true,
+            whichHint: which,
+            hintX: +e.clientX,
+            hintY: +e.clientY
+        })
+    };
+
+    closeHint = () => {
+        this.setState({
+            showHint: false
+        })
     };
 
     render() {
@@ -40,7 +79,14 @@ class App extends Component {
                         <Route
                             path={/^\/(?!admin).*/}
                             render={(props) => (
-                                <ClientNavList {...props} openApplicationForm={this.openApplicationForm}/>)}
+                                <ClientNavList
+                                    {...props}
+                                    openApplicationForm={this.openApplicationForm}
+                                    showHint={this.showHint}
+                                    closeHint={this.closeHint}
+                                />
+                                )
+                            }
                         />
                         <Route
                             path='/admin'
@@ -61,6 +107,8 @@ class App extends Component {
                                         applicationFormVisible={this.state.applicationFormVisible}
                                         closeLogInForm={this.closeLogInForm}
                                         closeAppWindow={this.closeApplicationForm}
+                                        showHint={this.showHint}
+                                        closeHint={this.closeHint}
                                     />
                                 )
                             }
@@ -76,6 +124,15 @@ class App extends Component {
                                 )
                             }
                     />
+                    {this.state.showHint
+                        ?
+                        <Hint
+                            hintText={this.getHintText()}
+                            x={this.state.hintX}
+                            y={this.state.hintY}
+                        />
+                        : null
+                    }
                 </section>
 
             </Router>

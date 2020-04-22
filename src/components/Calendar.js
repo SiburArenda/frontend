@@ -4,20 +4,26 @@ import '../resource/styles/Calendar.css'
 import TimeSelectDialogue from "./TimeSelectDialogue";
 import Timing from "../functional/Timing";
 import '../resource/styles/Main.css'
+import PropTypes from 'prop-types';
 
 class Calendar extends React.Component {
 
-    state = {
-        dateContext: moment(),
-        today: moment(),
-        showMonthPopup: false,
-        showYearPopup: false,
-        selectedDays: [],
-        selectedTimings: [],
-        lastChosenWithShift: null,
-        timeSelectDialogue: null,
-        currentlyManagedDayIndex: -1
-    };
+    state = this.props.savedState.nothing === 'nothing'
+        ?
+        {
+            dateContext: moment(),
+            today: moment(),
+            showMonthPopup: false,
+            showYearPopup: false,
+            selectedDays: [],
+            selectedTimings: [],
+            lastChosenWithShift: null,
+            timeSelectDialogue: null,
+            currentlyManagedDayIndex: -1,
+            nothing: 'something'
+        }
+        :
+        this.props.savedState;
 
     weekdaysShort = ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ', 'ВС'];
     months = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
@@ -92,7 +98,9 @@ class Calendar extends React.Component {
         const popup = props.monthList.map((monthName) => {
             return (
                 <div key={monthName}>
-                    <p className='hover-text' onClick={() => {this.setMonth(monthName)}}>
+                    <p className='hover-text' onClick={() => {
+                        this.setMonth(monthName)
+                    }}>
                         {monthName}
                     </p>
                 </div>
@@ -163,7 +171,7 @@ class Calendar extends React.Component {
                         type="number"
                     />
                     <button
-                        className='transparent-element no-border-element'
+                        className='transparent-element no-border-element hover-text'
                         onClick={() => {
                             this.showYearEditor()
                         }}
@@ -176,7 +184,7 @@ class Calendar extends React.Component {
                     onClick={() => {
                         this.showYearEditor()
                     }}
-                    id='year-nav'
+                    className='hover-text'
                 >
                 {this.year()}
                 </span>
@@ -242,7 +250,7 @@ class Calendar extends React.Component {
                     newSelectedTimings.push(new Timing());
                 }
                 const timeSelect =
-                    (index === +this.state.currentlyManagedDayIndex) ? null: this.state.timeSelectDialogue;
+                    (index === +this.state.currentlyManagedDayIndex) ? null : this.state.timeSelectDialogue;
                 let newDayIndex = this.state.currentlyManagedDayIndex;
                 newDayIndex -= (index < newDayIndex) ? 1 : 0;
                 this.setState({
@@ -296,7 +304,9 @@ class Calendar extends React.Component {
                     {d}
                     <button
                         className={this.getTimeSetButtonClass(d)}
-                        onClick={(e) => {this.timeSetButton(e, d)}}>
+                        onClick={(e) => {
+                            this.timeSetButton(e, d)
+                        }}>
                     </button>
                 </td>
             );
@@ -341,11 +351,15 @@ class Calendar extends React.Component {
                             <button
                                 id='prev'
                                 className='time-move-btn'
-                                onClick={() => {this.moveMonth(-1)}}>{''}</button>
+                                onClick={() => {
+                                    this.moveMonth(-1)
+                                }}>{''}</button>
                             <button
                                 id='next'
                                 className='time-move-btn'
-                                onClick={() => {this.moveMonth(1)}}>{''}</button>
+                                onClick={() => {
+                                    this.moveMonth(1)
+                                }}>{''}</button>
                         </td>
                     </tr>
                     </thead>
@@ -381,11 +395,21 @@ class Calendar extends React.Component {
                     changeTiming={this.changeTiming}
                     setForAll={this.setForAll}
                     closeTimeSelectDialogue={() => this.closeTimeSettings()}
-                    startHRef={el => {if (el != null) el.value = el.defaultValue}}
-                    startMRef={el => {if (el != null) el.value = el.defaultValue}}
-                    endHRef={el => {if (el != null) el.value = el.defaultValue}}
-                    endMRef={el => {if (el != null) el.value = el.defaultValue}}
-                    checkBoxRef={el => {if (el != null) el.checked = false}}
+                    startHRef={el => {
+                        if (el != null) el.value = el.defaultValue
+                    }}
+                    startMRef={el => {
+                        if (el != null) el.value = el.defaultValue
+                    }}
+                    endHRef={el => {
+                        if (el != null) el.value = el.defaultValue
+                    }}
+                    endMRef={el => {
+                        if (el != null) el.value = el.defaultValue
+                    }}
+                    checkBoxRef={el => {
+                        if (el != null) el.checked = false
+                    }}
                 />;
             this.setState({
                 currentlyManagedDayIndex: index,
@@ -429,5 +453,9 @@ class Calendar extends React.Component {
         })
     };
 }
+
+Calendar.propTypes = {
+    savedState: PropTypes.object.isRequired
+};
 
 export default Calendar;

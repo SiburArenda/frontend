@@ -4,8 +4,8 @@ import {Room, TypeOfEvent} from '../../functional/EnumsAndConsts'
 import Calendar from "../Calendar";
 import '../../resource/styles/ApplicationForm.css'
 import '../../resource/styles/Main.css'
-import Hint from "./Hint";
 import {BrowserRouter as Router} from "react-router-dom";
+import MinifiedApplicationForm from "./MinifiedApplicationForm";
 
 class FromTo {
     constructor(from, to) {
@@ -34,25 +34,10 @@ class ApplicationForm extends Component {
         dragged: false,
         resized: false,
         showPickRoom: false,
-        showHint: false,
-        whichHint: '',
-        hintX: 0,
-        hintY: 0,
-        minimized: false
-    };
-
-    manageableStyle = {
-        top: '40px',
-        left: '400px'
-    };
-
-    getHintText = () => {
-        switch (this.state.whichHint) {
-            case 'closeBtn':
-                return 'Если Вы закроете неотправленную заявку, введённая информация не сохранится';
-            case 'minBtn':
-                return 'Свернуть';
-        }
+        minimized: false,
+        minimizedX: 0,
+        minimizedY: 0,
+        calendarState: {nothing: 'nothing'}
     };
 
     render() {
@@ -61,11 +46,17 @@ class ApplicationForm extends Component {
                 {
                     this.state.minimized
                         ?
-                        <div>jopa</div> // minified AppForm
+                        <MinifiedApplicationForm
+                            showHint={this.props.showHint}
+                            closeHint={this.props.closeHint}
+                            closeAppWindow={this.props.closeAppWindow}
+                            expand={this.expand}
+                            posX={this.state.minimizedX}
+                            posY={this.state.minimizedY}
+                        />
                         :
                         <div id='application-form'
                              className='drag-detector'
-                             style={this.manageableStyle}
                              onMouseDown={e => this.startFormDrag(e)}
                              onMouseMove={e => this.dragForm(e)}
                              onMouseUp={() => this.stopDrag()}
@@ -73,30 +64,23 @@ class ApplicationForm extends Component {
                         >
                             <div className='btn-pusher drag-detector'>
                                 <button
-                                    onClick={this.props.closeAppWindow}
-                                    onMouseEnter={e => this.showHint(e, 'closeBtn')}
-                                    onMouseLeave={() => this.closeHint()}
-                                    id='close-btn'
+                                    onClick={() => {
+                                        this.props.closeHint();
+                                        this.props.closeAppWindow()
+                                    }}
+                                    onMouseEnter={e => this.props.showHint(e, 'closeAppFormBtn')}
+                                    onMouseLeave={() => this.props.closeHint()}
+                                    className='close-btn'
                                 >
                                 </button>
                                 <button
                                     onClick={() => this.minimize()}
-                                    onMouseEnter={e => this.showHint(e, 'minBtn')}
-                                    onMouseLeave={() => this.closeHint()}
+                                    onMouseEnter={e => this.props.showHint(e, 'minAppFormBtn')}
+                                    onMouseLeave={() => this.props.closeHint()}
                                     id='minimize-btn'
                                 >
                                 </button>
                             </div>
-                            {this.state.showHint
-                                ?
-                                <Hint
-                                    hintText={this.getHintText()}
-                                    x={this.state.hintX}
-                                    y={this.state.hintY}
-                                />
-                                : null
-                            }
-                            <br/>
                             <div className='block-container ninety-container drag-detector'>
                                 <label className='drag-detector'>Название мероприятия:</label>
                                 <input
@@ -106,12 +90,15 @@ class ApplicationForm extends Component {
                                         this.handleInput(e)
                                     }}
                                     className='medium-text-input'
+                                    defaultValue={this.state.eventName}
                                 />
                                 <br/>
                                 <label className='drag-detector'>Тип мероприятия:</label>
-                                <select name='eventType' onChange={(e) => {
-                                    this.handleInput(e)
-                                }}>
+                                <select
+                                    name='eventType'
+                                    onChange={(e) => {this.handleInput(e)}}
+                                    defaultValue={this.state.eventType}
+                                >
                                     <option value={TypeOfEvent.CONCERT}>Концерт, представление</option>
                                     <option value={TypeOfEvent.PARTY}>Корпоратив, семинар, собрание</option>
                                     <option value='SPORT'>Спорт</option>
@@ -121,12 +108,24 @@ class ApplicationForm extends Component {
                                 {['SPORT', 'MATCH', 'TRAINING'].includes(this.state.eventType)
                                     ?
                                     <React.Fragment>
-                                        <input name='eventType' type='radio' value='TRAINING' onChange={(e) => {
-                                            this.handleInput(e)
-                                        }}/><label>Тренировка</label><br/>
-                                        <input name='eventType' type='radio' value='MATCH' onChange={(e) => {
-                                            this.handleInput(e)
-                                        }}/><label>Матч</label><br/>
+                                        <input
+                                            name='eventType'
+                                            type='radio'
+                                            value='TRAINING'
+                                            onChange={(e) => {this.handleInput(e)}}
+                                            checked={['SPORT', 'TRAINING'].includes(this.state.eventType)}
+                                        />
+                                        <label>Тренировка</label>
+                                        <br/>
+                                        <input
+                                            name='eventType'
+                                            type='radio'
+                                            value='MATCH'
+                                            onChange={(e) => {this.handleInput(e)}}
+                                            checked={this.state.eventType === 'MATCH'}
+                                        />
+                                        <label>Матч</label>
+                                        <br/>
                                     </React.Fragment>
                                     :
                                     null
@@ -166,19 +165,18 @@ class ApplicationForm extends Component {
                                         <input
                                             type='text'
                                             name='viewers'
-                                            onChange={(e) => {
-                                                this.handleInput(e)
-                                            }}
+                                            onChange={(e) => {this.handleInput(e)}}
                                             className='small-text-input'
+                                            defaultValue={this.state.viewers === 0 ? '' : this.state.viewers}
                                         /><br/>
                                     </React.Fragment>
                                     :
                                     null
                                 }
                             </div>
-                            <Calendar ref={this.calendarRef}/>
+                            <Calendar ref={this.calendarRef} savedState={this.state.calendarState}/>
                             <div className='block-container ninety-container drag-detector'>
-                                <label>
+                                <label className='drag-detector'>
                                     В этом поле Вы можете оставить любые комментарии, которые сочтёте важными. К
                                     примеру, стоит указать, в каком формате и когда Вам было бы удобно связаться для
                                     окончательного заключения договора об аренде.
@@ -189,13 +187,17 @@ class ApplicationForm extends Component {
                         name='comment'
                         onChange={e => this.handleInput(e)}
                         className='big-text-input'
+                        defaultValue={this.state.comment}
                     />
                             </div>
                             <div className='btn-pusher drag-detector'>
                                 <button
                                     id='send-btn'
                                     className='hover-text'
-                                    onClick={e => this.sendApplication(e)}>
+                                    onClick={e => this.sendApplication(e)}
+                                    onMouseEnter={e => this.props.showHint(e, 'sendAppBtn')}
+                                    onMouseLeave={() => this.props.closeHint()}
+                                >
                                     Отправить заявку
                                 </button>
                             </div>
@@ -281,6 +283,15 @@ class ApplicationForm extends Component {
         }
     };
 
+    getCoords = () => {
+        const movedObj = document.getElementById('application-form');
+        const formXpx = movedObj.style.left === '' ? '400px' : movedObj.style.left;
+        const formX = +formXpx.substr(0, formXpx.length - 2);
+        const formYpx = movedObj.style.top === '' ? '50px' : movedObj.style.top;
+        const formY = +formYpx.substr(0, formYpx.length - 2);
+        return [formX, formY]
+    };
+
     startFormDrag = (e) => {
         if (e.target.className.indexOf('drag-detector') !== -1) {
             const movedObj = document.getElementById('application-form');
@@ -290,11 +301,8 @@ class ApplicationForm extends Component {
             const clientHeight = +movedObj.clientHeight;
             const clientWidth = +movedObj.clientWidth;
 
-            const formXpx = movedObj.style.left;
-            const formX = +formXpx.substr(0, formXpx.length - 2);
-
-            const formYpx = movedObj.style.top;
-            const formY = +formYpx.substr(0, formYpx.length - 2);
+            const formX = this.getCoords()[0];
+            const formY = this.getCoords()[1];
 
             const offsetX = mouseX - formX;
             const offsetY = mouseY - formY;
@@ -383,24 +391,23 @@ class ApplicationForm extends Component {
         })
     };
 
-    showHint = (e, which) => {
-        this.setState({
-            showHint: true,
-            whichHint: which,
-            hintX: +e.clientX,
-            hintY: +e.clientY
-        })
-    };
-
-    closeHint = () => {
-        this.setState({
-            showHint: false
-        })
-    };
-
     minimize = () => {
+        this.props.closeHint();
+        const bothCoords = this.getCoords();
+        const x = bothCoords[0];
+        const y = bothCoords[1];
         this.setState({
-            minimized: true
+            minimizedX: x,
+            minimizedY: y,
+            minimized: true,
+            calendarState: this.calendarRef.current.state
+        })
+    };
+
+    expand = () => {
+        this.props.closeHint();
+        this.setState({
+            minimized: false
         })
     }
 }
@@ -408,7 +415,9 @@ class ApplicationForm extends Component {
 ApplicationForm.propTypes = {
     closeAppWindow: PropTypes.func.isRequired,
     userName: PropTypes.string.isRequired,
-    token: PropTypes.string.isRequired
+    token: PropTypes.string.isRequired,
+    showHint: PropTypes.func.isRequired,
+    closeHint: PropTypes.func.isRequired
 };
 
 export default ApplicationForm;

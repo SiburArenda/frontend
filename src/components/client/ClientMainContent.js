@@ -41,6 +41,8 @@ class ClientMainContent extends Component {
                         closeAppWindow={this.props.closeAppWindow}
                         userName={this.state.userName}
                         token={this.state.token}
+                        showHint={this.props.showHint}
+                        closeHint={this.props.closeHint}
                     />
                     : null
                 }
@@ -64,7 +66,9 @@ ClientMainContent.propTypes = {
     logInFormVisible: PropTypes.bool.isRequired,
     applicationFormVisible: PropTypes.bool.isRequired,
     closeLogInForm: PropTypes.func.isRequired,
-    closeAppWindow: PropTypes.func.isRequired
+    closeAppWindow: PropTypes.func.isRequired,
+    showHint: PropTypes.func.isRequired,
+    closeHint: PropTypes.func.isRequired
 };
 
 export default ClientMainContent;

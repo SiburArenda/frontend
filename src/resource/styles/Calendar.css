@@ -159,3 +159,44 @@ button,
     z-index: 3;
     position: absolute;
 }
+
+#hidden-check {
+    position: absolute;
+    z-index: -1;
+    opacity: 0;
+}
+
+#hidden-check+label {
+    display: inline-flex;
+    align-items: center;
+    user-select: none;
+    cursor: pointer;
+}
+#hidden-check+label::before {
+    content: '';
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    flex-shrink: 0;
+    flex-grow: 0;
+    border: 2px solid #efefef;
+    border-radius: 2px;
+    margin-right: 2px;
+    background-color: transparent;
+}
+
+#hidden-check:not(:disabled)+label:hover::before {
+    border-color: #16a4ab;
+}
+
+#hidden-check:checked+label::before {
+    background: center no-repeat url("../img/tick.png");
+}
+
+#hidden-check:not(:disabled):checked+label:hover::before {
+    background-image: url("../img/tickHvr.png");
+}
+
+#checkbox-aligner{
+    display: flex;
+}

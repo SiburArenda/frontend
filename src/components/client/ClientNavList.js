@@ -1,15 +1,8 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {Link, BrowserRouter as Router} from "react-router-dom";
-import Hint from "./Hint";
 
 class ClientNavList extends Component {
-
-    state = {
-        hintX: 0,
-        hintY: 0,
-        showAppFormHint: false
-    };
 
     render() {
         return (
@@ -30,35 +23,21 @@ class ClientNavList extends Component {
                     <button
                         onClick={() => this.props.openApplicationForm()}
                         className='hover-text'
-                        onMouseEnter={e => this.showHint(e)}
-                        onMouseLeave={() => this.setState({showAppFormHint: false})}
+                        onMouseEnter={e => this.props.showHint(e, 'openAppFormBtn')}
+                        onMouseLeave={() => this.props.closeHint()}
                     >
                         Оформить заявку
                     </button>
-                    {this.state.showAppFormHint
-                        ? <Hint
-                            hintText={'Окно заполнения заявки откроется параллельно с остальным содержимым сервиса' +
-                        ' - Вы сможете переходить по разделам, не закрывая его и не заполняя заново!'}
-                            x={this.state.hintX}
-                            y={this.state.hintY}/>
-                        : null}
                 </li>
             </Router>
         );
     }
-
-
-    showHint = (e) => {
-        this.setState({
-            hintX: +e.clientX,
-            hintY: +e.clientY,
-            showAppFormHint: true
-        })
-    }
 }
 
 ClientNavList.propTypes = {
-    openApplicationForm: PropTypes.func.isRequired
+    openApplicationForm: PropTypes.func.isRequired,
+    showHint: PropTypes.func.isRequired,
+    closeHint: PropTypes.func.isRequired
 };
 
 export default ClientNavList;

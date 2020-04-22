@@ -65,6 +65,11 @@ footer{
     padding: 10px;
 }
 
+.hover-text{
+    cursor: pointer;
+    color: #efefef;
+}
+
 .hover-text:hover{
     color: #16a4ab;
 }
