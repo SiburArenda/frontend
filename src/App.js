@@ -19,6 +19,16 @@ class App extends Component {
     };
 
     getHintText = () => {
+
+        if (this.state.whichHint.startsWith('fullName&')) {
+            return this.state.whichHint.substring(9)
+        }
+
+        if (this.state.whichHint.startsWith('interval')) {
+            const split = this.state.whichHint.split('%');
+            return `Пожалуйста, введите число от ${split[1]} до ${split[2]}`;
+        }
+
         switch (this.state.whichHint) {
             case 'closeAppFormBtn':
                 return 'Если Вы закроете неотправленную заявку, введённая информация не сохранится';
@@ -31,7 +41,19 @@ class App extends Component {
                     ' - Вы сможете переходить по разделам, не закрывая его и не заполняя заново!';
             case 'sendAppBtn':
                 return 'Заявка будет отправлена, но Вы всегда сможете отредактировать её:' +
-                    ' просто отыщите её в Отправленных Заявках в Вашем профиле.';
+                    ' просто отыщите её в Отправленных Заявках в Вашем профиле';
+            case 'intPosNum':
+                return 'Пожалуйста, введите целое положительное число';
+            case 'clearCalendar':
+                return 'Все выбранные даты и временные рамки для них будут сброшены';
+            case 'timeSet':
+                return 'Установить временные рамки для этой даты';
+            case 'timeSelOK':
+                return 'Введённые временные рамки уже сохранены -' +
+                    ' эта кнопка просто скроет этот диалог, чтобы он Вам не мешал!';
+            case 'forAllCheck':
+                return 'Пока Вы настраиваете временные рамки для выбранной сейчас даты, это действие можно' +
+                    ' будет отменить; как только Вы переключитесь на другую дату, значения сохранятся';
             default:
                 return '';
         }

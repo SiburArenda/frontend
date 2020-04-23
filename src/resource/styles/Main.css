@@ -68,6 +68,7 @@ footer{
 .hover-text{
     cursor: pointer;
     color: #efefef;
+    user-select: none;
 }
 
 .hover-text:hover{
@@ -95,4 +96,55 @@ footer{
     max-width: 250px;
     line-height: 1.4em;
     text-align: left;
+}
+
+.dropdown{
+    position: relative;
+    max-width: 190px;
+}
+
+.open-select-btn{
+    width: 20px;
+    height: 15px;
+    border: none;
+    background: center no-repeat url("../img/dropdownBtn.svg");
+    margin-left: 8px;
+}
+
+.open-select-btn:hover{
+    background-image: url("../img/dropdownBtnHvr.svg");
+}
+
+.select-popup{
+    position: absolute;
+    z-index: 5;
+    background: #1a1a1a;
+    border: white 1px solid;
+    color: #efefef;
+    text-align: center;
+    padding: 2px 10px;
+    width: fit-content;
+    max-width: 190px;
+    top: auto;
+    max-height: 110px;
+    overflow-y: scroll;
+}
+
+.select-item{
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.dropdown-header{
+    width: 213px;
+    display: flex;
+    align-items: center;
+}
+
+.no-overflow{
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    width: 190px;
 }

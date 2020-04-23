@@ -23,27 +23,29 @@
 }
 
 #prev{
-    background: center no-repeat url('../img/prevMonthIcon.png');
+    background: center no-repeat url('../img/prevMonthIcon.svg');
 }
 
 #prev:hover{
-    background-image: url("../img/prevMonthIconHover.png");
+    background-image: url("../img/prevMonthIconHover.svg");
 }
 
 #next{
-    background: center no-repeat url('../img/nextMonthIcon.png');
+    background: center no-repeat url('../img/nextMonthIcon.svg');
 }
 
 #next:hover{
-    background-image: url("../img/nextMonthIconHover.png");
+    background-image: url("../img/nextMonthIconHover.svg");
 }
 
 #calendar-container{
     text-align: center;
     background-color: transparent;
     width: 440px;
+    height: fit-content;
     padding: 0 10px;
     border: white 1px solid;
+    display: block;
 }
 
 .day {
@@ -63,6 +65,7 @@
     color: #efefef;
     background-color: transparent;
     height: 40px;
+    user-select: none;
 }
 
 .transparent-element{
@@ -73,7 +76,6 @@
     border: none;
 }
 
-#month-nav,
 #year-nav,
 button,
 .day{
@@ -88,17 +90,7 @@ button,
     color: #efefef;
 }
 
-#month-select-popup{
-    z-index: 2;
-    position: absolute;
-    left: -10px;
-    background-color: #1a1a1a;
-    border: white 1px solid;
-    padding: 5px;
-    color: #efefef;
-}
-
-#month-nav{
+.pos-parent{
     position: relative;
 }
 
@@ -108,6 +100,7 @@ button,
     padding-left: 12px;
     position: relative;
     height: 50px;
+    user-select: none;
 }
 
 .non-selected-day{
@@ -140,24 +133,19 @@ button,
 }
 
 .time-set-button-orange{
-    background-image: url("../img/timeSetBtnOrange.png");
+    background-image: url("../img/timeSetBtnOrange.svg");
 }
 
 .time-set-button-white{
-    background-image: url("../img/timeSetBtnWhite.png");
+    background-image: url("../img/timeSetBtnWhite.svg");
 }
 
 .time-set-button-orange:hover{
-    background-image: url("../img/timeSetBtnOrangeHvr.png");
+    background-image: url("../img/timeSetBtnOrangeHvr.svg");
 }
 
 .time-set-button-white:hover{
-    background-image: url("../img/timeSetBtnWhiteHvr.png");
-}
-
-.time-select-dialogue{
-    z-index: 3;
-    position: absolute;
+    background-image: url("../img/timeSetBtnWhiteHvr.svg");
 }
 
 #hidden-check {
@@ -172,6 +160,7 @@ button,
     user-select: none;
     cursor: pointer;
 }
+
 #hidden-check+label::before {
     content: '';
     display: inline-block;
@@ -190,13 +179,16 @@ button,
 }
 
 #hidden-check:checked+label::before {
-    background: center no-repeat url("../img/tick.png");
+    background: center no-repeat url("../img/tick.svg");
 }
 
 #hidden-check:not(:disabled):checked+label:hover::before {
-    background-image: url("../img/tickHvr.png");
+    background-image: url("../img/tickHvr.svg");
 }
 
-#checkbox-aligner{
-    display: flex;
+.text-display{
+    text-align: left;
+    margin: 5px 0;
+    padding-top: 5px;
+    border-top: #efefef 1px solid;
 }

@@ -3,12 +3,22 @@
     border: none;
     color: #efefef;
     width: 30px;
-    margin-left: 5px;
+    margin-left: 10px;
 }
 
 #timing-container{
-    line-height: 25px;
     padding-top: 5px;
     padding-bottom: 15px;
     text-align: left;
+    border-top: #efefef 1px solid;
+    display: block;
+}
+
+.hour-min{
+    margin-left: 10px;
+}
+
+#checkbox-aligner{
+    display: flex;
+    padding: 5px 0;
 }

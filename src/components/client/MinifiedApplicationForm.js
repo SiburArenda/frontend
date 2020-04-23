@@ -6,7 +6,8 @@ class MinifiedApplicationForm extends Component {
     state = {
         offsetX: 0,
         offsetY: 0,
-        dragged: false
+        dragged: false,
+        grabbed: null
     };
 
     pos = {
@@ -47,6 +48,9 @@ class MinifiedApplicationForm extends Component {
 
     startFormDrag = (e) => {
         if (e.target.id === 'minimized-app-form') {
+
+            e.target.style.cursor = 'grab';
+
             const movedObj = document.getElementById('minimized-app-form');
             const mouseX = +e.screenX;
             const mouseY = +e.screenY;
@@ -63,7 +67,8 @@ class MinifiedApplicationForm extends Component {
             this.setState({
                 offsetX: offsetX,
                 offsetY: offsetY,
-                dragged: true
+                dragged: true,
+                grabbed: e.target
             })
 
         }
@@ -79,8 +84,11 @@ class MinifiedApplicationForm extends Component {
 
     stopDrag = () => {
         if (this.state.dragged) {
+            const grabbed = this.state.grabbed;
+            grabbed.style.cursor = 'default';
             this.setState({
-                dragged: false
+                dragged: false,
+                grabbed: null
             })
         }
     };

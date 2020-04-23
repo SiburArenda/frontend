@@ -14,9 +14,9 @@
     color: #efefef;
     resize: vertical;
     overflow: hidden scroll;
-    display: inline-block;
     top: 50px;
-    left: 400px
+    left: 400px;
+    display: block;
 }
 
 #expand-btn,
@@ -43,11 +43,11 @@
 }
 
 .close-btn{
-    background-image: url("../img/closeAppFormBtn.png");
+    background-image: url("../img/closeAppFormBtn.svg");
 }
 
 .close-btn:hover{
-    background-image: url("../img/closeAppFormBtnHover.png");
+    background-image: url("../img/closeAppFormBtnHover.svg");
 }
 
 input[type='text']{
@@ -78,6 +78,7 @@ select{
 
 #picked-rooms-display{
     display: flex;
+    flex-wrap: wrap;
 }
 
 .room-span{
@@ -86,6 +87,7 @@ select{
     border-radius: 10px;
     padding: 2px 7px;
     margin-right: 8px;
+    margin-bottom: 6px;
     position: relative;
     display: flex;
 }
@@ -95,35 +97,22 @@ select{
     height: 15px;
     border: none;
     margin: auto 2px auto 8px;
-    background: center no-repeat url("../img/removeRoomBtn.png");
+    background: center no-repeat url("../img/removeRoomBtn.svg");
 }
 
-#pick-room{
-    cursor: pointer;
-}
-
-.placeholder{
-    color: #575757;
-}
-
-#room-select-popup{
-    position: absolute;
-    z-index: 5;
-    background: #1a1a1a;
-    border: white 1px solid;
-    color: #efefef;
-    text-align: center;
-    padding: 2px 10px;
+.remove-room-btn:hover{
+    background-image: url("../img/removeRoomBtnHvr.svg");
 }
 
 .big-text-input{
+    box-sizing: border-box;
     background: transparent;
-    alignment: center;
     padding: 5px 2%;
     border: #efefef solid 1px;
     color: #efefef;
     resize: none;
-    width: 96%;
+    width: 462px;
+    margin: auto;
     height: 60px;
 }
 
@@ -142,23 +131,34 @@ select{
 }
 
 .block-container{
+    display: flex;
     margin: 0 auto 12px auto;
 }
 
+.block-col-left{
+    display: block;
+    flex: 1;
+}
+
+.block-col-right{
+    display: block;
+    flex: 1;
+}
+
 #minimize-btn{
-    background-image: url("../img/appFormMinBtn.png");
+    background-image: url("../img/appFormMinBtn.svg");
 }
 
 #minimize-btn:hover{
-    background-image: url("../img/appFormMinBtnHvr.png");
+    background-image: url("../img/appFormMinBtnHvr.svg");
 }
 
 #expand-btn{
-    background-image: url("../img/expandAppFormBtn.png");
+    background-image: url("../img/expandAppFormBtn.svg");
 }
 
 #expand-btn:hover{
-    background-image: url("../img/expandAppFormBtnHvr.png");
+    background-image: url("../img/expandAppFormBtnHvr.svg");
 }
 
 #minimized-app-form{
@@ -169,4 +169,72 @@ select{
     position: absolute;
     z-index: 6;
     border-radius: 0 0 0 20px;
+}
+
+.hidden-radio {
+    position: absolute;
+    z-index: -1;
+    opacity: 0;
+}
+
+.hidden-radio+label {
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    user-select: none;
+}
+
+.hidden-radio+label::before {
+    content: '';
+    display: inline-block;
+    width: 0.8em;
+    height: 0.8em;
+    flex-shrink: 0;
+    flex-grow: 0;
+    border: 2px solid #efefef;
+    border-radius: 50%;
+    margin-right: 0.3em;
+}
+
+.hidden-radio:not(:disabled):not(:checked)+label:hover::before {
+    border-color: #16a4ab;
+}
+
+.hidden-radio:checked+label::before {
+    background: center no-repeat url("../img/radio.svg");
+}
+
+.hidden-radio:checked:hover+label::before {
+    border-color: #16a4ab;
+    background: center no-repeat url("../img/radioHvr.svg");
+}
+
+.flex-container{
+    display: flex;
+    width: fit-content;
+    align-items: center;
+}
+
+.drag-detector{
+    cursor: default;
+}
+
+p, label{
+    user-select: none;
+}
+
+.warning{
+    margin-left: 8px;
+    background: center no-repeat url("../img/warning.svg");
+    width: 17px;
+    height: 17px;
+    cursor: help;
+}
+
+.empty-warning{
+    margin-left: 8px;
+    background: transparent;
+    width: 17px;
+    height: 17px;
+    cursor: default;
 }

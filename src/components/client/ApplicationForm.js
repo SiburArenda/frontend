@@ -1,11 +1,12 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import {Room, TypeOfEvent} from '../../functional/EnumsAndConsts'
+import {Room} from '../../functional/EnumsAndConsts'
 import Calendar from "../Calendar";
 import '../../resource/styles/ApplicationForm.css'
 import '../../resource/styles/Main.css'
 import {BrowserRouter as Router} from "react-router-dom";
 import MinifiedApplicationForm from "./MinifiedApplicationForm";
+import Dropdown from "../Dropdown";
 
 class FromTo {
     constructor(from, to) {
@@ -24,23 +25,36 @@ class ApplicationForm extends Component {
 
     state = {
         eventName: null,
-        eventType: TypeOfEvent.CONCERT,
+        eventType: 'PARTY',
         rooms: [],
-        viewersExpected: false,
+        viewersExpected: 'false',
         viewers: 0,
         comment: '',
         offsetX: 0,
         offsetY: 0,
         dragged: false,
         resized: false,
-        showPickRoom: false,
         minimized: false,
         minimizedX: 0,
         minimizedY: 0,
-        calendarState: {nothing: 'nothing'}
+        calendarState: {nothing: 'nothing'},
+        warning: '',
+        grabbed: null
     };
 
+    eventTypeOptions = [
+        {rusName: 'Концерт, представление', additional: null},
+        {rusName: 'Корпоратив, семинар, собрание', additional: null},
+        {rusName: 'Спорт', additional: null},
+        {rusName: 'Другое', additional: null}
+    ];
+
     render() {
+
+        const roomOptions = Room.map(roomInfo => {
+            return {rusName: roomInfo.rusName, additional: null} //TODO: add Link to Room Page as additional
+        });
+
         return (
             <Router>
                 {
@@ -81,100 +95,220 @@ class ApplicationForm extends Component {
                                 >
                                 </button>
                             </div>
+
                             <div className='block-container ninety-container drag-detector'>
-                                <label className='drag-detector'>Название мероприятия:</label>
-                                <input
-                                    type='text'
-                                    name='eventName'
-                                    onChange={(e) => {
-                                        this.handleInput(e)
-                                    }}
-                                    className='medium-text-input'
-                                    defaultValue={this.state.eventName}
-                                />
-                                <br/>
-                                <label className='drag-detector'>Тип мероприятия:</label>
-                                <select
-                                    name='eventType'
-                                    onChange={(e) => {this.handleInput(e)}}
-                                    defaultValue={this.state.eventType}
-                                >
-                                    <option value={TypeOfEvent.CONCERT}>Концерт, представление</option>
-                                    <option value={TypeOfEvent.PARTY}>Корпоратив, семинар, собрание</option>
-                                    <option value='SPORT'>Спорт</option>
-                                    <option value={TypeOfEvent.OTHER}>Другое</option>
-                                </select>
-                                <br/>
-                                {['SPORT', 'MATCH', 'TRAINING'].includes(this.state.eventType)
-                                    ?
-                                    <React.Fragment>
-                                        <input
-                                            name='eventType'
-                                            type='radio'
-                                            value='TRAINING'
-                                            onChange={(e) => {this.handleInput(e)}}
-                                            checked={['SPORT', 'TRAINING'].includes(this.state.eventType)}
-                                        />
-                                        <label>Тренировка</label>
-                                        <br/>
-                                        <input
-                                            name='eventType'
-                                            type='radio'
-                                            value='MATCH'
-                                            onChange={(e) => {this.handleInput(e)}}
-                                            checked={this.state.eventType === 'MATCH'}
-                                        />
-                                        <label>Матч</label>
-                                        <br/>
-                                    </React.Fragment>
-                                    :
-                                    null
-                                }
-                                <this.PickRoom/>
-                                {this.state.rooms.length === 0
-                                    ?
-                                    <React.Fragment>
-                                        <br/>
-                                        <label className='placeholder'>Вы ещё не выбрали ни одного помещения</label>
-                                        <br/>
-                                    </React.Fragment>
-                                    :
+
+                                <div className='block-col-left drag-detector'>
+
+                                    <p className='drag-detector'>Название мероприятия:</p>
+
+                                    <p className='drag-detector'>Тип мероприятия:</p>
+
+                                    {['MATCH', 'TRAINING'].includes(this.state.eventType)
+                                        ?
+                                        <p className='drag-detector' style={{height: '1.7em'}}>{''}</p>
+                                        :
+                                        null
+                                    }
+
+                                    <p className='drag-detector'>Помещения:</p>
+
+                                </div>
+
+                                <div className='block-col-right drag-detector'>
+
+                                    <input
+                                        type='text'
+                                        name='eventName'
+                                        onChange={(e) => {
+                                            this.handleInput(e, null)
+                                        }}
+                                        className='medium-text-input'
+                                        defaultValue={this.state.eventName}
+                                    />
+
+                                    <Dropdown
+                                        header=''
+                                        options={this.eventTypeOptions}
+                                        onChoose={this.pickEventType}
+                                        withButton={true}
+                                        left={0}
+                                        top={16}
+                                        showHint={this.props.showHint}
+                                        closeHint={this.props.closeHint}
+                                    />
+
+                                    {
+                                        ['MATCH', 'TRAINING'].includes(this.state.eventType)
+                                            ?
+                                            <div className='flex-container'>
+
+                                                <input
+                                                    type='radio'
+                                                    id='training-radio'
+                                                    name='eventType'
+                                                    className='hidden-radio'
+                                                    value='TRAINING'
+                                                    onChange={(e) => {
+                                                        this.handleInput(e, null)
+                                                    }}
+                                                    checked={this.state.eventType === 'TRAINING'}
+                                                />
+                                                <label htmlFor='training-radio'>
+                                                </label>
+                                                <label style={{marginRight: '28px'}}>Тренировка</label>
+
+                                                <input
+                                                    type='radio'
+                                                    id='match-radio'
+                                                    name='eventType'
+                                                    className='hidden-radio'
+                                                    value='MATCH'
+                                                    onChange={(e) => {
+                                                        this.handleInput(e, null)
+                                                    }}
+                                                    checked={this.state.eventType === 'MATCH'}
+                                                />
+                                                <label htmlFor='match-radio'>
+                                                </label>
+                                                <label>Матч</label>
+                                            </div>
+                                            :
+                                            null
+                                    }
+
                                     <div id='picked-rooms-display'>
-                                        {this.state.rooms.map(room => <this.RoomSpan room={room}/>)}
+                                        <Dropdown
+                                            header='Добавить'
+                                            options={roomOptions}
+                                            onChoose={this.addRoom}
+                                            withButton={false}
+                                            marginRight={8}
+                                            showHint={this.props.showHint}
+                                            closeHint={this.props.closeHint}
+                                        />
+                                        {this.state.rooms.map(room => <this.RoomSpan key={room.rusName} room={room}/>)}
                                     </div>
-                                }
-                                {this.state.eventType === TypeOfEvent.OTHER || this.state.eventType === TypeOfEvent.PARTY
-                                    ?
-                                    <React.Fragment>
-                                        <label className='drag-detector'>Ожидается ли на Вашем мероприятии зрительская
-                                            аудитория?</label><br/>
-                                        <input name='viewersExpected' type='radio' value={true} onChange={(e) => {
-                                            this.handleInput(e)
-                                        }}/><label>Да</label><br/>
-                                        <input name='viewersExpected' type='radio' value={false} onChange={(e) => {
-                                            this.handleInput(e)
-                                        }}/><label>Нет</label><br/>
-                                    </React.Fragment>
-                                    :
-                                    null
-                                }
-                                {['MATCH', 'PARTY'].includes(this.state.eventType) || this.state.viewersExpected === 'true'
-                                    ?
-                                    <React.Fragment>
-                                        <label className='drag-detector'>Сколько зрителей вы ожидаете?</label>
-                                        <input
-                                            type='text'
-                                            name='viewers'
-                                            onChange={(e) => {this.handleInput(e)}}
-                                            className='small-text-input'
-                                            defaultValue={this.state.viewers === 0 ? '' : this.state.viewers}
-                                        /><br/>
-                                    </React.Fragment>
-                                    :
-                                    null
-                                }
+
+                                </div>
+
                             </div>
-                            <Calendar ref={this.calendarRef} savedState={this.state.calendarState}/>
+
+                            <div className='block-container ninety-container drag-detector'>
+
+                                <div className='block-col-left drag-detector'>
+
+                                    {
+                                        ['DRINKING_PARTY', 'OTHER'].includes(this.state.eventType)
+                                            ?
+                                            <p className='drag-detector'>Ожидается ли на Вашем мероприятии
+                                                зрительская аудитория?</p>
+                                            :
+                                            null
+                                    }
+
+                                    {
+                                        ['MATCH', 'PARTY'].includes(this.state.eventType)
+                                        || (this.state.eventType !== 'TRAINING' && this.state.viewersExpected === 'true')
+                                            ? <p className='drag-detector'>Количество зрителей:</p>
+                                            : null
+                                    }
+                                </div>
+
+                                <div className='block-col-right drag-detector'>
+
+                                    {
+                                        ['DRINKING_PARTY', 'OTHER'].includes(this.state.eventType)
+                                            ?
+                                            <React.Fragment>
+                                                <p className='drag-detector' style={{height: '1.7em'}}>{''}</p>
+
+                                                <div className='flex-container'>
+
+                                                    <input
+                                                        type='radio'
+                                                        id='yes-viewers-radio'
+                                                        name='viewersExpected'
+                                                        className='hidden-radio'
+                                                        value={true}
+                                                        onChange={(e) => {
+                                                            this.handleInput(e, null)
+                                                        }}
+                                                        checked={this.state.viewersExpected === 'true'}
+                                                    />
+                                                    <label htmlFor='yes-viewers-radio'>
+                                                    </label>
+                                                    <label style={{marginRight: '28px'}}>Да</label>
+
+                                                    <input
+                                                        type='radio'
+                                                        id='no-viewers-radio'
+                                                        name='viewersExpected'
+                                                        className='hidden-radio'
+                                                        value={false}
+                                                        onChange={(e) => {
+                                                            this.handleInput(e, null)
+                                                        }}
+                                                        checked={this.state.viewersExpected === 'false'}
+                                                    />
+                                                    <label htmlFor='no-viewers-radio'>
+                                                    </label>
+                                                    <label>Нет</label>
+                                                </div>
+
+                                                <p className='drag-detector' style={{height: '1.7em'}}>{''}</p>
+                                            </React.Fragment>
+                                            :
+                                            null
+                                    }
+
+                                    {
+                                        ['MATCH', 'PARTY'].includes(this.state.eventType)
+                                        || (this.state.eventType !== 'TRAINING' && this.state.viewersExpected === 'true')
+                                            ?
+                                            <div style={{display: 'flex', alignItems: 'center'}}>
+
+                                                <input
+                                                    type='text'
+                                                    name='viewers'
+                                                    onChange={e => {
+                                                        this.handleInput(e, this.invalidInput(e, 'viewers'))
+                                                    }}
+                                                    className='small-text-input'
+                                                    defaultValue={this.state.viewers === 0 ? '' : this.state.viewers}
+                                                />
+
+                                                {
+                                                    this.state.warning === 'viewers'
+                                                        ?
+                                                        <div
+                                                            className='warning'
+                                                            onMouseEnter={e => this.props.showHint(e, 'intPosNum')}
+                                                            onMouseLeave={() => this.props.closeHint()}
+                                                        >
+                                                        </div>
+                                                        :
+                                                        <div
+                                                            className='empty-warning'
+                                                        >
+                                                        </div>
+                                                }
+
+                                            </div>
+                                            : null
+                                    }
+
+                                </div>
+
+                            </div>
+
+                            <Calendar
+                                ref={this.calendarRef}
+                                savedState={this.state.calendarState}
+                                showHint={this.props.showHint}
+                                closeHint={this.props.closeHint}
+                            />
+
                             <div className='block-container ninety-container drag-detector'>
                                 <label className='drag-detector'>
                                     В этом поле Вы можете оставить любые комментарии, которые сочтёте важными. К
@@ -182,13 +316,13 @@ class ApplicationForm extends Component {
                                     окончательного заключения договора об аренде.
                                 </label>
                             </div>
-                            <div className='block-container ninety-container drag-detector'>
-                    <textarea
-                        name='comment'
-                        onChange={e => this.handleInput(e)}
-                        className='big-text-input'
-                        defaultValue={this.state.comment}
-                    />
+                            <div className='block-container drag-detector'>
+                                <textarea
+                                    name='comment'
+                                    onChange={e => this.handleInput(e)}
+                                    className='big-text-input'
+                                    defaultValue={this.state.comment}
+                                />
                             </div>
                             <div className='btn-pusher drag-detector'>
                                 <button
@@ -208,10 +342,14 @@ class ApplicationForm extends Component {
         );
     }
 
-    handleInput = (e) => {
+    handleInput = (e, callback) => {
         this.setState({
             [e.target.name]: e.target.value
         });
+
+        if (callback != null) {
+            callback();
+        }
     };
 
     sendApplication = () => {
@@ -276,9 +414,18 @@ class ApplicationForm extends Component {
     };
 
     addRoom = (room) => {
-        if (!this.state.rooms.includes(room)) {
+        let toAdd = null;
+
+        for (let roomInfo in Room) {
+            if (room.rusName === Room[roomInfo].rusName) {
+                toAdd = Room[roomInfo];
+                break;
+            }
+        }
+
+        if (toAdd != null && !this.state.rooms.includes(toAdd)) {
             this.setState({
-                rooms: [...this.state.rooms, room]
+                rooms: [...this.state.rooms, toAdd]
             })
         }
     };
@@ -294,6 +441,9 @@ class ApplicationForm extends Component {
 
     startFormDrag = (e) => {
         if (e.target.className.indexOf('drag-detector') !== -1) {
+
+            e.target.style.cursor = 'grab';
+
             const movedObj = document.getElementById('application-form');
             const mouseX = +e.screenX;
             const mouseY = +e.screenY;
@@ -311,7 +461,8 @@ class ApplicationForm extends Component {
                 this.setState({
                     offsetX: offsetX,
                     offsetY: offsetY,
-                    dragged: true
+                    dragged: true,
+                    grabbed: e.target
                 })
             }
 
@@ -327,59 +478,24 @@ class ApplicationForm extends Component {
     };
 
     stopDrag = () => {
+
         if (this.state.dragged) {
+            const grabbed = this.state.grabbed;
+            grabbed.style.cursor = 'default';
             this.setState({
-                dragged: false
+                dragged: false,
+                grabbed: null
             })
         }
     };
 
-    RoomSelect = () => {
-        const popup = Room.map((roomInfo) => {
-            return (
-                <div key={roomInfo.stringId}>
-                    <p
-                        onClick={() => {
-                            this.addRoom(roomInfo)
-                        }}
-                        className='hover-text'
-                    >
-                        {roomInfo.rusName}
-                    </p>
-                </div>
-            );
-        });
-        return (
-            <div id='room-select-popup'>
-                {popup}
-            </div>
-        );
-    };
-
-    PickRoom = () => {
-        return (
-            <span id='pick-room' className='hover-text' onClick={() => this.openPickRoom()}>
-                Добавить помещение
-                {this.state.showPickRoom
-                    ? <this.RoomSelect/>
-                    : null}
-            </span>
-        );
-    };
-
     RoomSpan = (props) => {
         return (
-            <span className='room-span'>
+            <span className='room-span' style={{order: props.room.rusName.length}}>
                 {props.room.rusName}
                 <button onClick={() => this.removeRoom(props.room)} className='remove-room-btn'>{''}</button>
             </span>
         );
-    };
-
-    openPickRoom = () => {
-        this.setState({
-            showPickRoom: !this.state.showPickRoom
-        })
     };
 
     removeRoom = (room) => {
@@ -409,6 +525,28 @@ class ApplicationForm extends Component {
         this.setState({
             minimized: false
         })
+    };
+
+    eventTypeId = ['PARTY', 'DRINKING_PARTY', 'TRAINING', 'OTHER'];
+
+    pickEventType = (option) => {
+        const index = this.eventTypeOptions.indexOf(option);
+        this.setState({
+            eventType: this.eventTypeId[index]
+        })
+    };
+
+    invalidInput = (e, where) => {
+        if (!e.target.value.match(/^\d*$/)) {
+            this.setState({
+                warning: where
+            })
+        } else {
+            this.props.closeHint();
+            this.setState({
+                warning: ''
+            })
+        }
     }
 }
 
