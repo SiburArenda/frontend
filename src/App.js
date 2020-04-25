@@ -7,6 +7,22 @@ import ClientMainContent from "./components/client/ClientMainContent";
 import AdminMainContent from "./components/admin/AdminMainContent";
 import Hint from "./components/client/Hint";
 
+class RoomInfo {
+    constructor(serverName, name, auditory, description, tags, isAdditionTo) {
+        this.serverName = serverName;
+        this.name = name;
+        this.auditory = auditory;
+        this.description = description;
+        this.tags = tags;
+        this.isAdditionTo = isAdditionTo === '-1' ? 'independent' : isAdditionTo;
+        this.amount = 1;
+    }
+
+    increaseAmount = () => this.amount += 1;
+
+    getURL = () => this.name.startsWith('VIP') ? 'VIP_ложи' : this.name.replace(/ /g, '_')
+}
+
 class App extends Component {
 
     state = {
@@ -18,18 +34,91 @@ class App extends Component {
         hintY: 0
     };
 
+    static roomArray = [];
+
+    componentDidMount() {
+        const request = new XMLHttpRequest();
+
+        request.onreadystatechange = function () {
+            if (request.readyState === 4) {
+
+                const pureResponse = JSON.parse(request.responseText);
+
+                for (let roomIndex in pureResponse){
+
+                    const roomObj = pureResponse[roomIndex];
+
+                    const priorName = roomObj.name;
+                    let name = '';
+                    let serverName = '';
+                    if (priorName.indexOf('#') !== -1) {
+                        const splitSpace = priorName.split(' ');
+                        name = `${splitSpace[0]} ${splitSpace[1]}`;
+                        const splitHash = priorName.split(' #');
+                        serverName = splitHash[0];
+                    } else {
+                        name = priorName;
+                        serverName = priorName;
+                    }
+
+                    const auditory = roomObj.auditory === -1 ? 0 : roomObj.auditory;
+                    if (name === 'VIP ложи') {
+                        name += ` на ${auditory} персон`
+                    }
+
+                    let add = false;
+                    for (let i in App.roomArray) {
+                        if (App.roomArray[i].name === name) {
+                            App.roomArray[i].increaseAmount();
+                            add = true;
+                        }
+                    }
+
+                    if (!add) {
+                        const description = roomObj.description;
+
+                        const tags = roomObj.tags.slice(0, roomObj.tags.length - 1);
+
+                        const isAdditionTo = roomObj.tags[roomObj.tags.length - 1];
+
+                        const newRoomInfo = new RoomInfo(serverName, name, auditory, description, tags, isAdditionTo);
+                        App.roomArray.push(newRoomInfo);
+                    }
+
+                }
+            }
+        };
+
+        request.open('GET', 'http://siburarenda.publicvm.com/api/public/rooms', true);
+        request.setRequestHeader('Content-Type', 'application/json');
+        request.send(null)
+    }
+
     getHintText = () => {
 
-        if (this.state.whichHint.startsWith('fullName&')) {
-            return this.state.whichHint.substring(9)
+        const whichHint = this.state.whichHint;
+
+        if (whichHint.startsWith('trainingArena')){
+            const split = whichHint.split('%');
+            let hintText = 'Тренировочная арена состоит из двух одинаковых баскетбольных площадок. Включить в заявку об аренде ';
+            return hintText + (split[1] === 'half' ? 'только одну из них?' : 'обе части?')
         }
 
-        if (this.state.whichHint.startsWith('interval')) {
-            const split = this.state.whichHint.split('%');
+        if (whichHint.startsWith('fullName&')) {
+            return whichHint.substring(9)
+        }
+
+        if (whichHint.startsWith('interval')) {
+            const split = whichHint.split('%');
             return `Пожалуйста, введите число от ${split[1]} до ${split[2]}`;
         }
 
-        switch (this.state.whichHint) {
+        if(whichHint.startsWith('roomAmount')) {
+            const split = whichHint.split('%');
+            return `Таких помещений в комплексе ${split[1]}, на данный момент в Вашу заявку об аренде включены ${split[2]} из них`
+        }
+
+        switch (whichHint) {
             case 'closeAppFormBtn':
                 return 'Если Вы закроете неотправленную заявку, введённая информация не сохранится';
             case 'minAppFormBtn':
@@ -54,6 +143,14 @@ class App extends Component {
             case 'forAllCheck':
                 return 'Пока Вы настраиваете временные рамки для выбранной сейчас даты, это действие можно' +
                     ' будет отменить; как только Вы переключитесь на другую дату, значения сохранятся';
+            case 'goToRooms':
+                return 'Открыть параллельно с формой заявки раздел "Помещения" с подробной информацией о каждом из них';
+            case 'exactRoomAbout':
+                return 'Перейти к странице с описанием данного помещения';
+            case 'plus':
+                return 'Увеличить количество';
+            case 'minus':
+                return 'Уменьшить количество';
             default:
                 return '';
         }
@@ -100,13 +197,15 @@ class App extends Component {
                     <ul id='main-nav'>
                         <Route
                             path={/^\/(?!admin).*/}
-                            render={(props) => (
-                                <ClientNavList
-                                    {...props}
-                                    openApplicationForm={this.openApplicationForm}
-                                    showHint={this.showHint}
-                                    closeHint={this.closeHint}
-                                />
+                            render={
+                                (props) => (
+                                    <ClientNavList
+                                        {...props}
+                                        openApplicationForm={this.openApplicationForm}
+                                        showHint={this.showHint}
+                                        closeHint={this.closeHint}
+                                    />
+
                                 )
                             }
                         />
@@ -131,6 +230,7 @@ class App extends Component {
                                         closeAppWindow={this.closeApplicationForm}
                                         showHint={this.showHint}
                                         closeHint={this.closeHint}
+                                        roomArray={App.roomArray}
                                     />
                                 )
                             }

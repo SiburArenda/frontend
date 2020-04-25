@@ -56,6 +56,8 @@ class Dropdown extends Component {
                         top={this.props.top}
                         showHint={this.props.showHint}
                         closeHint={this.props.closeHint}
+                        extraOption={this.props.extraOption}
+                        width={this.props.width}
                     />
                     : null
                 }
@@ -87,7 +89,9 @@ Dropdown.propTypes = {
     closeHint: PropTypes.func.isRequired,
     left: PropTypes.number,
     top: PropTypes.number,
-    marginRight: PropTypes.number
+    width: PropTypes.number,
+    marginRight: PropTypes.number,
+    extraOption: PropTypes.object
 };
 
 export default Dropdown;

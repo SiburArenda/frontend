@@ -44,12 +44,12 @@
     width: 440px;
     height: fit-content;
     padding: 0 10px;
-    border: white 1px solid;
+    border: #efefef 1px solid;
     display: block;
 }
 
 .day {
-    border-color: white;
+    border-color: #efefef;
     border-style: solid;
     border-width: 1px;
     border-collapse: collapse;

@@ -1,10 +1,9 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import {Room} from '../../functional/EnumsAndConsts'
 import Calendar from "../Calendar";
 import '../../resource/styles/ApplicationForm.css'
 import '../../resource/styles/Main.css'
-import {BrowserRouter as Router} from "react-router-dom";
+import {Link} from "react-router-dom";
 import MinifiedApplicationForm from "./MinifiedApplicationForm";
 import Dropdown from "../Dropdown";
 
@@ -16,11 +15,11 @@ class FromTo {
 }
 
 class ApplicationForm extends Component {
-
     constructor(props) {
         super(props);
 
         this.calendarRef = React.createRef();
+        this.halfRef = React.createRef();
     }
 
     state = {
@@ -49,14 +48,55 @@ class ApplicationForm extends Component {
         {rusName: 'Другое', additional: null}
     ];
 
+    goToRooms =
+        <p className='extra-item'>
+            <Link
+                to='/rooms'
+                className='hover-text'
+                style={{textDecoration: 'none'}}
+                onMouseEnter={e => this.props.showHint(e, 'goToRooms')}
+                onMouseLeave={() => this.props.closeHint()}
+                onClick={() => this.props.closeHint()}
+            >
+                Окрыть "Помещения"
+            </Link>
+        </p>;
+
     render() {
 
-        const roomOptions = Room.map(roomInfo => {
-            return {rusName: roomInfo.rusName, additional: null} //TODO: add Link to Room Page as additional
+        const roomOptions = this.props.roomArray.map(roomInfo =>
+        {
+            let parentChosenOrIndependent = roomInfo.isAdditionTo === 'independent';
+            if (!parentChosenOrIndependent) {
+                for (let roomIndex in this.state.rooms) {
+                    if (this.state.rooms[roomIndex].name.startsWith(roomInfo.isAdditionTo)){
+                        parentChosenOrIndependent = true;
+                        break;
+                    }
+                }
+            }
+            if (parentChosenOrIndependent) {
+                const rusName = roomInfo.name;
+                const url = roomInfo.getURL();
+                const additional =
+                    <p className='room-info'>
+                        <Link
+                            to={`/${url}`}
+                            style={{color: 'transparent'}}
+                            onMouseEnter={e => this.props.showHint(e, 'exactRoomAbout')}
+                            onMouseLeave={() => this.props.closeHint()}
+                            onClick={() => this.props.closeHint()}
+                        >
+                            link
+                        </Link>
+                    </p>;
+
+                return {rusName: rusName, additional: additional}
+            } else return null;
         });
 
         return (
-            <Router>
+            <React.Fragment>
                 {
                     this.state.minimized
                         ?
@@ -136,6 +176,7 @@ class ApplicationForm extends Component {
                                         top={16}
                                         showHint={this.props.showHint}
                                         closeHint={this.props.closeHint}
+                                        width={213}
                                     />
 
                                     {
@@ -180,14 +221,16 @@ class ApplicationForm extends Component {
                                     <div id='picked-rooms-display'>
                                         <Dropdown
                                             header='Добавить'
-                                            options={roomOptions}
+                                            options={roomOptions.filter(option => option != null)}
                                             onChoose={this.addRoom}
                                             withButton={false}
                                             marginRight={8}
                                             showHint={this.props.showHint}
                                             closeHint={this.props.closeHint}
+                                            extraOption={this.goToRooms}
+                                            width={213}
                                         />
-                                        {this.state.rooms.map(room => <this.RoomSpan key={room.rusName} room={room}/>)}
+                                        {this.state.rooms.map(room => <this.RoomSpan key={room.name} room={room}/>)}
                                     </div>
 
                                 </div>
@@ -337,7 +380,7 @@ class ApplicationForm extends Component {
                             </div>
                         </div>
                 }
-            </Router>
+            </React.Fragment>
 
         );
     }
@@ -352,11 +395,26 @@ class ApplicationForm extends Component {
         }
     };
 
+    getRoomJSON = () => {
+        const result = [];
+        const rooms = this.state.rooms.slice();
+        for (let i in rooms) {
+            const room = rooms[i];
+            const serverName = room.serverName;
+            if (room.maxAmount > 1) {
+                for (let j = 1; j <= room.amount; j++) {
+                    result.push(`${serverName} #${j}`)
+                }
+            }
+        }
+        return `"rooms":${JSON.stringify(result)},`
+    };
+
     sendApplication = () => {
         const nameJSON = `"name":"${this.state.eventName}",`;
         const audJSON = `"auditory":${this.state.viewers},`;
         const typeJSON = `"type":"${this.state.eventType}",`;
-        const roomsJSON = `"rooms":${JSON.stringify(this.state.rooms.map(room => room.stringId))},`;
+        const roomsJSON = this.getRoomJSON();
         const userJSON = `"user":"${this.props.userName}",`;
 
         const datesArraySel = this.calendarRef.current.state.selectedDays;
@@ -416,9 +474,18 @@ class ApplicationForm extends Component {
     addRoom = (room) => {
         let toAdd = null;
 
-        for (let roomInfo in Room) {
-            if (room.rusName === Room[roomInfo].rusName) {
-                toAdd = Room[roomInfo];
+        const {roomArray} = this.props;
+
+        for (let roomIndex in roomArray) {
+            const arrItem = roomArray[roomIndex];
+            if (room.rusName === arrItem.name) {
+                toAdd = {
+                    serverName: arrItem.serverName,
+                    name: room.rusName,
+                    amount: room.rusName === 'Тренировочная арена' ? 2 : 1,
+                    maxAmount: arrItem.amount,
+                    isAdditionTo: arrItem.isAdditionTo
+                };
                 break;
             }
         }
@@ -472,8 +539,9 @@ class ApplicationForm extends Component {
     dragForm = (e) => {
         if (this.state.dragged) {
             const movedObj = document.getElementById('application-form');
-            movedObj.style.top = (+e.screenY - this.state.offsetY) + 'px';
-            movedObj.style.left = (+e.screenX - this.state.offsetX) + 'px';
+            movedObj.style.top = +e.screenY - this.state.offsetY + 'px';
+            movedObj.style.left = +e.screenX - this.state.offsetX + 'px';
+
         }
     };
 
@@ -489,10 +557,81 @@ class ApplicationForm extends Component {
         }
     };
 
+    PlusMinus = (props) => {
+        const room = props.room;
+        const {amount, maxAmount} = room;
+        return(
+            <span className='flex-container'>
+
+                <button
+                    className='plus-minus-btn'
+                    onMouseEnter={e => this.props.showHint(e, 'minus')}
+                    onMouseLeave={() => this.props.closeHint()}
+                    onClick={() => this.changeRoomAmount(room, -1)}
+                >
+                    -
+                </button>
+
+                <label
+                    onMouseEnter={e => this.props.showHint(e, `roomAmount%${maxAmount}%${amount}`)}
+                    onMouseLeave={() => this.props.closeHint()}
+                    style={{margin: '0 8px'}}
+                >
+                    {amount}
+                </label>
+
+                <button
+                    className='plus-minus-btn'
+                    onMouseEnter={e => this.props.showHint(e, 'plus')}
+                    onMouseLeave={() => this.props.closeHint()}
+                    onClick={() => this.changeRoomAmount(room, 1)}
+                >
+                    +
+                </button>
+
+            </span>
+        );
+    };
+
+    Half = () => {
+        return(
+            <React.Fragment>
+                <input
+                    type='checkbox'
+                    onChange={e => this.halfField(e)}
+                    id='hidden-half'
+                />
+                <label
+                    htmlFor='hidden-half'
+                    onMouseEnter={e => this.halfHint(e)}
+                    onMouseLeave={() => this.props.closeHint()}
+                    onClick={() => this.props.closeHint()}
+                >
+                </label>
+            </React.Fragment>
+        )
+    };
+
+    halfHint = (e) => {
+        const secondHalf = document.getElementById('hidden-half').checked ? 'full' : 'half';
+        this.props.showHint(e, `trainingArena%${secondHalf}`)
+    };
+
     RoomSpan = (props) => {
-        return (
-            <span className='room-span' style={{order: props.room.rusName.length}}>
-                {props.room.rusName}
+        const {room} = props;
+        const {name, maxAmount} = room;
+        return(
+            <span className='room-span' style={{order: name.length}}>
+                {name}
+                {
+                    name === 'Тренировочная арена'
+                        ?
+                        <this.Half/>
+                        :
+                        maxAmount === 1
+                            ? null
+                            : <this.PlusMinus room={room}/>
+                }
                 <button onClick={() => this.removeRoom(props.room)} className='remove-room-btn'>{''}</button>
             </span>
         );
@@ -502,6 +641,31 @@ class ApplicationForm extends Component {
         const noRoom = this.state.rooms.slice();
         const index = noRoom.indexOf(room);
         noRoom.splice(index, 1);
+        while (true) {
+            const toRemoveAlso = [];
+            for (let i in noRoom) {
+                if (noRoom[i].isAdditionTo !== 'independent') {
+                    let chosen = false;
+                    for (let j in noRoom) {
+                        if (noRoom[j].name.startsWith(noRoom[i].isAdditionTo)) {
+                            chosen = true;
+                            break;
+                        }
+                    }
+                    if (!chosen) {
+                        toRemoveAlso.push(i);
+                    }
+                }
+            }
+            let deleted = 0;
+            if (toRemoveAlso.length !== 0) {
+                for (let i in toRemoveAlso) {
+                    noRoom.splice(toRemoveAlso[i] - deleted++, 1);
+                }
+            } else {
+                break;
+            }
+        }
         this.setState({
             rooms: noRoom
         })
@@ -547,6 +711,33 @@ class ApplicationForm extends Component {
                 warning: ''
             })
         }
+    };
+
+    changeRoomAmount = (room, number) => {
+        const index = this.state.rooms.indexOf(room);
+        const newRooms = this.state.rooms.slice();
+        const newAmount = room.amount + number;
+        if (room.maxAmount >= newAmount && 1 <= newAmount) {
+            newRooms[index].amount = newAmount;
+            this.setState({
+                rooms: newRooms
+            });
+        }
+    };
+
+    halfField = (e) => {
+        const rooms = this.state.rooms.slice();
+        let index = 0;
+        for (let i in rooms) {
+            if (rooms[i].name === 'Тренировочная арена') {
+                index = i;
+                break;
+            }
+        }
+        rooms[index].amount = e.target.checked ? 1 : 2;
+        this.setState({
+            rooms: rooms
+        })
     }
 }
 
@@ -555,7 +746,8 @@ ApplicationForm.propTypes = {
     userName: PropTypes.string.isRequired,
     token: PropTypes.string.isRequired,
     showHint: PropTypes.func.isRequired,
-    closeHint: PropTypes.func.isRequired
+    closeHint: PropTypes.func.isRequired,
+    roomArray: PropTypes.array.isRequired
 };
 
 export default ApplicationForm;

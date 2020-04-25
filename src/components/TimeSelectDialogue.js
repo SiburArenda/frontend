@@ -190,7 +190,7 @@ class TimeSelectDialogue extends Component {
                 <div id='checkbox-aligner'>
                     <input
                         type='checkbox'
-                        onChange={(e) => {this.props.setForAll(e)}}
+                        onChange={e => {this.props.setForAll(e)}}
                         ref={checkBoxRef}
                         id='hidden-check'
                     />

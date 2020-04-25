@@ -1,12 +1,12 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import {Link, BrowserRouter as Router} from "react-router-dom";
+import {Link} from "react-router-dom";
 
 class ClientNavList extends Component {
 
     render() {
         return (
-            <Router>
+            <React.Fragment>
                 <li>
                     <Link to='/' className='hover-text'>О сервисе</Link>
                 </li>
@@ -29,7 +29,7 @@ class ClientNavList extends Component {
                         Оформить заявку
                     </button>
                 </li>
-            </Router>
+            </React.Fragment>
         );
     }
 }

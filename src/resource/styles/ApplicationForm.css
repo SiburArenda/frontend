@@ -7,7 +7,7 @@
     max-height: 90%;
     width: 510px;
     background-color: #1a1a1a;
-    position: absolute;
+    position: fixed;
     z-index: 5;
     line-height: 1.7em;
     font-weight: normal;
@@ -17,6 +17,7 @@
     top: 50px;
     left: 400px;
     display: block;
+    border: #727272 3px solid;
 }
 
 #expand-btn,
@@ -93,8 +94,9 @@ select{
 }
 
 .remove-room-btn{
-    width: 15px;
-    height: 15px;
+    width: 16px;
+    height: 16px;
+    min-width: 16px;
     border: none;
     margin: auto 2px auto 8px;
     background: center no-repeat url("../img/removeRoomBtn.svg");
@@ -237,4 +239,77 @@ p, label{
     width: 17px;
     height: 17px;
     cursor: default;
+}
+
+.room-info{
+    background: center no-repeat url("../img/roomInfo.svg");
+    width: 15px;
+    height: 15px;
+    margin: 0 2px;
+    min-width: 15px;
+}
+
+.room-info:hover{
+    background-image: url("../img/roomInfoHvr.svg");
+}
+
+.flex-no-stretch{
+    display: flex;
+    align-items: center;
+    max-width: 213px;
+    justify-content: space-between;
+}
+
+.plus-minus-btn{
+    background-color: #16a4ab;
+    color: #efefef;
+    border: none;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px
+}
+
+.plus-minus-btn:hover{
+    background-color: #da6509;
+}
+
+#hidden-half {
+    position: absolute;
+    z-index: -1;
+    opacity: 0;
+}
+
+#hidden-half+label {
+    display: inline-flex;
+    align-items: center;
+    user-select: none;
+    cursor: pointer;
+}
+
+#hidden-half+label::before {
+    content: '';
+    display: inline-block;
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    flex-grow: 0;
+    border: none;
+    margin-left: 8px;
+    background: center no-repeat;
+}
+
+#hidden-half:not(:disabled):not(:checked)+label::before {
+    background-image: url("../img/halfField.svg");
+}
+
+#hidden-half:not(:disabled):not(:checked)+label:hover::before {
+    background-image: url("../img/halfFieldHvr.svg");
+}
+
+#hidden-half:not(:disabled):checked+label::before {
+    background-image: url("../img/fullField.svg");
+}
+
+#hidden-half:not(:disabled):checked+label:hover::before {
+    background-image: url("../img/fullFieldHvr.svg");
 }

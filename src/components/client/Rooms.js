@@ -5,13 +5,14 @@ class Rooms extends Component {
     render() {
         return (
             <React.Fragment>
-                Здесь будем получать список комнат с сервака
+                {this.props.roomArray.map(room => <p>{room.name}</p>)}
             </React.Fragment>
         );
     }
 }
 
 Rooms.propTypes = {
+    roomArray: PropTypes.array.isRequired
 };
 
 export default Rooms;
