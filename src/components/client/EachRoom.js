@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {Route} from "react-router-dom";
+import '../../resource/styles/Rooms.css'
 
 class EachRoom extends Component {
 
@@ -25,12 +26,14 @@ class EachRoom extends Component {
 
     getLayoutByDescription = (room) => {
         const {name, description} = room;
-        if (name.startsWith('VIP')) {
-            console.log(description)
-        }
         const split = description.split(/<\/?p>/).filter(word => word !== '');
         return <div className='info-container'>
-            <h2>{name.startsWith('VIP') ? 'VIP ложи' : name}</h2>
+            <h1>{name.startsWith('VIP') ? 'VIP ложи' : name}</h1>
+            <img
+                src='https://gorbilet.com/static/media/places/ea338e5837d38b5c719d8ea44bdf7ccc.jpg' // TODO: replace this with dynamic url when Valera finishes work on server
+                alt='arena'
+                className='header-photo'
+            />
             {split.map(paragraph => <p key={paragraph[0] + split.indexOf(paragraph)}
                                        className='info-paragraph'>{paragraph}</p>)}
         </div>

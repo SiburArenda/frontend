@@ -1,11 +1,11 @@
 import React from 'react';
 import moment from 'moment';
-import '../resource/styles/Calendar.css'
+import '../../resource/styles/Calendar.css'
 import TimeSelectDialogue from "./TimeSelectDialogue";
-import Timing from "../functional/Timing";
-import '../resource/styles/Main.css'
+import Timing from "../../functional/Timing";
+import '../../resource/styles/Main.css'
 import PropTypes from 'prop-types';
-import Dropdown from "./Dropdown";
+import Dropdown from "../Dropdown";
 
 class Calendar extends React.Component {
 

@@ -51,14 +51,6 @@
     background-image: url("../img/closeAppFormBtnHover.svg");
 }
 
-input[type='text']{
-    background: transparent;
-    border: none;
-    border-bottom: #efefef solid 1px;
-    color: #efefef;
-    padding-left: 5px;
-}
-
 .small-text-input{
     width: 80px;
 }
@@ -209,12 +201,6 @@ select{
 .hidden-radio:checked:hover+label::before {
     border-color: #16a4ab;
     background: center no-repeat url("../img/radioHvr.svg");
-}
-
-.flex-container{
-    display: flex;
-    width: fit-content;
-    align-items: center;
 }
 
 .drag-detector{

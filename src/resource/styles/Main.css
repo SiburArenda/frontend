@@ -8,6 +8,11 @@
     src: url("../fonts/Montserrat-Medium.otf");
 }
 
+@font-face {
+    font-family: MontserratBold;
+    src: url("../fonts/Montserrat-Bold.otf");
+}
+
 *{
     padding: 0;
     margin: 0;
@@ -171,17 +176,39 @@ header{
     background-color: #1a1a1a;
     text-align: left;
     font-family: MontserratMedium, sans-serif;
+    padding: 16px 35px;
 }
 
 .info-paragraph{
     color: #efefef;
     background-color: transparent;
-    margin-bottom: 10px;
-    padding: 10px;
+    padding: 12px 0;
 }
 
-.info-container h2{
+.info-container h1{
     color: #efefef;
     text-transform: uppercase;
-    padding: 10px;
+    padding: 10px 0;
+    font-family: MontserratBold, sans-serif;
+    font-size: 20px;
+}
+
+.flex-container{
+    display: flex;
+    width: fit-content;
+    align-items: center;
+}
+
+input[type='text']{
+    background: transparent;
+    border: none;
+    border-bottom: #efefef solid 1px;
+    color: #efefef;
+    padding-left: 5px;
+}
+
+.flex-end{
+    justify-content: flex-end;
+    width: 100%;
+    margin-bottom: 10px;
 }

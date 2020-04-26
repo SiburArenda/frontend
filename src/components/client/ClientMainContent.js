@@ -28,7 +28,14 @@ class ClientMainContent extends Component {
                 <Route
                     path="/rooms"
                     exact
-                    render={(props) => (<Rooms {...props} roomArray={this.props.roomArray}/>)}
+                    render={
+                        (props) => (<Rooms
+                            {...props}
+                            roomArray={this.props.roomArray}
+                            showHint={this.props.showHint}
+                            closeHint={this.props.closeHint}
+                        />)
+                    }
                 />
                 <Route
                     path="/contacts"

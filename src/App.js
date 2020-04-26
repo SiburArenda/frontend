@@ -20,7 +20,23 @@ class RoomInfo {
 
     increaseAmount = () => this.amount += 1;
 
-    getURL = () => this.name.startsWith('VIP') ? 'VIP_ложи' : this.name.replace(/ /g, '_')
+    getURL = (len = -1) => {
+        if (this.name.startsWith('VIP')) {
+            return 'VIP_ложи'
+        }
+        if (len !== -1) {
+            const split = this.name.split(' ');
+            if (len < split.length)
+            {
+                let urlName = '';
+                for (let i = 0; i < len; i++) {
+                    urlName += split[i] + (i === len - 1 ? '' : '_')
+                }
+                return urlName;
+            }
+        }
+        return this.name.replace(/ /g, '_');
+    }
 }
 
 class App extends Component {
@@ -151,6 +167,8 @@ class App extends Component {
                 return 'Увеличить количество';
             case 'minus':
                 return 'Уменьшить количество';
+            case 'searchRooms':
+                return 'Поиск';
             default:
                 return '';
         }

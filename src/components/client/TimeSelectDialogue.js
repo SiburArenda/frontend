@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import '../resource/styles/TimeSelectDialogue.css'
+import '../../resource/styles/TimeSelectDialogue.css'
 
 class TimeSelectDialogue extends Component {
 

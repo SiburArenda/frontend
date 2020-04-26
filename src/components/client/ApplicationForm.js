@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import Calendar from "../Calendar";
+import Calendar from "./Calendar";
 import '../../resource/styles/ApplicationForm.css'
 import '../../resource/styles/Main.css'
 import {Link} from "react-router-dom";

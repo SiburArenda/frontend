@@ -1,0 +1,62 @@
+.search{
+    width: 180px;
+    margin-right: 8px;
+}
+
+#search-icon{
+    background: center no-repeat url("../img/search.svg");
+    width: 20px;
+    height: 20px;
+    margin-right: 4px;
+}
+
+#divider{
+    color: #efefef;
+    margin: 0 10px;
+}
+
+.room-in-list{
+    color: #efefef;
+    border-top: #efefef 1px solid;
+    padding: 20px 15px 20px 5px;
+    display: flex;
+}
+
+.header-photo{
+    width: 100%
+}
+
+.header-photo-small{
+    width: 250px;
+    min-width: 250px;
+}
+
+.room-in-list h2{
+    text-transform: uppercase;
+    font-size: 16px;
+    margin-bottom: 5px;
+}
+
+.room-short-about{
+    margin-left: 15px;
+    position: relative;
+}
+
+.room-link{
+    position: absolute;
+    bottom: 0;
+    left: 0;
+}
+
+.turquoise-hover{
+    text-decoration: none;
+    color: #16a4ab;
+}
+
+.turquoise-hover:hover{
+    color: #da6509;
+}
+
+.rent-giver{
+    margin-top: 8px;
+}
