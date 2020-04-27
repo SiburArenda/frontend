@@ -47,6 +47,8 @@ class ClientMainContent extends Component {
                 />
                 <EachRoom
                     roomArray={this.props.roomArray}
+                    showHint={this.props.showHint}
+                    closeHint={this.props.closeHint}
                 />
                 {
                     this.props.applicationFormVisible

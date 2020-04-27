@@ -47,26 +47,26 @@ class Rooms extends Component {
         }
 
         const name = room.name.startsWith('VIP') ? 'VIP ложи' : room.name;
+        const addTo = room.isAdditionTo;
 
-        const imageURL = 'HERE THE BASE URL WILL BE' + room.getURL(2) + '.jpg'; //TODO: dynamic url gonna be taken from here
+        const imageURL = 'http://siburarenda.publicvm.com/img/' + room.getURL(2) + 'HeaderPh.jpg';
 
         const noP = room.description.replace(/<\/?p>/g, '');
         const dots = noP.split(/\. ?(?=[А-ЯЁ])/);
 
         let descriptionPreview = '';
 
-        const firstSentence = dots[0];
+        let firstSentence = dots[0];
         if (firstSentence.length <= 180 && firstSentence.length >= 100) {
             descriptionPreview = firstSentence;
         } else if (firstSentence.length < 100) {
             descriptionPreview = firstSentence + '. ' + dots[1]
         } else {
-            const comma = firstSentence.lastIndexOf(',');
-            descriptionPreview = firstSentence.substring(0, comma);
-            if (descriptionPreview.length > 180) {
-                const comma2 = descriptionPreview.lastIndexOf(', ');
-                descriptionPreview = descriptionPreview.substring(0, comma2);
+            while(firstSentence.length > 180) {
+                const comma = firstSentence.lastIndexOf(',');
+                firstSentence = firstSentence.substring(0, comma);
             }
+            descriptionPreview = firstSentence;
         }
 
         return <div
@@ -74,8 +74,8 @@ class Rooms extends Component {
             className='room-in-list'
         >
             <img
-                src='https://gorbilet.com/static/media/places/ea338e5837d38b5c719d8ea44bdf7ccc.jpg' // TODO: replace this with dynamic url when Valera finishes work on server
-                alt='arena'
+                src={imageURL}
+                alt={name}
                 className='header-photo-small'
             />
 
@@ -84,13 +84,35 @@ class Rooms extends Component {
             >
                 <h2>{name}</h2>
 
-                <p>{descriptionPreview + '...'}</p>
+                <p style={{userSelect: 'auto'}}>{descriptionPreview + '...'}</p>
+
+                {
+                    addTo === 'independent'
+                        ? null
+                        :
+                        <div
+                            className='flex-container additional-room-info'
+                        >
+                            <label>Это дополнительное помещение к</label>
+                            <Link
+                                to={`/${addTo.replace(/ /g, '_')}`}
+                                className='turquoise-hover'
+                            >
+                                {
+                                    addTo
+                                        .replace('ая', 'ой')
+                                        .replace(/а$/, 'е')
+                                        .replace(/и$/, 'ам')
+                                }
+                            </Link>
+                        </div>
+                }
 
                 {
                     room.tags.includes('Сторонний арендодатель')
                         ?
                         <div
-                            className='flex-container rent-giver'
+                            className='flex-container additional-room-info'
                         >
                             <label>Сайт арендодателя:  </label>
                             {this.rentGiverLink(room)}

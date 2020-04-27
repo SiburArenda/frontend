@@ -117,7 +117,7 @@ select{
 .btn-pusher{
     width: 100%;
     display: flex;
-    flex-direction: row-reverse;
+    justify-content: flex-end;
 }
 
 .ninety-container{
@@ -157,11 +157,12 @@ select{
 
 #minimized-app-form{
     background-color: #1a1a1a;
-    width: 105px;
+    width: 145px;
     display: flex;
     flex-direction: row-reverse;
-    position: absolute;
+    position: fixed;
     z-index: 6;
+    border: #727272 3px solid;
     border-radius: 0 0 0 20px;
 }
 

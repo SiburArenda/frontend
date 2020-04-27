@@ -20,6 +20,8 @@
     border-top: #efefef 1px solid;
     padding: 20px 15px 20px 5px;
     display: flex;
+    height: 170px;
+    align-items: flex-start;
 }
 
 .header-photo{
@@ -40,6 +42,11 @@
 .room-short-about{
     margin-left: 15px;
     position: relative;
+    height: 100%;
+}
+
+.room-short-about *{
+    user-select: auto;
 }
 
 .room-link{
@@ -57,6 +64,31 @@
     color: #da6509;
 }
 
-.rent-giver{
+.additional-room-info{
     margin-top: 8px;
+}
+
+.pool-parameters{
+    color: #efefef;
+    padding-left: 15px;
+    padding-bottom: 12px;
+}
+
+#back-to-rooms{
+    color: transparent;
+    position: absolute;
+    top: 26px;
+    right: 35px;
+    border: none;
+    background: center no-repeat url("../img/backToRooms.svg");
+    width: 32px;
+    height: 20px;
+}
+
+#back-to-rooms:hover{
+    background-image: url("../img/backToRoomsHvr.svg");
+}
+
+.addition-to-inside{
+    padding: 12px 0;
 }

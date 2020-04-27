@@ -169,6 +169,8 @@ class App extends Component {
                 return 'Уменьшить количество';
             case 'searchRooms':
                 return 'Поиск';
+            case 'backToRooms':
+                return 'К списку помещений';
             default:
                 return '';
         }

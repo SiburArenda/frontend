@@ -20,6 +20,10 @@
     font-size: 14px;
 }
 
+img{
+    user-select: none;
+}
+
 nav{
     padding-top: 25px;
     position: fixed;
@@ -177,12 +181,18 @@ header{
     text-align: left;
     font-family: MontserratMedium, sans-serif;
     padding: 16px 35px;
+    position: relative;
+}
+
+.info-container *{
+    color: #efefef;
 }
 
 .info-paragraph{
     color: #efefef;
     background-color: transparent;
     padding: 12px 0;
+    user-select: auto;
 }
 
 .info-container h1{

@@ -79,7 +79,7 @@ class TimeSelectDialogue extends Component {
                                     </div>
                                     :
                                     <div
-                                        className='empty-warning'
+                                        className='empty-warning drag-detector'
                                     >
                                     </div>
                             }
@@ -110,7 +110,7 @@ class TimeSelectDialogue extends Component {
                                     </div>
                                     :
                                     <div
-                                        className='empty-warning'
+                                        className='empty-warning drag-detector'
                                     >
                                     </div>
                             }
@@ -145,7 +145,7 @@ class TimeSelectDialogue extends Component {
                                     </div>
                                     :
                                     <div
-                                        className='empty-warning'
+                                        className='empty-warning drag-detector'
                                     >
                                     </div>
                             }
@@ -176,7 +176,7 @@ class TimeSelectDialogue extends Component {
                                     </div>
                                     :
                                     <div
-                                        className='empty-warning'
+                                        className='empty-warning drag-detector'
                                     >
                                     </div>
                             }
@@ -200,9 +200,9 @@ class TimeSelectDialogue extends Component {
                         onMouseLeave={() => this.props.closeHint()}
                     >
                     </label>
-                    <label>Установить такие временные рамки для всех выбранных дат</label><br/>
+                    <label className='drag-detector'>Установить такие временные рамки для всех выбранных дат</label><br/>
                 </div>
-                <div className='btn-pusher'>
+                <div className='btn-pusher drag-detector'>
                     <button
                         onClick={() => {
                             this.props.closeHint();
@@ -229,6 +229,7 @@ class TimeSelectDialogue extends Component {
 
                 if (!/^\d+$/.test(obj.value) || +obj.value < obj.min || +obj.value > obj.max) {
                     obj.value = 0;
+                    this.props.changeTiming(obj.name, 0);
                     const warnArray = this.state.warning.slice();
                     const index = warnArray.indexOf(obj.id);
                     if (index !== -1) {

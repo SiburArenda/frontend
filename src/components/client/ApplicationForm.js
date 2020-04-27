@@ -37,8 +37,9 @@ class ApplicationForm extends Component {
         minimizedX: 0,
         minimizedY: 0,
         calendarState: {nothing: 'nothing'},
-        warning: '',
-        grabbed: null
+        warning: [],
+        grabbed: null,
+        notFilled: ''
     };
 
     eventTypeOptions = [
@@ -118,6 +119,13 @@ class ApplicationForm extends Component {
                         >
                             <div className='btn-pusher drag-detector'>
                                 <button
+                                    onClick={() => this.minimize()}
+                                    onMouseEnter={e => this.props.showHint(e, 'minAppFormBtn')}
+                                    onMouseLeave={() => this.props.closeHint()}
+                                    id='minimize-btn'
+                                >
+                                </button>
+                                <button
                                     onClick={() => {
                                         this.props.closeHint();
                                         this.props.closeAppWindow()
@@ -125,13 +133,6 @@ class ApplicationForm extends Component {
                                     onMouseEnter={e => this.props.showHint(e, 'closeAppFormBtn')}
                                     onMouseLeave={() => this.props.closeHint()}
                                     className='close-btn'
-                                >
-                                </button>
-                                <button
-                                    onClick={() => this.minimize()}
-                                    onMouseEnter={e => this.props.showHint(e, 'minAppFormBtn')}
-                                    onMouseLeave={() => this.props.closeHint()}
-                                    id='minimize-btn'
                                 >
                                 </button>
                             </div>
@@ -161,7 +162,7 @@ class ApplicationForm extends Component {
                                         type='text'
                                         name='eventName'
                                         onChange={(e) => {
-                                            this.handleInput(e, null)
+                                            this.handleInput(e)
                                         }}
                                         className='medium-text-input'
                                         defaultValue={this.state.eventName}
@@ -191,7 +192,7 @@ class ApplicationForm extends Component {
                                                     className='hidden-radio'
                                                     value='TRAINING'
                                                     onChange={(e) => {
-                                                        this.handleInput(e, null)
+                                                        this.handleInput(e)
                                                     }}
                                                     checked={this.state.eventType === 'TRAINING'}
                                                 />
@@ -206,7 +207,7 @@ class ApplicationForm extends Component {
                                                     className='hidden-radio'
                                                     value='MATCH'
                                                     onChange={(e) => {
-                                                        this.handleInput(e, null)
+                                                        this.handleInput(e)
                                                     }}
                                                     checked={this.state.eventType === 'MATCH'}
                                                 />
@@ -275,7 +276,7 @@ class ApplicationForm extends Component {
                                                         className='hidden-radio'
                                                         value={true}
                                                         onChange={(e) => {
-                                                            this.handleInput(e, null)
+                                                            this.handleInput(e)
                                                         }}
                                                         checked={this.state.viewersExpected === 'true'}
                                                     />
@@ -290,7 +291,7 @@ class ApplicationForm extends Component {
                                                         className='hidden-radio'
                                                         value={false}
                                                         onChange={(e) => {
-                                                            this.handleInput(e, null)
+                                                            this.handleInput(e)
                                                         }}
                                                         checked={this.state.viewersExpected === 'false'}
                                                     />
@@ -315,14 +316,14 @@ class ApplicationForm extends Component {
                                                     type='text'
                                                     name='viewers'
                                                     onChange={e => {
-                                                        this.handleInput(e, this.invalidInput(e, 'viewers'))
+                                                        this.invalidInput(e, 'viewers')
                                                     }}
                                                     className='small-text-input'
                                                     defaultValue={this.state.viewers === 0 ? '' : this.state.viewers}
                                                 />
 
                                                 {
-                                                    this.state.warning === 'viewers'
+                                                    this.state.warning.includes('viewers')
                                                         ?
                                                         <div
                                                             className='warning'
@@ -368,6 +369,21 @@ class ApplicationForm extends Component {
                                 />
                             </div>
                             <div className='btn-pusher drag-detector'>
+                                {
+                                    // this.state.warning.includes('notFilled')
+                                    //     ?
+                                    //     <div
+                                    //         className='warning'
+                                    //         onMouseEnter={e => this.props.showHint(e, 'notFilled' + this.state.notFilled)}
+                                    //         onMouseLeave={() => this.props.closeHint()}
+                                    //     >
+                                    //     </div>
+                                    //     :
+                                    //     <div
+                                    //         className='empty-warning'
+                                    //     >
+                                    //     </div>
+                                }
                                 <button
                                     id='send-btn'
                                     className='hover-text'
@@ -385,14 +401,10 @@ class ApplicationForm extends Component {
         );
     }
 
-    handleInput = (e, callback) => {
+    handleInput = (e) => {
         this.setState({
             [e.target.name]: e.target.value
         });
-
-        if (callback != null) {
-            callback();
-        }
     };
 
     getRoomJSON = () => {
@@ -426,18 +438,20 @@ class ApplicationForm extends Component {
 
         const toSend = '{' + nameJSON + audJSON + typeJSON + roomsJSON + userJSON + dateJSON + commentJSON + '}';
 
-        const request = new XMLHttpRequest();
+        console.log(toSend);
 
-        request.onreadystatechange = function () {
-            if (request.readyState === 4) {
-                console.log('OK!');
-            }
-        };
+        // const request = new XMLHttpRequest();
+        //
+        // request.onreadystatechange = function () {
+        //     if (request.readyState === 4) {
+        //         console.log('OK!');
+        //     }
+        // };
 
-        request.open('POST', 'http://siburarenda.publicvm.com/api/user/order', true);
-        request.setRequestHeader('Authorization', 'Bearer_' + this.props.token);
-        request.setRequestHeader('Content-Type', 'application/json');
-        request.send(toSend)
+        // request.open('POST', 'http://siburarenda.publicvm.com/api/user/order', true);
+        // request.setRequestHeader('Authorization', 'Bearer_' + this.props.token);
+        // request.setRequestHeader('Content-Type', 'application/json');
+        // request.send(toSend)
     };
 
     dateTimeConstruction = (datesArray, timesArray) => {
@@ -703,12 +717,13 @@ class ApplicationForm extends Component {
     invalidInput = (e, where) => {
         if (!e.target.value.match(/^\d*$/)) {
             this.setState({
-                warning: where
+                warning: [this.state.warning, where]
             })
         } else {
             this.props.closeHint();
             this.setState({
-                warning: ''
+                warning: [],
+                [e.target.name]: e.target.value
             })
         }
     };
