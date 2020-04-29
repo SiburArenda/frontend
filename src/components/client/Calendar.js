@@ -223,8 +223,21 @@ class Calendar extends React.Component {
         }
     };
 
+    leadZero = (num) => {
+        let ans = num + "";
+        while (ans.length < 2) {
+            ans = '0' + ans;
+        }
+        return ans;
+    };
+
     onDayClick = (e, day) => {
-        if (e.target.className.indexOf('time-set-button') === -1) {
+        const now = moment();
+        const thenYM = this.state.dateContext.format('YYYY-MM-');
+        const thenT = this.state.dateContext.format('Thh:mm:ss');
+        const then = moment.utc(thenYM + this.leadZero(day) + thenT);
+        if (then.isAfter(now) && e.target.className.indexOf('time-set-button') === -1) {
+            this.props.hideSendWarning();
             const clickedDayDescription = this.exactDayDescription(day);
             if (e.shiftKey) {
                 this.shiftSelect(e, day);
@@ -284,21 +297,36 @@ class Calendar extends React.Component {
                 const dayOfWeek = (blanks.length + d) % 7;
                 dayClass += (dayOfWeek === 0 || dayOfWeek === 6) ? ' non-selected-weekend' : ' non-selected-weekday'
             }
+
+            const now = moment();
+            const thenYM = this.state.dateContext.format('YYYY-MM-');
+            const thenT = this.state.dateContext.format('Thh:mm:ss');
+            const then = moment.utc(thenYM + this.leadZero(d) + thenT);
+
+            const settable = then.isAfter(now);
+
             daysInMonth.push(
                 <td
-                    key={d} onClick={(e) => {
-                    this.onDayClick(e, d)
-                }}
+                    key={d}
+                    onClick={e => this.onDayClick(e, d)}
                     className={dayClass}
                 >
                     {d}
-                    <button
-                        className={this.getTimeSetButtonClass(d)}
-                        onClick={e => this.timeSetButton(e, d)}
-                        onMouseEnter={e => {if (!e.shiftKey) this.props.showHint(e, 'timeSet')}}
-                        onMouseLeave={() => this.props.closeHint()}
-                    >
-                    </button>
+                    {
+                        settable
+                            ?
+                            <button
+                                className={this.getTimeSetButtonClass(d)}
+                                onClick={e => this.timeSetButton(e, d)}
+                                onMouseEnter={e => {
+                                    if (!e.shiftKey) this.props.showHint(e, 'timeSet')
+                                }}
+                                onMouseLeave={() => this.props.closeHint()}
+                            >
+                            </button>
+                            :
+                            null
+                    }
                 </td>
             );
         }
@@ -400,6 +428,7 @@ class Calendar extends React.Component {
     }
 
     timeSetButton = (e, day) => {
+        this.props.hideSendWarning();
         const dayDesc = this.exactDayDescription(day);
         if (!this.state.selectedDays.includes(dayDesc)) {
             this.setState({
@@ -443,6 +472,7 @@ class Calendar extends React.Component {
         } else {
             this.shiftSelect(e, day);
         }
+
     };
 
     getTimeSetButtonClass = (day) => {
@@ -524,7 +554,8 @@ class Calendar extends React.Component {
 Calendar.propTypes = {
     savedState: PropTypes.object.isRequired,
     showHint: PropTypes.func.isRequired,
-    closeHint: PropTypes.func.isRequired
+    closeHint: PropTypes.func.isRequired,
+    hideSendWarning: PropTypes.func.isRequired
 };
 
 export default Calendar;

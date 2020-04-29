@@ -13,21 +13,6 @@ class Rooms extends Component {
 
     allTags = [];
 
-    constructor(props) {
-        super(props);
-
-        const roomArray = this.props.roomArray.slice();
-
-        for (let i in roomArray) {
-            const tags = roomArray[i].tags;
-            for (let j in tags) {
-                if (!this.allTags.includes(tags[j])){
-                    this.allTags.push(tags[j]);
-                }
-            }
-        }
-    }
-
     rentGiverLink = (room) => {
         const description = room.description;
         const link = description.replace(/.*(<a href=')|('>http.*)/g, '');
@@ -133,6 +118,17 @@ class Rooms extends Component {
 
     render() {
 
+        if (this.allTags.length === 0) {
+            for (let i in this.props.roomArray) {
+                const tags = this.props.roomArray[i].tags;
+                for (let j in tags) {
+                    if (!this.allTags.includes(tags[j])){
+                        this.allTags.push(tags[j]);
+                    }
+                }
+            }
+        }
+
         const filteredRooms = this.props.roomArray.filter(roomInfo => {
             for (let i in this.state.tags) {
                 if (!roomInfo.tags.includes(this.state.tags[i])) {
@@ -187,6 +183,32 @@ class Rooms extends Component {
                         closeHint={this.props.closeHint}
                     />
                 </div>
+                {
+                    this.state.tags.length === 0
+                        ?
+                        null
+                        :
+                        <div className='map-display'>
+                            <label style={{marginRight: '8px'}}>Тэги:</label>
+                            {
+                                this.state.tags.map(
+                                    tag =>
+                                        <span
+                                            key={tag}
+                                            className='map-span'
+                                            style={{order: tag.length}}
+                                        >
+                                            {tag}
+                                            <button
+                                                className='remove-btn'
+                                                onClick={() => this.removeTag(tag)}
+                                            >{''}
+                                            </button>
+                                        </span>
+                                )
+                            }
+                        </div>
+                }
                 {roomDisplay}
             </div>
         );
@@ -199,10 +221,21 @@ class Rooms extends Component {
     };
 
     addTag = (tag) => {
-        this.setState({
-            tags: [...this.state.tags, tag.rusName]
-        })
+        if (!this.state.tags.includes(tag.rusName)) {
+            this.setState({
+                tags: [...this.state.tags, tag.rusName]
+            })
+        }
     };
+
+    removeTag = (tag) => {
+        const noTag = this.state.tags.slice();
+        const index = noTag.indexOf(tag);
+        noTag.splice(index, 1);
+        this.setState({
+            tags: noTag
+        })
+    }
 }
 
 Rooms.propTypes = {

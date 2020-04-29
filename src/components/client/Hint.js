@@ -10,8 +10,7 @@ class Hint extends Component {
 
     render() {
         return (
-            <div className='hint' style={this.position}>
-                {this.props.hintText}
+            <div className='hint' style={this.position} dangerouslySetInnerHTML={{__html: this.props.hintText}}>
             </div>
         );
     }

@@ -69,35 +69,6 @@ select{
     color: #efefef;
 }
 
-#picked-rooms-display{
-    display: flex;
-    flex-wrap: wrap;
-}
-
-.room-span{
-    background-color: #237570;
-    border: none;
-    border-radius: 10px;
-    padding: 2px 7px;
-    margin-right: 8px;
-    margin-bottom: 6px;
-    position: relative;
-    display: flex;
-}
-
-.remove-room-btn{
-    width: 16px;
-    height: 16px;
-    min-width: 16px;
-    border: none;
-    margin: auto 2px auto 8px;
-    background: center no-repeat url("../img/removeRoomBtn.svg");
-}
-
-.remove-room-btn:hover{
-    background-image: url("../img/removeRoomBtnHvr.svg");
-}
-
 .big-text-input{
     box-sizing: border-box;
     background: transparent;

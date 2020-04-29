@@ -21,7 +21,7 @@ class ClientNavList extends Component {
                 </li>
                 <li>
                     <button
-                        onClick={() => this.props.openApplicationForm()}
+                        onClick={() => this.appClick()}
                         className='hover-text'
                         onMouseEnter={e => this.props.showHint(e, 'openAppFormBtn')}
                         onMouseLeave={() => this.props.closeHint()}
@@ -32,12 +32,26 @@ class ClientNavList extends Component {
             </React.Fragment>
         );
     }
+
+    appClick = () => {
+        const appF = this.props.appFormRef.current;
+        if (appF == null) {
+            this.props.openApplicationForm();
+        } else {
+            if (appF.state.minimized || appF.state.minimized === 'true') {
+                appF.setState({
+                    minimized: false
+                })
+            }
+        }
+    }
 }
 
 ClientNavList.propTypes = {
     openApplicationForm: PropTypes.func.isRequired,
     showHint: PropTypes.func.isRequired,
-    closeHint: PropTypes.func.isRequired
+    closeHint: PropTypes.func.isRequired,
+    appFormRef: PropTypes.object.isRequired
 };
 
 export default ClientNavList;

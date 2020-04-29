@@ -11,6 +11,10 @@ import EachRoom from "./EachRoom";
 
 class ClientMainContent extends Component {
 
+    constructor(props) {
+        super(props);
+    }
+
     state = {
         token: '',
         userName: '',
@@ -60,6 +64,7 @@ class ClientMainContent extends Component {
                             showHint={this.props.showHint}
                             closeHint={this.props.closeHint}
                             roomArray={this.props.roomArray}
+                            ref={this.props.appFormRef}
                         />
                         : null
                 }
@@ -87,6 +92,7 @@ ClientMainContent.propTypes = {
     showHint: PropTypes.func.isRequired,
     closeHint: PropTypes.func.isRequired,
     roomArray: PropTypes.array.isRequired,
+    appFormRef: PropTypes.object.isRequired
 };
 
 export default ClientMainContent;

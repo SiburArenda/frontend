@@ -26,8 +26,7 @@ class RoomInfo {
         }
         if (len !== -1) {
             const split = this.name.split(' ');
-            if (len < split.length)
-            {
+            if (len < split.length) {
                 let urlName = '';
                 for (let i = 0; i < len; i++) {
                     urlName += split[i] + (i === len - 1 ? '' : '_')
@@ -41,26 +40,46 @@ class RoomInfo {
 
 class App extends Component {
 
+    constructor(props) {
+        super(props);
+
+        this.appFormRef = React.createRef();
+
+        const screen = window.innerWidth;
+        this.state.headerWidth =  screen > 1200 ? screen - 20 : 1430
+    }
+
     state = {
         logInFormVisible: false,
         applicationFormVisible: false,
         showHint: false,
         whichHint: '',
         hintX: 0,
-        hintY: 0
+        hintY: 0,
+        roomArray: [],
+        headerWidth: 1430
     };
 
-    static roomArray = [];
+    headerWidth = () => {
+        const screen = window.innerWidth;
+        this.setState({
+            headerWidth: screen > 1200 ? screen - 20 : 1430
+        })
+    };
 
     componentDidMount() {
+
+        window.addEventListener('resize', this.headerWidth, false);
+
         const request = new XMLHttpRequest();
 
-        request.onreadystatechange = function () {
+        request.onreadystatechange = () => {
             if (request.readyState === 4) {
 
                 const pureResponse = JSON.parse(request.responseText);
+                const roomArray = [];
 
-                for (let roomIndex in pureResponse){
+                for (let roomIndex in pureResponse) {
 
                     const roomObj = pureResponse[roomIndex];
 
@@ -83,9 +102,9 @@ class App extends Component {
                     }
 
                     let add = false;
-                    for (let i in App.roomArray) {
-                        if (App.roomArray[i].name === name) {
-                            App.roomArray[i].increaseAmount();
+                    for (let i in roomArray) {
+                        if (roomArray[i].name === name) {
+                            roomArray[i].increaseAmount();
                             add = true;
                         }
                     }
@@ -98,10 +117,14 @@ class App extends Component {
                         const isAdditionTo = roomObj.tags[roomObj.tags.length - 1];
 
                         const newRoomInfo = new RoomInfo(serverName, name, auditory, description, tags, isAdditionTo);
-                        App.roomArray.push(newRoomInfo);
+                        roomArray.push(newRoomInfo);
                     }
 
                 }
+
+                this.setState({
+                    roomArray: roomArray
+                })
             }
         };
 
@@ -110,11 +133,15 @@ class App extends Component {
         request.send(null)
     }
 
+    componentWillUnmount() {
+        window.removeEventListener('resize', this.headerWidth, false);
+    }
+
     getHintText = () => {
 
         const whichHint = this.state.whichHint;
 
-        if (whichHint.startsWith('trainingArena')){
+        if (whichHint.startsWith('trainingArena')) {
             const split = whichHint.split('%');
             let hintText = 'Тренировочная арена состоит из двух одинаковых баскетбольных площадок. Включить в заявку об аренде ';
             return hintText + (split[1] === 'half' ? 'только одну из них?' : 'обе части?')
@@ -129,9 +156,49 @@ class App extends Component {
             return `Пожалуйста, введите число от ${split[1]} до ${split[2]}`;
         }
 
-        if(whichHint.startsWith('roomAmount')) {
+        if (whichHint.startsWith('roomAmount')) {
             const split = whichHint.split('%');
             return `Таких помещений в комплексе ${split[1]}, на данный момент в Вашу заявку об аренде включены ${split[2]} из них`
+        }
+
+        if (whichHint.startsWith('notFilled')) {
+            const split = whichHint.split(/%/g).filter(tag => tag !== '');
+
+            let message = '<p>Пожалуйста, исправьте следующие ошибки:</p>';
+
+            for (let i = 1; i < split.length; i++) {
+                const tag = split[i];
+
+                if (tag.startsWith('timings')) {
+
+                    const t = tag.split('->')[1].split('&').filter(p => p !== '');
+
+                    message += '<p>- Для следующих дат некорректно указаны временные рамки:' + t.toString() + '</p>';
+
+                } else {
+                    // eslint-disable-next-line default-case
+                    switch (tag) {
+                        case 'name': {
+                            message += '<p>- Не введено название мероприятия</p>';
+                            break;
+                        }
+                        case 'viewers': {
+                            message += '<p>- Не указано количество зрителей\n</p>';
+                            break;
+                        }
+                        case 'days': {
+                            message += '<p>- Не выбрано ни одной даты</p>';
+                            break;
+                        }
+                        case 'rooms': {
+                            message += '<p>- Не выбрано ни одного помещения</p>';
+                            break;
+                        }
+                    }
+                }
+            }
+
+            return message;
         }
 
         switch (whichHint) {
@@ -192,92 +259,88 @@ class App extends Component {
     };
 
     render() {
+        const scroll = !window.screenTop && !window.screenY ? 'hidden' : 'scroll';
         return (
-            <Router>
+            <div style={{overflowX: {scroll}}}>
+                <Router>
 
-                <header>
-                    <Route
-                        path={/^\/(?!admin).*/}
-                        render=
-                            {
-                                () => (
-                                    <button
-                                        id='open-log-in-button'
-                                        onClick={() => {
-                                            this.openLogInForm()
-                                        }}>Войти
-                                    </button>
-                                )
-                            }
-                    />
-                    <Link to='/admin'>Войти как администратор</Link>
-                </header>
+                    <header style={{width: this.state.headerWidth}}>
+                        <button
+                            id='open-log-in-button'
+                            onClick={() => {
+                                this.openLogInForm()
+                            }}>Войти
+                        </button>
+                    </header>
 
-                <nav>
-                    <ul id='main-nav'>
+                    <nav>
+                        <ul id='main-nav'>
+                            <Route
+                                path={/^\/(?!admin).*/}
+                                render={
+                                    (props) => (
+                                        <ClientNavList
+                                            {...props}
+                                            openApplicationForm={this.openApplicationForm}
+                                            showHint={this.showHint}
+                                            closeHint={this.closeHint}
+                                            appFormRef={this.appFormRef}
+                                        />
+
+                                    )
+                                }
+                            />
+                            <Route
+                                path='/admin'
+                                render={(props) => (<AdminNavList {...props}/>)}
+                            />
+                        </ul>
+                    </nav>
+
+                    <section id='main-content'>
                         <Route
                             path={/^\/(?!admin).*/}
-                            render={
-                                (props) => (
-                                    <ClientNavList
-                                        {...props}
-                                        openApplicationForm={this.openApplicationForm}
-                                        showHint={this.showHint}
-                                        closeHint={this.closeHint}
-                                    />
-
-                                )
-                            }
+                            render=
+                                {
+                                    (props) => (
+                                        <ClientMainContent
+                                            {...props}
+                                            logInFormVisible={this.state.logInFormVisible}
+                                            applicationFormVisible={this.state.applicationFormVisible}
+                                            closeLogInForm={this.closeLogInForm}
+                                            closeAppWindow={this.closeApplicationForm}
+                                            showHint={this.showHint}
+                                            closeHint={this.closeHint}
+                                            roomArray={this.state.roomArray}
+                                            appFormRef={this.appFormRef}
+                                        />
+                                    )
+                                }
                         />
                         <Route
                             path='/admin'
-                            render={(props) => (<AdminNavList {...props}/>)}
+                            render=
+                                {
+                                    (props) => (
+                                        <AdminMainContent
+                                            {...props}
+                                        />
+                                    )
+                                }
                         />
-                    </ul>
-                </nav>
+                        {this.state.showHint
+                            ?
+                            <Hint
+                                hintText={this.getHintText()}
+                                x={this.state.hintX}
+                                y={this.state.hintY}
+                            />
+                            : null
+                        }
+                    </section>
 
-                <section id='main-content'>
-                    <Route
-                        path={/^\/(?!admin).*/}
-                        render=
-                            {
-                                (props) => (
-                                    <ClientMainContent
-                                        {...props}
-                                        logInFormVisible={this.state.logInFormVisible}
-                                        applicationFormVisible={this.state.applicationFormVisible}
-                                        closeLogInForm={this.closeLogInForm}
-                                        closeAppWindow={this.closeApplicationForm}
-                                        showHint={this.showHint}
-                                        closeHint={this.closeHint}
-                                        roomArray={App.roomArray}
-                                    />
-                                )
-                            }
-                    />
-                    <Route
-                        path='/admin'
-                        render=
-                            {
-                                (props) => (
-                                    <AdminMainContent
-                                        {...props}
-                                    />
-                                )
-                            }
-                    />
-                    {this.state.showHint
-                        ?
-                        <Hint
-                            hintText={this.getHintText()}
-                            x={this.state.hintX}
-                            y={this.state.hintY}
-                        />
-                        : null
-                    }
-                </section>
-
-            </Router>
+                </Router>
+            </div>
         );
     }
 

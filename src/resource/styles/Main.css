@@ -26,13 +26,13 @@ img{
 
 nav{
     padding-top: 25px;
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 10%;
     background-color: #1a1a1a;
-    width: 18%;
     text-align: center;
     z-index: 2;
+    width: 273px;
 }
 
 nav button{
@@ -61,7 +61,6 @@ nav li{
 
 body{
     background-color: #c4c4c4;
-    overflow-x: hidden;
     overflow-y: scroll;
 }
 
@@ -70,12 +69,13 @@ body{
 }
 
 header{
+    box-sizing: border-box;
     background-color: transparent;
     display: flex;
-    flex-direction: row-reverse;
+    justify-content: flex-end;
     padding: 15px 0;
     width: 100%;
-    position: fixed;
+    position: absolute;
     top: 0;
     z-index: 1;
 }
@@ -91,14 +91,15 @@ header{
 }
 
 #open-log-in-button{
-    margin: 0 25px 0 20px;
+    margin: 0 45px 0 20px;
 }
 
 #main-content{
-    padding-left: 32%;
+    box-sizing: border-box;
+    padding-left: 480px;
     padding-top: 80px;
     padding-bottom: 80px;
-    width: 55%;
+    width: 1320px;
     line-height: 1.7em;
     z-index: 1;
     height: 100%;
@@ -110,12 +111,18 @@ header{
     position: fixed;
     padding: 5px 8px;
     background-color: #efefef;
-    color: #1a1a1a;
-    font-size: 12px;
     width: fit-content;
     max-width: 250px;
-    line-height: 1.4em;
     text-align: left;
+    color: #1a1a1a;
+    font-size: 12px;
+    line-height: 1.4em;
+}
+
+.hint p{
+    color: #1a1a1a;
+    font-size: 12px;
+    line-height: 1.4em;
 }
 
 .dropdown{
@@ -221,4 +228,34 @@ input[type='text']{
     justify-content: flex-end;
     width: 100%;
     margin-bottom: 10px;
+}
+
+.remove-btn{
+    width: 16px;
+    height: 16px;
+    min-width: 16px;
+    border: none;
+    margin: auto 2px auto 8px;
+    background: center no-repeat url("../img/removeRoomBtn.svg");
+}
+
+.remove-btn:hover{
+    background-image: url("../img/removeRoomBtnHvr.svg");
+}
+
+.map-span{
+    background-color: #237570;
+    border: none;
+    border-radius: 10px;
+    padding: 2px 7px;
+    margin-right: 8px;
+    margin-bottom: 6px;
+    position: relative;
+    display: flex;
+    user-select: none;
+}
+
+.map-display{
+    display: flex;
+    flex-wrap: wrap;
 }

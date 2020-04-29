@@ -6,6 +6,7 @@ import '../../resource/styles/Main.css'
 import {Link} from "react-router-dom";
 import MinifiedApplicationForm from "./MinifiedApplicationForm";
 import Dropdown from "../Dropdown";
+import moment from "moment";
 
 class FromTo {
     constructor(from, to) {
@@ -19,11 +20,10 @@ class ApplicationForm extends Component {
         super(props);
 
         this.calendarRef = React.createRef();
-        this.halfRef = React.createRef();
     }
 
     state = {
-        eventName: null,
+        eventName: '',
         eventType: 'PARTY',
         rooms: [],
         viewersExpected: 'false',
@@ -219,7 +219,7 @@ class ApplicationForm extends Component {
                                             null
                                     }
 
-                                    <div id='picked-rooms-display'>
+                                    <div className='map-display'>
                                         <Dropdown
                                             header='Добавить'
                                             options={roomOptions.filter(option => option != null)}
@@ -315,9 +315,7 @@ class ApplicationForm extends Component {
                                                 <input
                                                     type='text'
                                                     name='viewers'
-                                                    onChange={e => {
-                                                        this.invalidInput(e, 'viewers')
-                                                    }}
+                                                    onChange={e => this.invalidInput(e, 'viewers')}
                                                     className='small-text-input'
                                                     defaultValue={this.state.viewers === 0 ? '' : this.state.viewers}
                                                 />
@@ -351,6 +349,7 @@ class ApplicationForm extends Component {
                                 savedState={this.state.calendarState}
                                 showHint={this.props.showHint}
                                 closeHint={this.props.closeHint}
+                                hideSendWarning={this.hideSendWarning}
                             />
 
                             <div className='block-container ninety-container drag-detector'>
@@ -370,19 +369,19 @@ class ApplicationForm extends Component {
                             </div>
                             <div className='btn-pusher drag-detector'>
                                 {
-                                    // this.state.warning.includes('notFilled')
-                                    //     ?
-                                    //     <div
-                                    //         className='warning'
-                                    //         onMouseEnter={e => this.props.showHint(e, 'notFilled' + this.state.notFilled)}
-                                    //         onMouseLeave={() => this.props.closeHint()}
-                                    //     >
-                                    //     </div>
-                                    //     :
-                                    //     <div
-                                    //         className='empty-warning'
-                                    //     >
-                                    //     </div>
+                                    this.state.warning.includes('notFilled')
+                                        ?
+                                        <div
+                                            className='warning'
+                                            onMouseEnter={e => this.props.showHint(e, 'notFilled' + this.state.notFilled)}
+                                            onMouseLeave={() => this.props.closeHint()}
+                                        >
+                                        </div>
+                                        :
+                                        <div
+                                            className='empty-warning'
+                                        >
+                                        </div>
                                 }
                                 <button
                                     id='send-btn'
@@ -402,8 +401,16 @@ class ApplicationForm extends Component {
     }
 
     handleInput = (e) => {
+        this.props.closeHint();
+        const warning = this.state.warning.slice();
+        const index = warning.indexOf('notFilled');
+        if (index !== -1) {
+            warning.splice(index, 1);
+        }
+
         this.setState({
-            [e.target.name]: e.target.value
+            [e.target.name]: e.target.value,
+            warning: warning
         });
     };
 
@@ -417,41 +424,97 @@ class ApplicationForm extends Component {
                 for (let j = 1; j <= room.amount; j++) {
                     result.push(`${serverName} #${j}`)
                 }
+            } else {
+                result.push(serverName);
             }
         }
         return `"rooms":${JSON.stringify(result)},`
     };
 
     sendApplication = () => {
-        const nameJSON = `"name":"${this.state.eventName}",`;
-        const audJSON = `"auditory":${this.state.viewers},`;
-        const typeJSON = `"type":"${this.state.eventType}",`;
-        const roomsJSON = this.getRoomJSON();
-        const userJSON = `"user":"${this.props.userName}",`;
 
-        const datesArraySel = this.calendarRef.current.state.selectedDays;
-        const timesArraySel = this.calendarRef.current.state.selectedTimings;
-        const dateArrJSON = JSON.stringify(JSON.stringify(this.dateTimeJSON(datesArraySel, timesArraySel)));
-        const dateJSON = `"dates":${dateArrJSON},`;
+        const {eventName, viewers, eventType, userName, comment, viewersExpected, rooms, warning} = this.state;
+        const {selectedDays, selectedTimings} = this.calendarRef.current.state;
 
-        const commentJSON = `"comment":"${this.state.comment}"`;
+        const nameProblems = eventName === '';
 
-        const toSend = '{' + nameJSON + audJSON + typeJSON + roomsJSON + userJSON + dateJSON + commentJSON + '}';
+        const viewersNeeded = ['MATCH', 'PARTY'].includes(eventType) || viewersExpected;
+        const viewersProblems = viewersNeeded && +viewers === 0;
 
-        console.log(toSend);
+        const noDays = selectedDays.length === 0;
 
-        // const request = new XMLHttpRequest();
-        //
-        // request.onreadystatechange = function () {
-        //     if (request.readyState === 4) {
-        //         console.log('OK!');
-        //     }
-        // };
+        let badTimings = '';
+        for (let i in selectedTimings) {
+            const {startH, startM, endH, endM} = selectedTimings[i];
+            const bad = ((+startH) * 60 + (+startM)) >= ((+endH) * 60 + (+endM));
+            if (bad) {
+                const correlatedDay = selectedDays[i];
+                const split = correlatedDay.split(/ /g);
+                const monthNum = moment.monthsShort().indexOf(split[1]);
+                badTimings += `& ${split[2]}.${monthNum}.${split[3]}`;
+            }
+        }
 
-        // request.open('POST', 'http://siburarenda.publicvm.com/api/user/order', true);
-        // request.setRequestHeader('Authorization', 'Bearer_' + this.props.token);
-        // request.setRequestHeader('Content-Type', 'application/json');
-        // request.send(toSend)
+        const roomProblems = rooms.length === 0;
+
+        if (nameProblems || viewersProblems || noDays || badTimings.length !== 0 || roomProblems) {
+
+            let notFilled = '';
+
+            if (nameProblems) {
+                notFilled += '%name';
+            }
+
+            if (viewersProblems) {
+                notFilled += '%viewers';
+            }
+
+            if (noDays) {
+                notFilled += '%days';
+            }
+
+            if (roomProblems) {
+                notFilled += '%rooms';
+            }
+
+            if (badTimings.length !== 0) {
+                notFilled += '%timings->' + badTimings;
+            }
+
+            this.setState({
+                warning: warning.indexOf('notFilled') === -1 ? [...warning, 'notFilled'] : warning,
+                notFilled: notFilled
+            })
+
+        } else {
+            const nameJSON = `"name":"${eventName}",`;
+            const audJSON = `"auditory":${viewersNeeded ? +viewers : 0},`;
+            const typeJSON = `"type":"${eventType}",`;
+            const roomsJSON = this.getRoomJSON();
+            const userJSON = `"user":"${userName}",`;
+
+            const dateArrJSON = JSON.stringify(JSON.stringify(this.dateTimeJSON(selectedDays, selectedTimings)));
+            const dateJSON = `"dates":${dateArrJSON},`;
+
+            const commentJSON = `"comment":"${comment}"`;
+
+            const toSend = '{' + nameJSON + audJSON + typeJSON + roomsJSON + userJSON + dateJSON + commentJSON + '}';
+
+            console.log(toSend);
+
+            // const request = new XMLHttpRequest();
+            //
+            // request.onreadystatechange = function () {
+            //     if (request.readyState === 4) {
+            //         console.log('OK!');
+            //     }
+            // };
+
+            // request.open('POST', 'http://siburarenda.publicvm.com/api/user/order', true);
+            // request.setRequestHeader('Authorization', 'Bearer_' + this.props.token);
+            // request.setRequestHeader('Content-Type', 'application/json');
+            // request.send(toSend)
+        }
     };
 
     dateTimeConstruction = (datesArray, timesArray) => {
@@ -486,6 +549,13 @@ class ApplicationForm extends Component {
     };
 
     addRoom = (room) => {
+        this.props.closeHint();
+        const warning = this.state.warning.slice();
+        const index = warning.indexOf('notFilled');
+        if (index !== -1) {
+            warning.splice(index, 1);
+        }
+
         let toAdd = null;
 
         const {roomArray} = this.props;
@@ -506,7 +576,8 @@ class ApplicationForm extends Component {
 
         if (toAdd != null && !this.state.rooms.includes(toAdd)) {
             this.setState({
-                rooms: [...this.state.rooms, toAdd]
+                rooms: [...this.state.rooms, toAdd],
+                warning: warning
             })
         }
     };
@@ -635,7 +706,7 @@ class ApplicationForm extends Component {
         const {room} = props;
         const {name, maxAmount} = room;
         return(
-            <span className='room-span' style={{order: name.length}}>
+            <span className='map-span' style={{order: name.length}}>
                 {name}
                 {
                     name === 'Тренировочная арена'
@@ -646,7 +717,7 @@ class ApplicationForm extends Component {
                             ? null
                             : <this.PlusMinus room={room}/>
                 }
-                <button onClick={() => this.removeRoom(props.room)} className='remove-room-btn'>{''}</button>
+                <button onClick={() => this.removeRoom(props.room)} className='remove-btn'>{''}</button>
             </span>
         );
     };
@@ -715,17 +786,41 @@ class ApplicationForm extends Component {
     };
 
     invalidInput = (e, where) => {
+
         if (!e.target.value.match(/^\d*$/)) {
             this.setState({
                 warning: [this.state.warning, where]
             })
         } else {
+
+            const warning = this.state.warning.slice();
+            const indexF = warning.indexOf('notFilled');
+            if (indexF !== -1) {
+                warning.splice(indexF, 1);
+            }
+            const indexW = warning.indexOf(where);
+            if (indexW !== -1) {
+                warning.splice(indexW, 1);
+            }
+
             this.props.closeHint();
             this.setState({
-                warning: [],
+                warning: warning,
                 [e.target.name]: e.target.value
             })
         }
+    };
+
+    hideSendWarning = () => {
+        this.props.closeHint();
+        const warning = this.state.warning.slice();
+        const index = warning.indexOf('notFilled');
+        if (index !== -1) {
+            warning.splice(index, 1);
+        }
+        this.setState({
+            warning: warning
+        })
     };
 
     changeRoomAmount = (room, number) => {
