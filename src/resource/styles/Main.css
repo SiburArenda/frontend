@@ -24,15 +24,24 @@ img{
     user-select: none;
 }
 
+#triangle{
+    background: center no-repeat url("../img/menuBottom.svg");
+    width: 273px;
+    height: 46px
+}
+
 nav{
-    padding-top: 25px;
     position: absolute;
     top: 0;
     left: 10%;
-    background-color: #1a1a1a;
     text-align: center;
     z-index: 2;
     width: 273px;
+}
+
+#sibur-logo-container{
+    background: #1a1a1a;
+    padding-top: 25px;
 }
 
 nav button{
@@ -55,6 +64,7 @@ nav ul{
 }
 
 nav li{
+    background-color: #1a1a1a;
     border-bottom: white 1px solid;
     padding: 15px;
 }
@@ -92,6 +102,14 @@ header{
 
 #open-log-in-button{
     margin: 0 45px 0 20px;
+    background: center no-repeat url("../img/logInBtn.svg");
+    width: 52px;
+    height: 52px;
+    border: none;
+}
+
+#open-log-in-button:hover{
+    background-image: url("../img/logInBtnHvr.svg");
 }
 
 #main-content{
@@ -216,7 +234,9 @@ header{
     align-items: center;
 }
 
-input[type='text']{
+input[type='text'],
+input[type='password'],
+input[type='email']{
     background: transparent;
     border: none;
     border-bottom: #efefef solid 1px;
@@ -258,4 +278,66 @@ input[type='text']{
 .map-display{
     display: flex;
     flex-wrap: wrap;
+}
+
+.btn-pusher{
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.hidden-radio {
+    position: absolute;
+    z-index: -1;
+    opacity: 0;
+}
+
+.hidden-radio+label {
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    user-select: none;
+}
+
+.hidden-radio+label::before {
+    content: '';
+    display: inline-block;
+    width: 0.8em;
+    height: 0.8em;
+    flex-shrink: 0;
+    flex-grow: 0;
+    border: 2px solid #efefef;
+    border-radius: 50%;
+    margin-right: 0.3em;
+}
+
+.hidden-radio:not(:disabled):not(:checked)+label:hover::before {
+    border-color: #16a4ab;
+}
+
+.hidden-radio:checked+label::before {
+    background: center no-repeat url("../img/radio.svg");
+}
+
+.hidden-radio:checked:hover+label::before {
+    border-color: #16a4ab;
+    background: center no-repeat url("../img/radioHvr.svg");
+}
+
+.red-star{
+    color: red;
+}
+
+.flex-100{
+    display: flex;
+    width: 100%
+}
+
+.turquoise-hover{
+    text-decoration: none;
+    color: #16a4ab;
+}
+
+.turquoise-hover:hover{
+    color: #da6509;
 }

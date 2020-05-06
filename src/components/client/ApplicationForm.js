@@ -12,6 +12,7 @@ class FromTo {
     constructor(from, to) {
         this.from = from;
         this.to = to;
+        this.status = 'NOT_ACTIVE'
     }
 }
 
@@ -34,8 +35,8 @@ class ApplicationForm extends Component {
         dragged: false,
         resized: false,
         minimized: false,
-        minimizedX: 0,
-        minimizedY: 0,
+        minimizedX: 400,
+        minimizedY: 50,
         calendarState: {nothing: 'nothing'},
         warning: [],
         grabbed: null,
@@ -116,6 +117,7 @@ class ApplicationForm extends Component {
                              onMouseMove={e => this.dragForm(e)}
                              onMouseUp={() => this.stopDrag()}
                              onMouseLeave={() => this.stopDrag()}
+                             style={{top: this.state.minimizedY, left: this.state.minimizedX}}
                         >
                             <div className='btn-pusher drag-detector'>
                                 <button
@@ -139,11 +141,11 @@ class ApplicationForm extends Component {
 
                             <div className='block-container ninety-container drag-detector'>
 
-                                <div className='block-col-left drag-detector'>
+                                <div className='block-col drag-detector'>
 
-                                    <p className='drag-detector'>Название мероприятия:</p>
+                                    <p className='drag-detector'>Название мероприятия</p>
 
-                                    <p className='drag-detector'>Тип мероприятия:</p>
+                                    <p className='drag-detector'>Тип мероприятия</p>
 
                                     {['MATCH', 'TRAINING'].includes(this.state.eventType)
                                         ?
@@ -152,11 +154,11 @@ class ApplicationForm extends Component {
                                         null
                                     }
 
-                                    <p className='drag-detector'>Помещения:</p>
+                                    <p className='drag-detector'>Помещения</p>
 
                                 </div>
 
-                                <div className='block-col-right drag-detector'>
+                                <div className='block-col drag-detector'>
 
                                     <input
                                         type='text'
@@ -240,7 +242,7 @@ class ApplicationForm extends Component {
 
                             <div className='block-container ninety-container drag-detector'>
 
-                                <div className='block-col-left drag-detector'>
+                                <div className='block-col drag-detector'>
 
                                     {
                                         ['DRINKING_PARTY', 'OTHER'].includes(this.state.eventType)
@@ -254,12 +256,12 @@ class ApplicationForm extends Component {
                                     {
                                         ['MATCH', 'PARTY'].includes(this.state.eventType)
                                         || (this.state.eventType !== 'TRAINING' && this.state.viewersExpected === 'true')
-                                            ? <p className='drag-detector'>Количество зрителей:</p>
+                                            ? <p className='drag-detector'>Количество зрителей</p>
                                             : null
                                     }
                                 </div>
 
-                                <div className='block-col-right drag-detector'>
+                                <div className='block-col drag-detector'>
 
                                     {
                                         ['DRINKING_PARTY', 'OTHER'].includes(this.state.eventType)
@@ -433,7 +435,7 @@ class ApplicationForm extends Component {
 
     sendApplication = () => {
 
-        const {eventName, viewers, eventType, userName, comment, viewersExpected, rooms, warning} = this.state;
+        const {eventName, viewers, eventType, comment, viewersExpected, rooms, warning} = this.state;
         const {selectedDays, selectedTimings} = this.calendarRef.current.state;
 
         const nameProblems = eventName === '';
@@ -491,7 +493,7 @@ class ApplicationForm extends Component {
             const audJSON = `"auditory":${viewersNeeded ? +viewers : 0},`;
             const typeJSON = `"type":"${eventType}",`;
             const roomsJSON = this.getRoomJSON();
-            const userJSON = `"user":"${userName}",`;
+            const userJSON = `"user":"${this.props.userLogin}",`;
 
             const dateArrJSON = JSON.stringify(JSON.stringify(this.dateTimeJSON(selectedDays, selectedTimings)));
             const dateJSON = `"dates":${dateArrJSON},`;
@@ -771,8 +773,13 @@ class ApplicationForm extends Component {
 
     expand = () => {
         this.props.closeHint();
+        const min = document.getElementById('minimized-app-form');
+        const x = min.style.left;
+        const y = min.style.top;
         this.setState({
-            minimized: false
+            minimized: false,
+            minimizedX: x,
+            minimizedY: y
         })
     };
 
@@ -853,7 +860,7 @@ class ApplicationForm extends Component {
 
 ApplicationForm.propTypes = {
     closeAppWindow: PropTypes.func.isRequired,
-    userName: PropTypes.string.isRequired,
+    userLogin: PropTypes.string.isRequired,
     token: PropTypes.string.isRequired,
     showHint: PropTypes.func.isRequired,
     closeHint: PropTypes.func.isRequired,

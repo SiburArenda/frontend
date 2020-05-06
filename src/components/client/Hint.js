@@ -4,8 +4,8 @@ import PropTypes from 'prop-types';
 class Hint extends Component {
 
     position = {
-        top: (+this.props.y + 8) + 'px',
-        left: (+this.props.x + 8) + 'px'
+        top: (+this.props.y + this.props.hintVPos) + 'px',
+        left: (+this.props.x + this.props.hintHPos) + 'px'
     };
 
     render() {
@@ -19,7 +19,9 @@ class Hint extends Component {
 Hint.propTypes = {
     hintText: PropTypes.string.isRequired,
     x: PropTypes.number.isRequired,
-    y: PropTypes.number.isRequired
+    y: PropTypes.number.isRequired,
+    hintHPos: PropTypes.number.isRequired,
+    hintVPos: PropTypes.number.isRequired
 };
 
 export default Hint;

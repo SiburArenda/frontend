@@ -43,9 +43,9 @@ class TimeSelectDialogue extends Component {
 
                     <div className='block-col-left drag-detector'>
 
-                        <p className='drag-detector'>Время начала:</p>
+                        <p className='drag-detector'>Время начала</p>
 
-                        <p className='drag-detector'>Время окончания:</p>
+                        <p className='drag-detector'>Время окончания</p>
 
                     </div>
 

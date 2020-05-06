@@ -55,15 +55,6 @@
     left: 0;
 }
 
-.turquoise-hover{
-    text-decoration: none;
-    color: #16a4ab;
-}
-
-.turquoise-hover:hover{
-    color: #da6509;
-}
-
 .additional-room-info{
     margin-top: 8px;
 }

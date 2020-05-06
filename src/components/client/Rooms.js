@@ -164,6 +164,7 @@ class Rooms extends Component {
             <div
                 className='info-container'
             >
+                <h1>Помещения</h1>
                 <div className='flex-container flex-end'>
                     <div id='search-icon'>
                     </div>

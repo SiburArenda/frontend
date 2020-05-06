@@ -1,11 +1,12 @@
 import React, {Component} from 'react';
-import {BrowserRouter as Router, Route, Link} from "react-router-dom"
+import {BrowserRouter as Router} from "react-router-dom"
 import './resource/styles/Main.css'
 import ClientNavList from "./components/client/ClientNavList";
 import AdminNavList from "./components/admin/AdminNavList";
 import ClientMainContent from "./components/client/ClientMainContent";
 import AdminMainContent from "./components/admin/AdminMainContent";
 import Hint from "./components/client/Hint";
+import LogIn from "./components/client/LogIn";
 
 class RoomInfo {
     constructor(serverName, name, auditory, description, tags, isAdditionTo) {
@@ -54,16 +55,22 @@ class App extends Component {
         applicationFormVisible: false,
         showHint: false,
         whichHint: '',
+        hintHPos: 8,
+        hintVPos: 8,
         hintX: 0,
         hintY: 0,
         roomArray: [],
-        headerWidth: 1430
+        headerWidth: 1430,
+        userLogin: '',
+        userName: '',
+        token: '',
+        role: 'USER'
     };
 
     headerWidth = () => {
         const screen = window.innerWidth;
         this.setState({
-            headerWidth: screen > 1200 ? screen - 20 : 1430
+            headerWidth: screen > 1090 ? screen - 20 : 1430
         })
     };
 
@@ -238,17 +245,27 @@ class App extends Component {
                 return 'Поиск';
             case 'backToRooms':
                 return 'К списку помещений';
+            case 'logIn':
+                return this.state.userName === '' ? 'Войти' : 'Мой аккаунт';
             default:
                 return '';
         }
     };
 
     showHint = (e, which) => {
+        const textLength = this.getHintText().length * 7 + 5;
+        const length = textLength < 250 ? textLength : 260;
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+        const vPos = +e.clientY + 95 <= height ? 8 : -95;
+        const hPos = +e.clientX + length <= width ? 8 : -length;
         this.setState({
             showHint: true,
             whichHint: which,
             hintX: +e.clientX,
-            hintY: +e.clientY
+            hintY: +e.clientY,
+            hintHPos: hPos,
+            hintVPos: vPos
         })
     };
 
@@ -265,78 +282,89 @@ class App extends Component {
                 <Router>
 
                     <header style={{width: this.state.headerWidth}}>
+
                         <button
                             id='open-log-in-button'
-                            onClick={() => {
-                                this.openLogInForm()
-                            }}>Войти
+                            onClick={() => this.openLogInForm()}
+                            onMouseEnter={e => this.showHint(e, 'logIn')}
+                            onMouseLeave={() => this.closeHint()}
+                        >
                         </button>
+
+                        {this.state.logInFormVisible
+                            ?
+                            <LogIn
+                                closeLogInForm={this.closeLogInForm}
+                                storeResponse={this.storeResponse}
+                                userName={this.state.userName}
+                            />
+                            :
+                            null
+                        }
+
                     </header>
 
                     <nav>
-                        <ul id='main-nav'>
-                            <Route
-                                path={/^\/(?!admin).*/}
-                                render={
-                                    (props) => (
-                                        <ClientNavList
-                                            {...props}
-                                            openApplicationForm={this.openApplicationForm}
-                                            showHint={this.showHint}
-                                            closeHint={this.closeHint}
-                                            appFormRef={this.appFormRef}
-                                        />
-
-                                    )
-                                }
+                        <div
+                            id='sibur-logo-container'
+                        >
+                            <img
+                                src='http://siburarenda.publicvm.com/img/logo.svg'
+                                alt='logo'
                             />
-                            <Route
-                                path='/admin'
-                                render={(props) => (<AdminNavList {...props}/>)}
-                            />
+                        </div>
+                        <ul>
+                            {
+                                this.state.role === 'USER'
+                                    ?
+                                    <ClientNavList
+                                        openApplicationForm={this.openApplicationForm}
+                                        showHint={this.showHint}
+                                        closeHint={this.closeHint}
+                                        appFormRef={this.appFormRef}
+                                    />
+                                    :
+                                    <AdminNavList/>
+                            }
                         </ul>
+                        <div
+                            id='triangle'
+                        >
+                        </div>
                     </nav>
 
                     <section id='main-content'>
-                        <Route
-                            path={/^\/(?!admin).*/}
-                            render=
-                                {
-                                    (props) => (
-                                        <ClientMainContent
-                                            {...props}
-                                            logInFormVisible={this.state.logInFormVisible}
-                                            applicationFormVisible={this.state.applicationFormVisible}
-                                            closeLogInForm={this.closeLogInForm}
-                                            closeAppWindow={this.closeApplicationForm}
-                                            showHint={this.showHint}
-                                            closeHint={this.closeHint}
-                                            roomArray={this.state.roomArray}
-                                            appFormRef={this.appFormRef}
-                                        />
-                                    )
-                                }
-                        />
-                        <Route
-                            path='/admin'
-                            render=
-                                {
-                                    (props) => (
-                                        <AdminMainContent
-                                            {...props}
-                                        />
-                                    )
-                                }
-                        />
+                        {
+                            this.state.role === 'USER'
+                                ?
+                                <ClientMainContent
+                                    logInFormVisible={this.state.logInFormVisible}
+                                    applicationFormVisible={this.state.applicationFormVisible}
+                                    closeLogInForm={this.closeLogInForm}
+                                    closeAppWindow={this.closeApplicationForm}
+                                    showHint={this.showHint}
+                                    closeHint={this.closeHint}
+                                    roomArray={this.state.roomArray}
+                                    appFormRef={this.appFormRef}
+                                    userLogin={this.state.userLogin}
+                                    token={this.state.token}
+                                />
+                                :
+                                <AdminMainContent/>
+                        }
+
                         {this.state.showHint
                             ?
                             <Hint
                                 hintText={this.getHintText()}
                                 x={this.state.hintX}
                                 y={this.state.hintY}
+                                hintHPos={this.getHintText().length > 8 ? this.state.hintHPos : 8}
+                                hintVPos={this.state.hintVPos}
                             />
                             : null
                         }
+
                     </section>
 
                 </Router>
@@ -351,6 +379,7 @@ class App extends Component {
     };
 
     openLogInForm = () => {
+        this.closeHint();
         this.setState({
             logInFormVisible: true
         })
@@ -365,6 +394,16 @@ class App extends Component {
     closeLogInForm = () => {
         this.setState({
             logInFormVisible: false
+        })
+    };
+
+    storeResponse = (userName, userLogin, token, roles) => {
+        const role = roles.includes('USER') ? 'USER' : 'ADMIN';
+        this.setState({
+            userLogin: userLogin,
+            userName: userName,
+            token: token,
+            role: role
         })
     };
 }

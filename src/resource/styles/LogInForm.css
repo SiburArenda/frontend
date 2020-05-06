@@ -1,6 +1,54 @@
 #log-in-form{
+    z-index: 3;
     position: absolute;
-    top: 40px;
+    top: 80px;
     right: 25px;
     background: #1a1a1a;
+    padding: 20px 15px 15px 15px;
+    width: 280px;
+    border: #727272 3px solid;
+    display: block;
+}
+
+#log-in-form p{
+    color: #efefef;
+}
+
+#log-in-form button{
+    border: none;
+    background: transparent;
+    display: block;
+}
+
+#left{
+    display: block;
+    margin-right: 15px;
+}
+
+#left *{
+    display: block;
+    color: #efefef;
+}
+
+#right{
+    display: block;
+}
+
+#right input{
+    display: block;
+}
+
+.log-in-input{
+    color: #efefef;
+    width: 100%;
+    padding-top: 4px;
+}
+
+.what-to-enter{
+    box-sizing: border-box;
+    line-height: 1.7em;
+}
+
+#submit-log-in{
+    margin-top: 15px;
 }
