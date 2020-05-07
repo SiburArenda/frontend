@@ -8,10 +8,16 @@
     width: 280px;
     border: #727272 3px solid;
     display: block;
+    text-align: center;
+    line-height: 1.7em;
 }
 
 #log-in-form p{
     color: #efefef;
+}
+
+#log-in-form a{
+    display: block;
 }
 
 #log-in-form button{
@@ -50,5 +56,10 @@
 }
 
 #submit-log-in{
-    margin-top: 15px;
+    margin-bottom: 10px;
+}
+
+.btn-center{
+    justify-content: center;
+    margin-top: 10px;
 }

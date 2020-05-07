@@ -44,7 +44,50 @@ class App extends Component {
     constructor(props) {
         super(props);
 
+        const prevStateLocal = localStorage.getItem('appState');
+        if (prevStateLocal != null) {
+            const prevStateLocalParsed = JSON.parse(prevStateLocal);
+            const {userLogin, userName, token, role} = prevStateLocalParsed;
+            this.state.userLogin = userLogin;
+            this.state.userName = userName;
+            this.state.token = token;
+            this.state.role = role;
+        }
+
+        const prevStateSession = sessionStorage.getItem('appState');
+
+        if (prevStateSession != null) {
+
+            const prevStateSessionParsed = JSON.parse(prevStateSession);
+            const {roomArray, logInFormVisible, applicationFormVisible} = prevStateSessionParsed;
+
+            for (let roomInd in roomArray) {
+                const room = roomArray[roomInd];
+                room.getURL = (len = -1) => {
+                    if (room.name.startsWith('VIP')) {
+                        return 'VIP_ложи'
+                    }
+                    if (len !== -1) {
+                        const split = room.name.split(' ');
+                        if (len < split.length) {
+                            let urlName = '';
+                            for (let i = 0; i < len; i++) {
+                                urlName += split[i] + (i === len - 1 ? '' : '_')
+                            }
+                            return urlName;
+                        }
+                    }
+                    return room.name.replace(/ /g, '_');
+                }
+            }
+
+            this.state.logInFormVisible = logInFormVisible;
+            this.state.applicationFormVisible = applicationFormVisible;
+            this.state.roomArray = roomArray;
+        }
+
         this.appFormRef = React.createRef();
+        this.minAppRef = React.createRef();
 
         const screen = window.innerWidth;
         this.state.headerWidth =  screen > 1200 ? screen - 20 : 1430
@@ -64,7 +107,7 @@ class App extends Component {
         userLogin: '',
         userName: '',
         token: '',
-        role: 'USER'
+        role: ['USER']
     };
 
     headerWidth = () => {
@@ -74,74 +117,109 @@ class App extends Component {
         })
     };
 
+    saveState = () => {
+
+        const {logInFormVisible, applicationFormVisible, roomArray, userLogin, userName, token, role} = this.state;
+
+        const toLocal = {
+            userLogin: userLogin,
+            userName: userName,
+            token: token,
+            role: role.slice()
+        };
+
+        const toSession = {
+            logInFormVisible: logInFormVisible,
+            applicationFormVisible: applicationFormVisible,
+            roomArray: roomArray
+        };
+
+        localStorage.setItem('appState', JSON.stringify(toLocal));
+        sessionStorage.setItem('appState', JSON.stringify(toSession));
+
+        if (this.appFormRef.current != null) {
+            sessionStorage.setItem('appFormState', JSON.stringify(this.appFormRef.current.state))
+        }
+
+        if (this.minAppRef.current != null) {
+            const {x, y} = this.minAppRef.current.state;
+            const coords = {x: x, y: y};
+            sessionStorage.setItem('minAppForm', JSON.stringify(coords));
+        }
+    };
+
     componentDidMount() {
 
         window.addEventListener('resize', this.headerWidth, false);
+        window.addEventListener('beforeunload', this.saveState, false);
 
-        const request = new XMLHttpRequest();
+        if (this.state.roomArray.length === 0) {
+            const request = new XMLHttpRequest();
 
-        request.onreadystatechange = () => {
-            if (request.readyState === 4) {
+            request.onreadystatechange = () => {
+                if (request.readyState === 4) {
 
-                const pureResponse = JSON.parse(request.responseText);
-                const roomArray = [];
+                    const pureResponse = JSON.parse(request.responseText);
+                    const roomArray = [];
 
-                for (let roomIndex in pureResponse) {
+                    for (let roomIndex in pureResponse) {
 
-                    const roomObj = pureResponse[roomIndex];
+                        const roomObj = pureResponse[roomIndex];
 
-                    const priorName = roomObj.name;
-                    let name = '';
-                    let serverName = '';
-                    if (priorName.indexOf('#') !== -1) {
-                        const splitSpace = priorName.split(' ');
-                        name = `${splitSpace[0]} ${splitSpace[1]}`;
-                        const splitHash = priorName.split(' #');
-                        serverName = splitHash[0];
-                    } else {
-                        name = priorName;
-                        serverName = priorName;
-                    }
-
-                    const auditory = roomObj.auditory === -1 ? 0 : roomObj.auditory;
-                    if (name === 'VIP ложи') {
-                        name += ` на ${auditory} персон`
-                    }
-
-                    let add = false;
-                    for (let i in roomArray) {
-                        if (roomArray[i].name === name) {
-                            roomArray[i].increaseAmount();
-                            add = true;
+                        const priorName = roomObj.name;
+                        let name = '';
+                        let serverName = '';
+                        if (priorName.indexOf('#') !== -1) {
+                            const splitSpace = priorName.split(' ');
+                            name = `${splitSpace[0]} ${splitSpace[1]}`;
+                            const splitHash = priorName.split(' #');
+                            serverName = splitHash[0];
+                        } else {
+                            name = priorName;
+                            serverName = priorName;
                         }
+
+                        const auditory = roomObj.auditory === -1 ? 0 : roomObj.auditory;
+                        if (name === 'VIP ложи') {
+                            name += ` на ${auditory} персон`
+                        }
+
+                        let add = false;
+                        for (let i in roomArray) {
+                            if (roomArray[i].name === name) {
+                                roomArray[i].increaseAmount();
+                                add = true;
+                            }
+                        }
+
+                        if (!add) {
+                            const description = roomObj.description;
+
+                            const tags = roomObj.tags.slice(0, roomObj.tags.length - 1);
+
+                            const isAdditionTo = roomObj.tags[roomObj.tags.length - 1];
+
+                            const newRoomInfo = new RoomInfo(serverName, name, auditory, description, tags, isAdditionTo);
+                            roomArray.push(newRoomInfo);
+                        }
+
                     }
 
-                    if (!add) {
-                        const description = roomObj.description;
-
-                        const tags = roomObj.tags.slice(0, roomObj.tags.length - 1);
-
-                        const isAdditionTo = roomObj.tags[roomObj.tags.length - 1];
-
-                        const newRoomInfo = new RoomInfo(serverName, name, auditory, description, tags, isAdditionTo);
-                        roomArray.push(newRoomInfo);
-                    }
-
+                    this.setState({
+                        roomArray: roomArray
+                    })
                 }
+            };
 
-                this.setState({
-                    roomArray: roomArray
-                })
-            }
-        };
-
-        request.open('GET', 'http://siburarenda.publicvm.com/api/public/rooms', true);
-        request.setRequestHeader('Content-Type', 'application/json');
-        request.send(null)
+            request.open('GET', 'http://siburarenda.publicvm.com/api/public/rooms', true);
+            request.setRequestHeader('Content-Type', 'application/json');
+            request.send(null)
+        }
     }
 
     componentWillUnmount() {
         window.removeEventListener('resize', this.headerWidth, false);
+        window.removeEventListener('beforeunload', this.saveState, false)
     }
 
     getHintText = () => {
@@ -297,6 +375,7 @@ class App extends Component {
                                 closeLogInForm={this.closeLogInForm}
                                 storeResponse={this.storeResponse}
                                 userName={this.state.userName}
+                                logOut={this.logOut}
                             />
                             :
                             null
@@ -315,7 +394,7 @@ class App extends Component {
                         </div>
                         <ul>
                             {
-                                this.state.role === 'USER'
+                                this.state.role.includes('USER')
                                     ?
                                     <ClientNavList
                                         openApplicationForm={this.openApplicationForm}
@@ -335,7 +414,7 @@ class App extends Component {
 
                     <section id='main-content'>
                         {
-                            this.state.role === 'USER'
+                            this.state.role.includes('USER')
                                 ?
                                 <ClientMainContent
                                     logInFormVisible={this.state.logInFormVisible}
@@ -348,6 +427,7 @@ class App extends Component {
                                     appFormRef={this.appFormRef}
                                     userLogin={this.state.userLogin}
                                     token={this.state.token}
+                                    minAppRef={this.minAppRef}
                                 />
                                 :
                                 <AdminMainContent/>
@@ -372,6 +452,15 @@ class App extends Component {
         );
     }
 
+    logOut = () => {
+        this.setState({
+            userLogin: '',
+            userName: '',
+            token: '',
+            role: ['USER']
+        })
+    };
+
     openApplicationForm = () => {
         this.setState({
             applicationFormVisible: true
@@ -386,6 +475,8 @@ class App extends Component {
     };
 
     closeApplicationForm = () => {
+        sessionStorage.removeItem('appFormState');
+        sessionStorage.removeItem('calendarState');
         this.setState({
             applicationFormVisible: false
         })
@@ -398,12 +489,11 @@ class App extends Component {
     };
 
     storeResponse = (userName, userLogin, token, roles) => {
-        const role = roles.includes('USER') ? 'USER' : 'ADMIN';
         this.setState({
             userLogin: userLogin,
             userName: userName,
             token: token,
-            role: role
+            role: roles
         })
     };
 }

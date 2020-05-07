@@ -7,6 +7,8 @@ import Contacts from "./Contacts";
 import SignUp from "./SignUp";
 import ApplicationForm from "./ApplicationForm";
 import EachRoom from "./EachRoom";
+import AccountSettings from "./AccountSettings";
+import AllApplications from "./AllApplications";
 
 class ClientMainContent extends Component {
 
@@ -45,6 +47,14 @@ class ClientMainContent extends Component {
                     showHint={this.props.showHint}
                     closeHint={this.props.closeHint}
                 />
+                <Route
+                    path='/accountSettings'
+                    component={AccountSettings}
+                />
+                <Route
+                    path='/applications'
+                    component={AllApplications}
+                />
                 {
                     this.props.applicationFormVisible
                         ?
@@ -55,6 +65,7 @@ class ClientMainContent extends Component {
                             showHint={this.props.showHint}
                             closeHint={this.props.closeHint}
                             roomArray={this.props.roomArray}
+                            minAppRef={this.props.minAppRef}
                             ref={this.props.appFormRef}
                         />
                         : null
@@ -72,7 +83,8 @@ ClientMainContent.propTypes = {
     roomArray: PropTypes.array.isRequired,
     appFormRef: PropTypes.object.isRequired,
     userLogin: PropTypes.string.isRequired,
-    token: PropTypes.string.isRequired
+    token: PropTypes.string.isRequired,
+    minAppRef: PropTypes.object.isRequired
 };
 
 export default ClientMainContent;

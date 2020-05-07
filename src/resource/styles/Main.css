@@ -94,6 +94,7 @@ header{
     cursor: pointer;
     color: #efefef;
     user-select: none;
+    text-decoration: none;
 }
 
 .hover-text:hover{

@@ -20,6 +20,11 @@ class ApplicationForm extends Component {
     constructor(props) {
         super(props);
 
+        const prevState = sessionStorage.getItem('appFormState');
+        if (prevState != null) {
+            this.state = JSON.parse(prevState);
+        }
+
         this.calendarRef = React.createRef();
     }
 
@@ -33,14 +38,12 @@ class ApplicationForm extends Component {
         offsetX: 0,
         offsetY: 0,
         dragged: false,
-        resized: false,
         minimized: false,
-        minimizedX: 400,
-        minimizedY: 50,
-        calendarState: {nothing: 'nothing'},
         warning: [],
         grabbed: null,
-        notFilled: ''
+        notFilled: '',
+        y: 50,
+        x: 400
     };
 
     eventTypeOptions = [
@@ -107,8 +110,9 @@ class ApplicationForm extends Component {
                             closeHint={this.props.closeHint}
                             closeAppWindow={this.props.closeAppWindow}
                             expand={this.expand}
-                            posX={this.state.minimizedX}
-                            posY={this.state.minimizedY}
+                            posX={this.state.x}
+                            posY={this.state.y}
+                            ref={this.props.minAppRef}
                         />
                         :
                         <div id='application-form'
@@ -117,7 +121,7 @@ class ApplicationForm extends Component {
                              onMouseMove={e => this.dragForm(e)}
                              onMouseUp={() => this.stopDrag()}
                              onMouseLeave={() => this.stopDrag()}
-                             style={{top: this.state.minimizedY, left: this.state.minimizedX}}
+                             style={{top: this.state.y, left: this.state.x}}
                         >
                             <div className='btn-pusher drag-detector'>
                                 <button
@@ -348,7 +352,6 @@ class ApplicationForm extends Component {
 
                             <Calendar
                                 ref={this.calendarRef}
-                                savedState={this.state.calendarState}
                                 showHint={this.props.showHint}
                                 closeHint={this.props.closeHint}
                                 hideSendWarning={this.hideSendWarning}
@@ -502,6 +505,8 @@ class ApplicationForm extends Component {
 
             const toSend = '{' + nameJSON + audJSON + typeJSON + roomsJSON + userJSON + dateJSON + commentJSON + '}';
 
+            sessionStorage.removeItem('appFormState');
+
             console.log(toSend);
 
             // const request = new XMLHttpRequest();
@@ -625,10 +630,10 @@ class ApplicationForm extends Component {
 
     dragForm = (e) => {
         if (this.state.dragged) {
-            const movedObj = document.getElementById('application-form');
-            movedObj.style.top = +e.screenY - this.state.offsetY + 'px';
-            movedObj.style.left = +e.screenX - this.state.offsetX + 'px';
-
+            this.setState({
+                x: +e.screenX - this.state.offsetX + 'px',
+                y: +e.screenY - this.state.offsetY + 'px'
+            });
         }
     };
 
@@ -760,26 +765,18 @@ class ApplicationForm extends Component {
 
     minimize = () => {
         this.props.closeHint();
-        const bothCoords = this.getCoords();
-        const x = bothCoords[0];
-        const y = bothCoords[1];
+        sessionStorage.setItem('calendarState', JSON.stringify(this.calendarRef.current.state))
         this.setState({
-            minimizedX: x,
-            minimizedY: y,
-            minimized: true,
-            calendarState: this.calendarRef.current.state
-        })
+            minimized: true
+        });
     };
 
-    expand = () => {
+    expand = (x, y) => {
         this.props.closeHint();
-        const min = document.getElementById('minimized-app-form');
-        const x = min.style.left;
-        const y = min.style.top;
         this.setState({
             minimized: false,
-            minimizedX: x,
-            minimizedY: y
+            x: x,
+            y: y
         })
     };
 
@@ -864,7 +861,8 @@ ApplicationForm.propTypes = {
     token: PropTypes.string.isRequired,
     showHint: PropTypes.func.isRequired,
     closeHint: PropTypes.func.isRequired,
-    roomArray: PropTypes.array.isRequired
+    roomArray: PropTypes.array.isRequired,
+    minAppRef: PropTypes.object.isRequired
 };
 
 export default ApplicationForm;

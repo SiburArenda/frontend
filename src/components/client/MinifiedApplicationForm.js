@@ -3,23 +3,31 @@ import PropTypes from 'prop-types';
 
 class MinifiedApplicationForm extends Component {
 
+    constructor(props) {
+        super(props);
+
+        const coords = sessionStorage.getItem('minAppForm');
+        if (coords != null) {
+            const parsedCoords = JSON.parse(coords);
+            this.state.x = parsedCoords.x;
+            this.state.y = parsedCoords.y;
+        }
+    }
+
     state = {
         offsetX: 0,
         offsetY: 0,
         dragged: false,
-        grabbed: null
-    };
-
-    pos = {
-        top: this.props.posY,
-        left: this.props.posX
+        grabbed: null,
+        x: this.props.posX,
+        y: this.props.posY
     };
 
     render() {
         return (
             <div
                 id='minimized-app-form'
-                style={this.pos}
+                style={{top: this.state.y, left: this.state.x}}
                 onMouseDown={e => this.startFormDrag(e)}
                 onMouseMove={e => this.dragForm(e)}
                 onMouseUp={() => this.stopDrag()}
@@ -37,7 +45,7 @@ class MinifiedApplicationForm extends Component {
                 </button>
                 <button
                     id='expand-btn'
-                    onClick={() => this.props.expand()}
+                    onClick={() => this.props.expand(this.state.x, this.state.y)}
                     onMouseEnter={e => this.props.showHint(e, 'expAppFormBtn')}
                     onMouseLeave={() => this.props.closeHint()}
                 >
@@ -76,9 +84,10 @@ class MinifiedApplicationForm extends Component {
 
     dragForm = (e) => {
         if (this.state.dragged) {
-            const movedObj = document.getElementById('minimized-app-form');
-            movedObj.style.top = (+e.screenY - this.state.offsetY) + 'px';
-            movedObj.style.left = (+e.screenX - this.state.offsetX) + 'px';
+            this.setState({
+                x: (+e.screenX - this.state.offsetX) + 'px',
+                y: (+e.screenY - this.state.offsetY) + 'px'
+            });
         }
     };
 
@@ -99,8 +108,8 @@ MinifiedApplicationForm.propTypes = {
     closeHint: PropTypes.func.isRequired,
     closeAppWindow: PropTypes.func.isRequired,
     expand: PropTypes.func.isRequired,
-    posX: PropTypes.number.isRequired,
-    posY: PropTypes.number.isRequired
+    posX: PropTypes.string.isRequired,
+    posY: PropTypes.string.isRequired
 };
 
 export default MinifiedApplicationForm;

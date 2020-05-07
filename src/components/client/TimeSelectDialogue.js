@@ -34,10 +34,12 @@ class TimeSelectDialogue extends Component {
     };
 
     render() {
-        const { startH, startM, endH, endM } = this.props.dayToShow;
-        const { startHRef, startMRef, endHRef, endMRef, checkBoxRef } = this.props;
+        const { startHRef, startMRef, endHRef, endMRef, checkBoxRef, defaultTiming } = this.props;
+        const { startH, startM, endH, endM } = defaultTiming;
         return (
             <div id='timing-container' className='drag-detector'>
+
+                <p className='drag-detector'>{this.props.header}</p>
 
                 <div className='flex-container drag-detector' style={{width: '100%'}}>
 
@@ -57,9 +59,9 @@ class TimeSelectDialogue extends Component {
                                 id='s-h-i'
                                 className='time-input'
                                 type='text'
-                                defaultValue={startH}
                                 min={0}
                                 max={23}
+                                defaultValue={startH}
                                 name='startH'
                                 onClick={e => this.addClickOutside(e)}
                                 onChange={e => this.handleInput(e)}
@@ -88,10 +90,10 @@ class TimeSelectDialogue extends Component {
                                 id='s-m-i'
                                 className='time-input'
                                 type='text'
-                                defaultValue={startM}
                                 min={0}
                                 max={59}
                                 name='startM'
+                                defaultValue={startM}
                                 onChange={e => this.handleInput(e)}
                                 onClick={e => this.addClickOutside(e)}
                                 ref={startMRef}
@@ -123,10 +125,10 @@ class TimeSelectDialogue extends Component {
                                 id='e-h-i'
                                 className='time-input'
                                 type='text'
-                                defaultValue={endH}
                                 min={0}
                                 max={23}
                                 name='endH'
+                                defaultValue={endH}
                                 onChange={e => this.handleInput(e)}
                                 onClick={e => this.addClickOutside(e)}
                                 ref={endHRef}
@@ -154,10 +156,10 @@ class TimeSelectDialogue extends Component {
                                 id='e-m-i'
                                 className='time-input'
                                 type='text'
-                                defaultValue={endM}
                                 min={0}
                                 max={59}
                                 name='endM'
+                                defaultValue={endM}
                                 onChange={e => this.handleInput(e)}
                                 onClick={e => this.addClickOutside(e)}
                                 ref={endMRef}
@@ -249,15 +251,16 @@ class TimeSelectDialogue extends Component {
 }
 
 TimeSelectDialogue.propTypes = {
-    dayToShow: PropTypes.object.isRequired,
+    header: PropTypes.object.isRequired,
+    defaultTiming: PropTypes.object.isRequired,
     changeTiming: PropTypes.func.isRequired,
     setForAll: PropTypes.func.isRequired,
     closeTimeSelectDialogue: PropTypes.func.isRequired,
-    startHRef: PropTypes.func.isRequired,
-    startMRef: PropTypes.func.isRequired,
-    endHRef: PropTypes.func.isRequired,
-    endMRef: PropTypes.func.isRequired,
-    checkBoxRef: PropTypes.func.isRequired,
+    startHRef: PropTypes.object.isRequired,
+    startMRef: PropTypes.object.isRequired,
+    endHRef: PropTypes.object.isRequired,
+    endMRef: PropTypes.object.isRequired,
+    checkBoxRef: PropTypes.object.isRequired,
     showHint: PropTypes.func.isRequired,
     closeHint: PropTypes.func.isRequired
 };

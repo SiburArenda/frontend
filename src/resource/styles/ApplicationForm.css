@@ -14,8 +14,6 @@
     color: #efefef;
     resize: vertical;
     overflow: hidden scroll;
-    top: 50px;
-    left: 400px;
     display: block;
     border: #727272 3px solid;
 }

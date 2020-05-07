@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import '../../resource/styles/LogInForm.css'
 import '../../resource/styles/Main.css'
+import {Link} from "react-router-dom";
 
 class LogIn extends Component {
 
@@ -13,10 +14,19 @@ class LogIn extends Component {
 
     componentDidMount() {
         document.addEventListener('click', this.close, false);
+        window.addEventListener('beforeunload', this.saveState, false)
     }
+
+    saveState = () =>
+        sessionStorage.setItem(
+            'logInState',
+            JSON.stringify({userLogin: this.state.userLogin, invalid: this.state.invalid})
+        );
+
 
     componentWillUnmount() {
         document.removeEventListener('click', this.close, false);
+        window.removeEventListener('beforeunload', this.saveState, false)
     }
 
     close = (e) => {
@@ -36,79 +46,101 @@ class LogIn extends Component {
                     this.props.userName === ''
 
                         ?
-                        <div
-                            className='log-in-inside'
-                            style={{display: 'flex'}}
-                        >
+
+                        <React.Fragment>
 
                             <div
-                                id='left'
-                                className='log-in-inside'
-                            >
-                                <p
-                                    className='what-to-enter log-in-inside'
-                                >
-                                    E-mail
-                                </p>
-                                <p
-                                    className='what-to-enter log-in-inside'
-                                >
-                                    Пароль
-                                </p>
-                            </div>
-
-                            <div
-                                id='right'
-                                className='log-in-inside'
+                                className='log-in-inside flex-100'
                             >
 
-                                <input
-                                    type='text'
-                                    name='userLogin'
-                                    className='log-in-input log-in-inside'
-                                    onChange={e => this.handleInput(e)}
-                                />
-
-                                <input
-                                    type='password'
-                                    name='password'
-                                    className='log-in-input log-in-inside'
-                                    onChange={e => this.handleInput(e)}
-                                />
-
-                                <div className='log-in-inside btn-pusher'>
-
-                                    <button
-                                        onClick={() => this.submitLogIn()}
-                                        className='log-in-inside no-border-element transparent-element hover-text'
-                                        id='submit-log-in'
+                                <div
+                                    id='left'
+                                    className='log-in-inside'
+                                >
+                                    <p
+                                        className='what-to-enter log-in-inside'
                                     >
-                                        Войти
-                                    </button>
+                                        E-mail
+                                    </p>
+                                    <p
+                                        className='what-to-enter log-in-inside'
+                                    >
+                                        Пароль
+                                    </p>
+                                </div>
+
+                                <div
+                                    id='right'
+                                    className='log-in-inside'
+                                >
+
+                                    <input
+                                        type='text'
+                                        name='userLogin'
+                                        className='log-in-input log-in-inside'
+                                        onChange={e => this.handleInput(e)}
+                                    />
+
+                                    <input
+                                        type='password'
+                                        name='password'
+                                        className='log-in-input log-in-inside'
+                                        onChange={e => this.handleInput(e)}
+                                    />
 
                                 </div>
 
                             </div>
 
-                        </div>
+                            <div className='log-in-inside flex-100 btn-center'>
+
+                                <button
+                                    onClick={() => this.submitLogIn()}
+                                    className='log-in-inside no-border-element transparent-element hover-text'
+                                    id='submit-log-in'
+                                >
+                                    Войти
+                                </button>
+
+                            </div>
+
+                            <Link
+                                to='/signUp'
+                                className='turquoise-hover'
+                            >
+                                У меня ещё нет аккаунта
+                            </Link>
+
+                        </React.Fragment>
 
                         :
 
                         <React.Fragment>
 
-                            <p>Вы вошли как {this.props.userName}</p>
+                            <p style={{marginBottom: '10px'}}>Вы вошли как {this.props.userName}</p>
 
-                            <button className='hover-text log-in-inside'>
+                            <Link
+                                to='/applications'
+                                className='hover-text log-in-inside'
+                            >
                                 Мои заявки
-                            </button>
+                            </Link>
 
-                            <button className='hover-text log-in-inside'>
+                            <Link
+                                to='/accountSettings'
+                                className='hover-text log-in-inside'
+                            >
                                 Редактировать профиль
-                            </button>
+                            </Link>
 
-                            <button className='hover-text log-in-inside'>
-                                Выйти
-                            </button>
+                            <div className='log-in-inside flex-100 btn-center'>
+                                <button
+                                    className='hover-text log-in-inside'
+                                    onClick={() => this.props.logOut()}
+                                >
+                                    Выйти
+                                </button>
+                            </div>
 
                         </React.Fragment>
                 }
@@ -134,7 +166,7 @@ class LogIn extends Component {
 
                     const {firstName, lastName, roles, username, token} = parsedResponse;
 
-                    const fullName = firstName + ' ' + lastName;
+                    const fullName = lastName + ' ' + firstName;
 
                     this.props.storeResponse(fullName, username, token, roles);
                 }
@@ -156,7 +188,8 @@ class LogIn extends Component {
 LogIn.propTypes = {
     closeLogInForm: PropTypes.func.isRequired,
     storeResponse: PropTypes.func.isRequired,
-    userName: PropTypes.string.isRequired
+    userName: PropTypes.string.isRequired,
+    logOut: PropTypes.func.isRequired
 };
 
 export default LogIn;
