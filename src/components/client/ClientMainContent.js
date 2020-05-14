@@ -12,6 +12,10 @@ import AllApplications from "./AllApplications";
 
 class ClientMainContent extends Component {
 
+    state = {
+        newApplication: true
+    };
+
     render() {
         return (
             <React.Fragment>
@@ -53,7 +57,18 @@ class ClientMainContent extends Component {
                 />
                 <Route
                     path='/applications'
-                    component={AllApplications}
+                    render={
+                        (props) => (
+                            <AllApplications
+                                {...props}
+                                token={this.props.token}
+                                userLogin={this.props.userLogin}
+                                newApplication={this.newApplication}
+                                refresh={this.state.newApplication}
+                                openLogInForm={this.props.openLogInForm}
+                            />
+                        )
+                    }
                 />
                 {
                     this.props.applicationFormVisible
@@ -66,12 +81,20 @@ class ClientMainContent extends Component {
                             closeHint={this.props.closeHint}
                             roomArray={this.props.roomArray}
                             minAppRef={this.props.minAppRef}
+                            newApplication={this.newApplication}
                             ref={this.props.appFormRef}
+                            refreshToken={this.props.refreshToken}
                         />
                         : null
                 }
             </React.Fragment>
         );
+    }
+
+    newApplication = (what) => {
+        this.setState({
+            newApplication: what
+        })
     }
 }
 
@@ -84,7 +107,9 @@ ClientMainContent.propTypes = {
     appFormRef: PropTypes.object.isRequired,
     userLogin: PropTypes.string.isRequired,
     token: PropTypes.string.isRequired,
-    minAppRef: PropTypes.object.isRequired
+    minAppRef: PropTypes.object.isRequired,
+    openLogInForm: PropTypes.func.isRequired,
+    refreshToken: PropTypes.func.isRequired
 };
 
 export default ClientMainContent;

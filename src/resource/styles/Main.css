@@ -342,3 +342,32 @@ input[type='email']{
 .turquoise-hover:hover{
     color: #da6509;
 }
+
+.hover-text:disabled{
+    color: #727272;
+    cursor: default;
+}
+
+.warning{
+    margin-left: 8px;
+    background: center no-repeat url("../img/warning.svg");
+    width: 22px;
+    height: 18px;
+    cursor: help;
+    display: flex;
+}
+
+.empty-warning{
+    display: flex;
+    margin-left: 8px;
+    background: transparent;
+    width: 22px;
+    height: 18px;
+    cursor: default;
+}
+
+.waiting{
+    background: center no-repeat url("../img/waiting.svg");
+    width: 24px;
+    height: 24px;
+}

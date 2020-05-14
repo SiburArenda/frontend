@@ -1,3 +1,4 @@
+/* eslint-disable react/no-direct-mutation-state */
 import React, {Component} from 'react';
 import {BrowserRouter as Router} from "react-router-dom"
 import './resource/styles/Main.css'
@@ -7,91 +8,46 @@ import ClientMainContent from "./components/client/ClientMainContent";
 import AdminMainContent from "./components/admin/AdminMainContent";
 import Hint from "./components/client/Hint";
 import LogIn from "./components/client/LogIn";
-
-class RoomInfo {
-    constructor(serverName, name, auditory, description, tags, isAdditionTo) {
-        this.serverName = serverName;
-        this.name = name;
-        this.auditory = auditory;
-        this.description = description;
-        this.tags = tags;
-        this.isAdditionTo = isAdditionTo === '-1' ? 'independent' : isAdditionTo;
-        this.amount = 1;
-    }
-
-    increaseAmount = () => this.amount += 1;
-
-    getURL = (len = -1) => {
-        if (this.name.startsWith('VIP')) {
-            return 'VIP_ложи'
-        }
-        if (len !== -1) {
-            const split = this.name.split(' ');
-            if (len < split.length) {
-                let urlName = '';
-                for (let i = 0; i < len; i++) {
-                    urlName += split[i] + (i === len - 1 ? '' : '_')
-                }
-                return urlName;
-            }
-        }
-        return this.name.replace(/ /g, '_');
-    }
-}
+import {connectServer} from "./functional/ServerConnect";
+import RoomInfo from "./functional/RoomInfo";
+import {connectDatabase} from "./functional/Database";
 
 class App extends Component {
 
+    // happens first and once before any rendering; the state object does not exist yet
     constructor(props) {
         super(props);
-
-        const prevStateLocal = localStorage.getItem('appState');
-        if (prevStateLocal != null) {
-            const prevStateLocalParsed = JSON.parse(prevStateLocal);
-            const {userLogin, userName, token, role} = prevStateLocalParsed;
-            this.state.userLogin = userLogin;
-            this.state.userName = userName;
-            this.state.token = token;
-            this.state.role = role;
-        }
-
-        const prevStateSession = sessionStorage.getItem('appState');
-
-        if (prevStateSession != null) {
-
-            const prevStateSessionParsed = JSON.parse(prevStateSession);
-            const {roomArray, logInFormVisible, applicationFormVisible} = prevStateSessionParsed;
-
-            for (let roomInd in roomArray) {
-                const room = roomArray[roomInd];
-                room.getURL = (len = -1) => {
-                    if (room.name.startsWith('VIP')) {
-                        return 'VIP_ложи'
-                    }
-                    if (len !== -1) {
-                        const split = room.name.split(' ');
-                        if (len < split.length) {
-                            let urlName = '';
-                            for (let i = 0; i < len; i++) {
-                                urlName += split[i] + (i === len - 1 ? '' : '_')
-                            }
-                            return urlName;
-                        }
-                    }
-                    return room.name.replace(/ /g, '_');
-                }
-            }
-
-            this.state.logInFormVisible = logInFormVisible;
-            this.state.applicationFormVisible = applicationFormVisible;
-            this.state.roomArray = roomArray;
-        }
 
         this.appFormRef = React.createRef();
         this.minAppRef = React.createRef();
 
         const screen = window.innerWidth;
-        this.state.headerWidth =  screen > 1200 ? screen - 20 : 1430
+        this.state.headerWidth =  screen > 1200 ? screen - 20 : 1430;
+
+        connectDatabase(
+            'App',
+            'get',
+            this.setInitState
+        );
+
     }
+
+    setInitState = dbData => {
+        if (dbData !== undefined) {
+            const {userLogin, userName, password, token, role, roomArray, logInFormVisible, applicationFormVisible} = dbData;
+            const objRooms = JSON.parse(roomArray).map(r => new RoomInfo(r.serverName, r.name, r.auditory, r.description, r.tags, r.isAdditionTo));
+            this.state.userLogin = userLogin;
+            this.state.userName = userName;
+            this.state.password = password; //TODO: security!
+            this.state.token = token;
+            this.state.role = role;
+            this.state.roomArray = objRooms;
+            if (logInFormVisible !== undefined && applicationFormVisible !== undefined) {
+                this.state.logInFormVisible = logInFormVisible;
+                this.state.applicationFormVisible = applicationFormVisible;
+            }
+        }
+    };
 
     state = {
         logInFormVisible: false,
@@ -106,10 +62,27 @@ class App extends Component {
         headerWidth: 1430,
         userLogin: '',
         userName: '',
+        password: '', // TODO: Security!
         token: '',
         role: ['USER']
     };
 
+    // happens once after constructor, right after the first render
+    componentDidMount() {
+
+        window.addEventListener('resize', this.headerWidth, false);
+        window.addEventListener('beforeunload', () => this.saveState(true), false);
+        window.addEventListener('close', () => this.saveState(false), false);
+
+        if (this.state.roomArray.length === 0) {
+            const headers = [
+                {name: 'Content-Type', value: 'application/json'}
+            ];
+            connectServer(null, this.getRoomsFromServer, 'get', headers, 'api/public/rooms');
+        }
+    }
+
+    // tweak the header width so that the LogIn button is positioned nicely
     headerWidth = () => {
         const screen = window.innerWidth;
         this.setState({
@@ -117,109 +90,237 @@ class App extends Component {
         })
     };
 
-    saveState = () => {
+    // save the website state when the page is reloaded (reload = true) or closed (reload = false)
+    saveState = (reload) => {
 
-        const {logInFormVisible, applicationFormVisible, roomArray, userLogin, userName, token, role} = this.state;
+        const {logInFormVisible, applicationFormVisible, roomArray, userLogin, userName, token, role, password} = this.state;
 
-        const toLocal = {
+        const interactionArray = [];
+
+        const toSave = {
+            componentName: 'App',
             userLogin: userLogin,
             userName: userName,
             token: token,
-            role: role.slice()
+            role: role,
+            roomArray: JSON.stringify(roomArray),
+            password: password //TODO: Security!
         };
 
-        const toSession = {
-            logInFormVisible: logInFormVisible,
-            applicationFormVisible: applicationFormVisible,
-            roomArray: roomArray
-        };
+        if (reload) {
+            toSave.applicationFormVisible = applicationFormVisible;
+            toSave.logInFormVisible = logInFormVisible;
 
-        localStorage.setItem('appState', JSON.stringify(toLocal));
-        sessionStorage.setItem('appState', JSON.stringify(toSession));
+            if (this.appFormRef.current != null) {
+                const af = Object.assign({}, this.appFormRef.current.state);
+                af.componentName = 'ApplicationForm';
+                interactionArray.push(af);
+            }
 
-        if (this.appFormRef.current != null) {
-            sessionStorage.setItem('appFormState', JSON.stringify(this.appFormRef.current.state))
+            if (this.minAppRef.current != null) {
+                const {x, y} = this.minAppRef.current.state;
+                const coords = {componentName: 'MinifiedApplicationForm', x: x, y: y};
+                interactionArray.push(coords);
+            }
+        } else {
+            connectDatabase(
+                [
+                    'App',
+                    'ApplicationForm',
+                    'Calendar',
+                    'MinifiedApplicationForm',
+                    'LogInForm'
+                ],
+                'delete'
+            );
         }
 
-        if (this.minAppRef.current != null) {
-            const {x, y} = this.minAppRef.current.state;
-            const coords = {x: x, y: y};
-            sessionStorage.setItem('minAppForm', JSON.stringify(coords));
-        }
+        interactionArray.push(toSave);
+
+        connectDatabase(interactionArray, 'put');
     };
 
-    componentDidMount() {
+    // get rooms if they are not saved from last session
+    getRoomsFromServer = (responseText) => {
+        const pureResponse = JSON.parse(responseText);
+        const roomArray = [];
 
-        window.addEventListener('resize', this.headerWidth, false);
-        window.addEventListener('beforeunload', this.saveState, false);
+        for (let roomIndex in pureResponse) {
 
-        if (this.state.roomArray.length === 0) {
-            const request = new XMLHttpRequest();
+            const roomObj = pureResponse[roomIndex];
 
-            request.onreadystatechange = () => {
-                if (request.readyState === 4) {
+            const priorName = roomObj.name;
+            let name = '';
+            let serverName = '';
+            if (priorName.indexOf('#') !== -1) {
+                const splitSpace = priorName.split(' ');
+                name = `${splitSpace[0]} ${splitSpace[1]}`;
+                const splitHash = priorName.split(' #');
+                serverName = splitHash[0];
+            } else {
+                name = priorName;
+                serverName = priorName;
+            }
 
-                    const pureResponse = JSON.parse(request.responseText);
-                    const roomArray = [];
+            const auditory = roomObj.auditory === -1 ? 0 : roomObj.auditory;
+            if (name === 'VIP ложи') {
+                name += ` на ${auditory} персон`
+            }
 
-                    for (let roomIndex in pureResponse) {
-
-                        const roomObj = pureResponse[roomIndex];
-
-                        const priorName = roomObj.name;
-                        let name = '';
-                        let serverName = '';
-                        if (priorName.indexOf('#') !== -1) {
-                            const splitSpace = priorName.split(' ');
-                            name = `${splitSpace[0]} ${splitSpace[1]}`;
-                            const splitHash = priorName.split(' #');
-                            serverName = splitHash[0];
-                        } else {
-                            name = priorName;
-                            serverName = priorName;
-                        }
-
-                        const auditory = roomObj.auditory === -1 ? 0 : roomObj.auditory;
-                        if (name === 'VIP ложи') {
-                            name += ` на ${auditory} персон`
-                        }
-
-                        let add = false;
-                        for (let i in roomArray) {
-                            if (roomArray[i].name === name) {
-                                roomArray[i].increaseAmount();
-                                add = true;
-                            }
-                        }
-
-                        if (!add) {
-                            const description = roomObj.description;
-
-                            const tags = roomObj.tags.slice(0, roomObj.tags.length - 1);
-
-                            const isAdditionTo = roomObj.tags[roomObj.tags.length - 1];
-
-                            const newRoomInfo = new RoomInfo(serverName, name, auditory, description, tags, isAdditionTo);
-                            roomArray.push(newRoomInfo);
-                        }
-
-                    }
-
-                    this.setState({
-                        roomArray: roomArray
-                    })
+            let add = false;
+            for (let i in roomArray) {
+                if (roomArray[i].name === name) {
+                    roomArray[i].increaseAmount();
+                    add = true;
                 }
-            };
+            }
 
-            request.open('GET', 'http://siburarenda.publicvm.com/api/public/rooms', true);
-            request.setRequestHeader('Content-Type', 'application/json');
-            request.send(null)
+            if (!add) {
+                const description = roomObj.description;
+
+                const tags = roomObj.tags.slice(0, roomObj.tags.length - 1);
+
+                const isAdditionTo = roomObj.tags[roomObj.tags.length - 1];
+
+                const newRoomInfo = new RoomInfo(serverName, name, auditory, description, tags, isAdditionTo);
+                roomArray.push(newRoomInfo);
+            }
+
         }
-    }
 
+        this.setState({
+            roomArray: roomArray
+        })
+    };
+
+    // happens once right before the component is removed
     componentWillUnmount() {
         window.removeEventListener('resize', this.headerWidth, false);
-        window.removeEventListener('beforeunload', this.saveState, false)
+        window.removeEventListener('beforeunload', () => this.saveState(true), false);
+    }
+
+    // happens on each state change
+    render() {
+
+        const scroll = !window.screenTop && !window.screenY ? 'hidden' : 'scroll';
+        const {
+            logInFormVisible,
+            applicationFormVisible,
+            headerWidth,
+            userName,
+            role,
+            roomArray,
+            userLogin,
+            token,
+            showHint,
+            hintVPos,
+            hintHPos,
+            hintX,
+            hintY,
+            password
+        } = this.state;
+
+        return (
+            <div style={{overflowX: {scroll}}}>
+                <Router>
+
+                    <header style={{width: headerWidth}}>
+
+                        <button
+                            id='open-log-in-button'
+                            onClick={() => this.openLogInForm()}
+                            onMouseEnter={e => this.showHint(e, 'logIn')}
+                            onMouseLeave={() => this.closeHint()}
+                        >
+                        </button>
+
+                        {logInFormVisible
+                            ?
+                            <LogIn
+                                closeLogInForm={this.closeLogInForm}
+                                storeResponse={this.storeResponse}
+                                userName={userName}
+                                logOut={this.logOut}
+                                closeHint={this.closeHint}
+                                showHint={this.showHint}
+                            />
+                            :
+                            null
+                        }
+
+                    </header>
+
+                    <nav>
+                        <div
+                            id='sibur-logo-container'
+                        >
+                            <img
+                                src='http://siburarenda.publicvm.com/img/logo.svg'
+                                alt='logo'
+                            />
+                        </div>
+                        <ul>
+                            {
+                                role.includes('USER')
+                                    ?
+                                    <ClientNavList
+                                        openApplicationForm={this.openApplicationForm}
+                                        showHint={this.showHint}
+                                        closeHint={this.closeHint}
+                                        appFormRef={this.appFormRef}
+                                    />
+                                    :
+                                    <AdminNavList/>
+                            }
+                        </ul>
+                        <div
+                            id='triangle'
+                        >
+                        </div>
+                    </nav>
+
+                    <section id='main-content'>
+                        {
+                            role.includes('USER')
+                                ?
+                                <ClientMainContent
+                                    logInFormVisible={logInFormVisible}
+                                    applicationFormVisible={applicationFormVisible}
+                                    closeLogInForm={this.closeLogInForm}
+                                    closeAppWindow={this.closeApplicationForm}
+                                    showHint={this.showHint}
+                                    closeHint={this.closeHint}
+                                    roomArray={roomArray}
+                                    appFormRef={this.appFormRef}
+                                    userLogin={userLogin}
+                                    token={token}
+                                    password={password} //TODO: Security!
+                                    minAppRef={this.minAppRef}
+                                    openLogInForm={this.openLogInForm}
+                                    refreshToken={this.refreshToken}
+                                />
+                                :
+                                <AdminMainContent/>
+                        }
+
+                        {
+                            showHint
+                            ?
+                            <Hint
+                                hintText={this.getHintText()}
+                                x={hintX}
+                                y={hintY}
+                                hintHPos={this.getHintText().length > 8 ? hintHPos : 8}
+                                hintVPos={hintVPos}
+                            />
+                            : null
+                        }
+
+                    </section>
+
+                </Router>
+            </div>
+        );
     }
 
     getHintText = () => {
@@ -325,6 +426,8 @@ class App extends Component {
                 return 'К списку помещений';
             case 'logIn':
                 return this.state.userName === '' ? 'Войти' : 'Мой аккаунт';
+            case 'invalidLogIn':
+                return 'Что-то пошло не так. Возможно, Вы неверно ввели адрес электронной почты или пароль';
             default:
                 return '';
         }
@@ -353,112 +456,14 @@ class App extends Component {
         })
     };
 
-    render() {
-        const scroll = !window.screenTop && !window.screenY ? 'hidden' : 'scroll';
-        return (
-            <div style={{overflowX: {scroll}}}>
-                <Router>
-
-                    <header style={{width: this.state.headerWidth}}>
-
-                        <button
-                            id='open-log-in-button'
-                            onClick={() => this.openLogInForm()}
-                            onMouseEnter={e => this.showHint(e, 'logIn')}
-                            onMouseLeave={() => this.closeHint()}
-                        >
-                        </button>
-
-                        {this.state.logInFormVisible
-                            ?
-                            <LogIn
-                                closeLogInForm={this.closeLogInForm}
-                                storeResponse={this.storeResponse}
-                                userName={this.state.userName}
-                                logOut={this.logOut}
-                            />
-                            :
-                            null
-                        }
-
-                    </header>
-
-                    <nav>
-                        <div
-                            id='sibur-logo-container'
-                        >
-                            <img
-                                src='http://siburarenda.publicvm.com/img/logo.svg'
-                                alt='logo'
-                            />
-                        </div>
-                        <ul>
-                            {
-                                this.state.role.includes('USER')
-                                    ?
-                                    <ClientNavList
-                                        openApplicationForm={this.openApplicationForm}
-                                        showHint={this.showHint}
-                                        closeHint={this.closeHint}
-                                        appFormRef={this.appFormRef}
-                                    />
-                                    :
-                                    <AdminNavList/>
-                            }
-                        </ul>
-                        <div
-                            id='triangle'
-                        >
-                        </div>
-                    </nav>
-
-                    <section id='main-content'>
-                        {
-                            this.state.role.includes('USER')
-                                ?
-                                <ClientMainContent
-                                    logInFormVisible={this.state.logInFormVisible}
-                                    applicationFormVisible={this.state.applicationFormVisible}
-                                    closeLogInForm={this.closeLogInForm}
-                                    closeAppWindow={this.closeApplicationForm}
-                                    showHint={this.showHint}
-                                    closeHint={this.closeHint}
-                                    roomArray={this.state.roomArray}
-                                    appFormRef={this.appFormRef}
-                                    userLogin={this.state.userLogin}
-                                    token={this.state.token}
-                                    minAppRef={this.minAppRef}
-                                />
-                                :
-                                <AdminMainContent/>
-                        }
-
-                        {this.state.showHint
-                            ?
-                            <Hint
-                                hintText={this.getHintText()}
-                                x={this.state.hintX}
-                                y={this.state.hintY}
-                                hintHPos={this.getHintText().length > 8 ? this.state.hintHPos : 8}
-                                hintVPos={this.state.hintVPos}
-                            />
-                            : null
-                        }
-
-                    </section>
-
-                </Router>
-            </div>
-        );
-    }
-
     logOut = () => {
         this.setState({
             userLogin: '',
             userName: '',
             token: '',
+            password: '', //TODO: Security!
             role: ['USER']
-        })
+        });
     };
 
     openApplicationForm = () => {
@@ -475,8 +480,7 @@ class App extends Component {
     };
 
     closeApplicationForm = () => {
-        sessionStorage.removeItem('appFormState');
-        sessionStorage.removeItem('calendarState');
+        connectDatabase(['ApplicationForm', 'Calendar', 'MinifiedApplicationForm'], 'delete');
         this.setState({
             applicationFormVisible: false
         })
@@ -488,14 +492,21 @@ class App extends Component {
         })
     };
 
-    storeResponse = (userName, userLogin, token, roles) => {
+    storeResponse = (userName, userLogin, token, roles, password) => {
         this.setState({
             userLogin: userLogin,
             userName: userName,
             token: token,
-            role: roles
+            role: roles,
+            password: password //TODO: Security!
         })
     };
+
+    refreshToken = (response) => {
+        this.setState({
+            token: JSON.parse(response).token
+        })
+    }
 }
 
 export default App;

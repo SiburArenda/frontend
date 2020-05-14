@@ -7,6 +7,7 @@ import {Link} from "react-router-dom";
 import MinifiedApplicationForm from "./MinifiedApplicationForm";
 import Dropdown from "../Dropdown";
 import moment from "moment";
+import {connectServer, checkToken} from "../../functional/ServerConnect";
 
 class FromTo {
     constructor(from, to) {
@@ -17,6 +18,36 @@ class FromTo {
 }
 
 class ApplicationForm extends Component {
+
+    handleResize = () => {
+
+        const screenW = window.innerWidth;
+        const screenH = window.innerHeight;
+        const {x, y} = this.state;
+
+        if (x + 50 > screenW) {
+            this.setState({
+                x: 380
+            });
+        }
+
+        if (y + 50 > screenH){
+            this.setState({
+                y: 40
+            });
+        }
+
+    };
+
+
+    componentDidMount() {
+        window.addEventListener('resize', this.handleResize, false)
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener('resize', this.handleResize, false)
+    }
+
     constructor(props) {
         super(props);
 
@@ -443,7 +474,7 @@ class ApplicationForm extends Component {
 
         const nameProblems = eventName === '';
 
-        const viewersNeeded = ['MATCH', 'PARTY'].includes(eventType) || viewersExpected;
+        const viewersNeeded = ['MATCH', 'PARTY'].includes(eventType) || viewersExpected === 'true';
         const viewersProblems = viewersNeeded && +viewers === 0;
 
         const noDays = selectedDays.length === 0;
@@ -455,7 +486,7 @@ class ApplicationForm extends Component {
             if (bad) {
                 const correlatedDay = selectedDays[i];
                 const split = correlatedDay.split(/ /g);
-                const monthNum = moment.monthsShort().indexOf(split[1]);
+                const monthNum = moment.monthsShort().indexOf(split[1] + 1);
                 badTimings += `& ${split[2]}.${monthNum}.${split[3]}`;
             }
         }
@@ -509,19 +540,24 @@ class ApplicationForm extends Component {
 
             console.log(toSend);
 
-            // const request = new XMLHttpRequest();
-            //
-            // request.onreadystatechange = function () {
-            //     if (request.readyState === 4) {
-            //         console.log('OK!');
-            //     }
-            // };
+            checkToken(this.props.refreshToken, this.props.token);
 
-            // request.open('POST', 'http://siburarenda.publicvm.com/api/user/order', true);
-            // request.setRequestHeader('Authorization', 'Bearer_' + this.props.token);
-            // request.setRequestHeader('Content-Type', 'application/json');
-            // request.send(toSend)
+            const headers = [
+                {name: 'Authorization', value: 'Bearer_' + this.props.token},
+                {name: 'Content-Type', value: 'application/json'}
+            ];
+            connectServer(
+                toSend,
+                this.onConnect,
+                'post',
+                headers,
+                '/api/user/order');
         }
+    };
+
+    onConnect = (responseText) => {
+        console.log(responseText);
+        this.props.newApplication(true);
     };
 
     dateTimeConstruction = (datesArray, timesArray) => {
@@ -631,8 +667,8 @@ class ApplicationForm extends Component {
     dragForm = (e) => {
         if (this.state.dragged) {
             this.setState({
-                x: +e.screenX - this.state.offsetX + 'px',
-                y: +e.screenY - this.state.offsetY + 'px'
+                x: +e.screenX - this.state.offsetX,
+                y: +e.screenY - this.state.offsetY
             });
         }
     };
@@ -765,7 +801,7 @@ class ApplicationForm extends Component {
 
     minimize = () => {
         this.props.closeHint();
-        sessionStorage.setItem('calendarState', JSON.stringify(this.calendarRef.current.state))
+        sessionStorage.setItem('calendarState', JSON.stringify(this.calendarRef.current.state));
         this.setState({
             minimized: true
         });
@@ -862,7 +898,9 @@ ApplicationForm.propTypes = {
     showHint: PropTypes.func.isRequired,
     closeHint: PropTypes.func.isRequired,
     roomArray: PropTypes.array.isRequired,
-    minAppRef: PropTypes.object.isRequired
+    minAppRef: PropTypes.object.isRequired,
+    newApplication: PropTypes.func.isRequired,
+    refreshToken: PropTypes.func.isRequired
 };
 
 export default ApplicationForm;

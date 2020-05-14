@@ -85,7 +85,7 @@ class Calendar extends React.Component {
 
     month = () => {
         const monthInd = this.state.dateContext.format("M");
-        return this.months[+monthInd];
+        return this.months[+monthInd - 1];
     };
 
     daysInMonth = () => this.state.dateContext.daysInMonth();
@@ -475,7 +475,7 @@ class Calendar extends React.Component {
         const day = selectedDays[currentlyManagedDayIndex];
         const split = day.split(' ');
         const d = this.leadZero(+split[2]);
-        const m = this.leadZero(moment.monthsShort().indexOf(split[1]));
+        const m = this.leadZero(moment.monthsShort().indexOf(split[1]) + 1);
         const y = split[3];
         return `${d}.${m}.${y}`
     };
@@ -533,7 +533,7 @@ class Calendar extends React.Component {
 
     closeTimeSettings = () => {
         this.setState({
-            timeSelectDialogue: null
+            showTimeSelect: false
         })
     };
 

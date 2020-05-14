@@ -3,6 +3,35 @@ import PropTypes from 'prop-types';
 
 class MinifiedApplicationForm extends Component {
 
+    handleResize = () => {
+
+        const screenW = window.innerWidth;
+        const screenH = window.innerHeight;
+        const {x, y} = this.state;
+
+        if (x + 50 > screenW) {
+            this.setState({
+                x: 380
+            });
+        }
+
+        if (y + 50 > screenH){
+            this.setState({
+                y: 40
+            });
+        }
+
+    };
+
+
+    componentDidMount() {
+        window.addEventListener('resize', this.handleResize, false)
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener('resize', this.handleResize, false)
+    }
+
     constructor(props) {
         super(props);
 
@@ -85,8 +114,8 @@ class MinifiedApplicationForm extends Component {
     dragForm = (e) => {
         if (this.state.dragged) {
             this.setState({
-                x: (+e.screenX - this.state.offsetX) + 'px',
-                y: (+e.screenY - this.state.offsetY) + 'px'
+                x: +e.screenX - this.state.offsetX,
+                y: +e.screenY - this.state.offsetY
             });
         }
     };
@@ -108,8 +137,8 @@ MinifiedApplicationForm.propTypes = {
     closeHint: PropTypes.func.isRequired,
     closeAppWindow: PropTypes.func.isRequired,
     expand: PropTypes.func.isRequired,
-    posX: PropTypes.string.isRequired,
-    posY: PropTypes.string.isRequired
+    posX: PropTypes.number.isRequired,
+    posY: PropTypes.number.isRequired
 };
 
 export default MinifiedApplicationForm;

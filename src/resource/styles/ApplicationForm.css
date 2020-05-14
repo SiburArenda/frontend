@@ -132,22 +132,6 @@ p, label{
     user-select: none;
 }
 
-.warning{
-    margin-left: 8px;
-    background: center no-repeat url("../img/warning.svg");
-    width: 17px;
-    height: 17px;
-    cursor: help;
-}
-
-.empty-warning{
-    margin-left: 8px;
-    background: transparent;
-    width: 17px;
-    height: 17px;
-    cursor: default;
-}
-
 .room-info{
     background: center no-repeat url("../img/roomInfo.svg");
     width: 15px;
