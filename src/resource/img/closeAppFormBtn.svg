@@ -15,7 +15,7 @@
    version="1.1"
    id="svg8"
    inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
-   sodipodi:docname="inksc2.svg">
+   sodipodi:docname="closeAppFormBtn.svg">
   <defs
      id="defs2" />
   <sodipodi:namedview
@@ -25,9 +25,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="2"
-     inkscape:cx="-187.47994"
-     inkscape:cy="91.536003"
+     inkscape:zoom="1"
+     inkscape:cx="-132.06883"
+     inkscape:cy="-101.27777"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -67,44 +67,6 @@
      inkscape:groupmode="layer"
      id="layer1"
      transform="translate(0,-291.70832)">
-    <rect
-       style="opacity:1;fill:none;fill-opacity:1;stroke:#ff00ff;stroke-width:0.13229166;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:fill markers stroke"
-       id="rect1382"
-       width="5.2916665"
-       height="5.2916665"
-       x="-84.005135"
-       y="305.27957"
-       inkscape:export-filename="C:\My\Projects\Web\sibur_arenda_1.0\src\resource\img\appFormMinBtn.png"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96" />
-    <path
-       style="opacity:1;fill:#efefef;fill-opacity:1;stroke:none;stroke-width:0.66145831;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:fill markers stroke"
-       d="m -91.495631,304.94643 a 0.53009016,0.53009016 0 0 0 0.74967,1.8e-4 l 1.740506,-1.74129 0.749486,-0.74987 -0.749834,-0.74947 -1.741318,-1.74051 a 0.53009016,0.53009016 0 0 0 -0.749668,-1.8e-4 0.53009016,0.53009016 0 0 0 2.23e-4,0.74965 l 1.741317,1.74051 -1.740506,1.74132 a 0.53009016,0.53009016 0 0 0 2.22e-4,0.74966 z"
-       id="rect831"
-       inkscape:connector-curvature="0"
-       inkscape:transform-center-x="1.6979872"
-       inkscape:transform-center-y="0.00050175847"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96"
-       inkscape:export-filename="C:\My\Projects\Web\sibur_arenda_1.0\src\resource\img\nextMonthIcon.png" />
-    <path
-       inkscape:export-ydpi="96"
-       inkscape:export-xdpi="96"
-       inkscape:transform-center-y="0.00050175847"
-       inkscape:transform-center-x="-1.6979872"
-       inkscape:connector-curvature="0"
-       id="path829"
-       d="m -94.365395,305.12833 a 0.53009016,0.53009016 0 0 1 -0.74967,1.8e-4 l -1.740506,-1.74129 -0.749486,-0.74987 0.749834,-0.74947 1.741318,-1.74051 a 0.53009016,0.53009016 0 0 1 0.749668,-1.8e-4 0.53009016,0.53009016 0 0 1 -2.23e-4,0.74965 l -1.741317,1.74051 1.740506,1.74132 a 0.53009016,0.53009016 0 0 1 -2.22e-4,0.74966 z"
-       style="opacity:1;fill:#efefef;fill-opacity:1;stroke:none;stroke-width:0.66145831;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:fill markers stroke"
-       inkscape:export-filename="C:\My\Projects\Web\sibur_arenda_1.0\src\resource\img\prevMonthIcon.png" />
-    <path
-       style="opacity:1;fill:#16a4ab;fill-opacity:1;stroke:none;stroke-width:0.66145837;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:fill markers stroke"
-       d="m -81.454286,295.84146 a 0.39755972,0.39755972 0 0 0 -0.275171,0.11626 0.39755972,0.39755972 0 0 0 0,0.56236 l 1.306095,1.30533 -1.305322,1.30609 a 0.39755972,0.39755972 0 0 0 0,0.56197 0.39755972,0.39755972 0 0 0 0.56236,3.9e-4 l 1.305319,-1.3057 -3.97e-4,-3.9e-4 h 3.97e-4 v 3.9e-4 l 1.304933,1.3057 a 0.39755972,0.39755972 0 0 0 0.562358,-3.9e-4 0.39755972,0.39755972 0 0 0 0,-0.56197 l -1.305322,-1.30609 1.306096,-1.30533 a 0.39755972,0.39755972 0 0 0 0,-0.56236 0.39755972,0.39755972 0 0 0 -0.56197,4.1e-4 l -1.306095,1.30532 h -3.97e-4 l -1.305708,-1.30532 a 0.39755972,0.39755972 0 0 0 -0.287186,-0.11667 z"
-       id="path822"
-       inkscape:connector-curvature="0"
-       inkscape:export-filename="C:\My\Projects\Web\sibur_arenda_1.0\src\resource\img\removeRoomBtn.png"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96" />
     <path
        inkscape:export-ydpi="96"
        inkscape:export-xdpi="96"
@@ -113,92 +75,5 @@
        id="path823"
        d="m 0.5224946,291.70838 a 0.53007926,0.53007926 0 0 0 -0.366895,0.15502 0.53007926,0.53007926 0 0 0 0,0.74981 l 1.741459,1.74044 -1.740428,1.74145 a 0.53007926,0.53007926 0 0 0 0,0.74929 0.53007926,0.53007926 0 0 0 0.749813,5.2e-4 l 1.740424,-1.74093 -5.29e-4,-5.2e-4 h 5.29e-4 v 5.2e-4 l 1.73991,1.74093 a 0.53007926,0.53007926 0 0 0 0.74981,-5.2e-4 0.53007926,0.53007926 0 0 0 0,-0.74929 l -1.740428,-1.74145 1.74146,-1.74044 a 0.53007926,0.53007926 0 0 0 0,-0.74981 0.53007926,0.53007926 0 0 0 -0.749293,5.4e-4 l -1.741459,1.74043 h -5.29e-4 l -1.740943,-1.74043 a 0.53007926,0.53007926 0 0 0 -0.382914,-0.15556 z"
        style="opacity:1;fill:#efefef;fill-opacity:1;stroke:none;stroke-width:0.66145837;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:fill markers stroke" />
-    <path
-       inkscape:export-filename="C:\My\Projects\Web\sibur_arenda_1.0\src\resource\img\nextMonthIconHover.png"
-       inkscape:export-ydpi="96"
-       inkscape:export-xdpi="96"
-       inkscape:transform-center-y="0.00050175847"
-       inkscape:transform-center-x="1.6979872"
-       inkscape:connector-curvature="0"
-       id="path825"
-       d="m -94.357472,297.90376 a 0.53009016,0.53009016 0 0 0 0.74967,1.8e-4 l 1.740506,-1.74129 0.749486,-0.74987 -0.749834,-0.74947 -1.741318,-1.74051 a 0.53009016,0.53009016 0 0 0 -0.749668,-1.8e-4 0.53009016,0.53009016 0 0 0 2.23e-4,0.74965 l 1.741317,1.74051 -1.740506,1.74132 a 0.53009016,0.53009016 0 0 0 2.22e-4,0.74966 z"
-       style="opacity:1;fill:#16a4ab;fill-opacity:1;stroke:none;stroke-width:0.66145831;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:fill markers stroke" />
-    <path
-       inkscape:export-filename="C:\My\Projects\Web\sibur_arenda_1.0\src\resource\img\prevMonthIconHover.png"
-       style="opacity:1;fill:#16a4ab;fill-opacity:1;stroke:none;stroke-width:0.66145831;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:fill markers stroke"
-       d="m -86.367485,297.82107 a 0.53009016,0.53009016 0 0 1 -0.74967,1.8e-4 l -1.740506,-1.74129 -0.749486,-0.74987 0.749834,-0.74947 1.741318,-1.74051 a 0.53009016,0.53009016 0 0 1 0.749668,-1.8e-4 0.53009016,0.53009016 0 0 1 -2.23e-4,0.74965 l -1.741317,1.74051 1.740506,1.74132 a 0.53009016,0.53009016 0 0 1 -2.22e-4,0.74966 z"
-       id="path827"
-       inkscape:connector-curvature="0"
-       inkscape:transform-center-x="-1.6979872"
-       inkscape:transform-center-y="0.00050175847"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96" />
-    <path
-       style="opacity:1;fill:#16a4ab;fill-opacity:1;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m -4.3714348,295.39733 c -0.07416,-0.0959 -0.173537,-0.14943 -0.276951,-0.14946 l -4.4951541,-3.6e-4 c -0.219766,1.3e-4 -0.397899,0.23727 -0.397997,0.52984 -2.04e-4,0.29286 0.178012,0.53045 0.397994,0.53058 l 4.4954061,-6.3e-4 c 0.219978,6e-5 0.398317,-0.23736 0.398267,-0.53021 -1.9e-4,-0.1433 -0.04395,-0.28039 -0.121315,-0.38003 z"
-       id="path1377"
-       inkscape:connector-curvature="0"
-       sodipodi:nodetypes="ccccccccc"
-       inkscape:export-filename="C:\My\Projects\Web\sibur_arenda_1.0\src\resource\img\appFormMinBtn.png"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96" />
-    <path
-       inkscape:export-ydpi="96"
-       inkscape:export-xdpi="96"
-       inkscape:export-filename="C:\My\Projects\Web\sibur_arenda_1.0\src\resource\img\appFormMinBtnHvr.png"
-       style="opacity:1;fill:#16a4ab;fill-opacity:1;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m -61.407019,302.47015 c -0.07416,-0.0959 -0.173537,-0.14943 -0.276951,-0.14946 l -4.495154,-3.6e-4 c -0.219766,1.3e-4 -0.397899,0.23727 -0.397997,0.52984 -2.04e-4,0.29286 0.178012,0.53045 0.397994,0.53058 l 4.495406,-6.3e-4 c 0.219978,6e-5 0.398317,-0.23736 0.398267,-0.53021 -1.9e-4,-0.1433 -0.04395,-0.28039 -0.121315,-0.38003 z"
-       id="path891"
-       inkscape:connector-curvature="0"
-       sodipodi:nodetypes="ccccccccc" />
-    <path
-       style="opacity:1;fill:#efefef;fill-opacity:1;stroke:none;stroke-width:0.13229166;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:fill markers stroke"
-       d="m -87.273742,313.46686 v 10e-4 a 0.53015321,0.53015321 0 0 0 -0.03721,0.001 0.53015321,0.53015321 0 0 0 -0.05271,0.006 0.53015321,0.53015321 0 0 0 -0.05168,0.0119 0.53015321,0.53015321 0 0 0 -0.05013,0.0165 0.53015321,0.53015321 0 0 0 -0.04857,0.0217 0.53015321,0.53015321 0 0 0 -0.04599,0.0263 0.53015321,0.53015321 0 0 0 -0.04289,0.031 0.53015321,0.53015321 0 0 0 -0.03979,0.0346 0.53015321,0.53015321 0 0 0 -0.03617,0.0393 0.53015321,0.53015321 0 0 0 -0.03204,0.0419 0.53015321,0.53015321 0 0 0 -0.0279,0.0455 0.53015321,0.53015321 0 0 0 -0.02325,0.0475 0.53015321,0.53015321 0 0 0 -0.01809,0.0496 0.53015321,0.53015321 0 0 0 -0.01292,0.0517 0.53015321,0.53015321 0 0 0 -0.0078,0.0522 0.53015321,0.53015321 0 0 0 -0.0031,0.0527 v 0.5302 3.70159 a 0.53015321,0.53015321 0 0 0 0.0016,0.0372 0.53015321,0.53015321 0 0 0 0.0062,0.0527 0.53015321,0.53015321 0 0 0 0.01189,0.0517 0.53015321,0.53015321 0 0 0 0.01654,0.0501 0.53015321,0.53015321 0 0 0 0.0217,0.0486 0.53015321,0.53015321 0 0 0 0.02636,0.046 0.53015321,0.53015321 0 0 0 0.03101,0.0429 0.53015321,0.53015321 0 0 0 0.03462,0.0398 0.53015321,0.53015321 0 0 0 0.03876,0.0362 0.53015321,0.53015321 0 0 0 0.04238,0.032 0.53015321,0.53015321 0 0 0 0.04496,0.0279 0.53015321,0.53015321 0 0 0 0.04806,0.0233 0.53015321,0.53015321 0 0 0 0.04961,0.0181 0.53015321,0.53015321 0 0 0 0.05168,0.0129 0.53015321,0.53015321 0 0 0 0.05219,0.008 0.53015321,0.53015321 0 0 0 0.05271,0.003 h 0.530199 3.171383 0.531752 a 0.53015321,0.53015321 0 0 0 0.03772,-0.002 0.53015321,0.53015321 0 0 0 0.05271,-0.006 0.53015321,0.53015321 0 0 0 0.05168,-0.0119 0.53015321,0.53015321 0 0 0 0.05012,-0.0165 0.53015321,0.53015321 0 0 0 0.04857,-0.0217 0.53015321,0.53015321 0 0 0 0.04599,-0.0264 0.53015321,0.53015321 0 0 0 0.04289,-0.031 0.53015321,0.53015321 0 0 0 0.03979,-0.0346 0.53015321,0.53015321 0 0 0 0.03617,-0.0388 0.53015321,0.53015321 0 0 0 0.03204,-0.0424 0.53015321,0.53015321 0 0 0 0.0279,-0.0455 0.53015321,0.53015321 0 0 0 0.02274,-0.0476 0.53015321,0.53015321 0 0 0 0.01809,-0.0496 0.53015321,0.53015321 0 0 0 0.01344,-0.0517 0.53015321,0.53015321 0 0 0 0.0078,-0.0522 0.53015321,0.53015321 0 0 0 5.16e-4,-0.0103 v -0.0884 -0.48421 -3.17138 -0.52968 a 0.53015321,0.53015321 0 0 0 0,-5.2e-4 0.53015321,0.53015321 0 0 0 -10e-4,-0.0372 0.53015321,0.53015321 0 0 0 -0.0067,-0.0527 0.53015321,0.53015321 0 0 0 -0.01137,-0.0517 0.53015321,0.53015321 0 0 0 -0.01654,-0.0501 0.53015321,0.53015321 0 0 0 -0.0217,-0.0486 0.53015321,0.53015321 0 0 0 -0.02635,-0.046 0.53015321,0.53015321 0 0 0 -0.03101,-0.0429 0.53015321,0.53015321 0 0 0 -0.03514,-0.0398 0.53015321,0.53015321 0 0 0 -0.03876,-0.0362 0.53015321,0.53015321 0 0 0 -0.04186,-0.032 0.53015321,0.53015321 0 0 0 -0.04548,-0.0279 0.53015321,0.53015321 0 0 0 -0.04754,-0.0227 0.53015321,0.53015321 0 0 0 -0.04961,-0.0186 0.53015321,0.53015321 0 0 0 -0.05168,-0.0129 0.53015321,0.53015321 0 0 0 -0.05219,-0.008 0.53015321,0.53015321 0 0 0 -0.05323,-0.003 h -0.529685 -3.701066 a 0.53015321,0.53015321 0 0 0 -5.16e-4,0 z m 0.530199,1.06092 h 3.171383 v 3.17138 h -1.745112 c 0.269126,-0.23358 0.245512,-0.57256 0.237712,-0.84439 0.09355,0.045 0.280847,0.27887 0.319876,0.40359 0.09807,-0.72606 -0.70862,-1.71569 -1.062985,-1.80299 0.06415,0.18078 0.216541,0.50112 0.122992,1.17667 0.121854,-0.011 0.237223,0.0567 0.248563,0.0987 0.13517,0.5002 -0.630021,0.76553 -1.292429,0.96841 z"
-       id="path951"
-       inkscape:connector-curvature="0"
-       inkscape:export-filename="C:\My\Projects\Web\sibur_arenda_1.0\src\resource\img\expandAppFormBtn.png"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96" />
-    <path
-       inkscape:connector-curvature="0"
-       id="path981"
-       d="m -80.468392,312.95237 v 0.001 a 0.53015321,0.53015321 0 0 0 -0.03721,10e-4 0.53015321,0.53015321 0 0 0 -0.05271,0.006 0.53015321,0.53015321 0 0 0 -0.05168,0.0119 0.53015321,0.53015321 0 0 0 -0.05013,0.0165 0.53015321,0.53015321 0 0 0 -0.04857,0.0217 0.53015321,0.53015321 0 0 0 -0.04599,0.0263 0.53015321,0.53015321 0 0 0 -0.04289,0.031 0.53015321,0.53015321 0 0 0 -0.03979,0.0346 0.53015321,0.53015321 0 0 0 -0.03617,0.0393 0.53015321,0.53015321 0 0 0 -0.03204,0.0419 0.53015321,0.53015321 0 0 0 -0.0279,0.0455 0.53015321,0.53015321 0 0 0 -0.02325,0.0475 0.53015321,0.53015321 0 0 0 -0.01809,0.0496 0.53015321,0.53015321 0 0 0 -0.01292,0.0517 0.53015321,0.53015321 0 0 0 -0.0078,0.0522 0.53015321,0.53015321 0 0 0 -0.0031,0.0527 v 0.5302 3.70159 a 0.53015321,0.53015321 0 0 0 0.0016,0.0372 0.53015321,0.53015321 0 0 0 0.0062,0.0527 0.53015321,0.53015321 0 0 0 0.01189,0.0517 0.53015321,0.53015321 0 0 0 0.01654,0.0501 0.53015321,0.53015321 0 0 0 0.0217,0.0486 0.53015321,0.53015321 0 0 0 0.02636,0.046 0.53015321,0.53015321 0 0 0 0.03101,0.0429 0.53015321,0.53015321 0 0 0 0.03462,0.0398 0.53015321,0.53015321 0 0 0 0.03876,0.0362 0.53015321,0.53015321 0 0 0 0.04238,0.032 0.53015321,0.53015321 0 0 0 0.04496,0.0279 0.53015321,0.53015321 0 0 0 0.04806,0.0233 0.53015321,0.53015321 0 0 0 0.04961,0.0181 0.53015321,0.53015321 0 0 0 0.05168,0.0129 0.53015321,0.53015321 0 0 0 0.05219,0.008 0.53015321,0.53015321 0 0 0 0.05271,0.003 h 0.530199 3.171383 0.531752 a 0.53015321,0.53015321 0 0 0 0.03772,-0.002 0.53015321,0.53015321 0 0 0 0.05271,-0.006 0.53015321,0.53015321 0 0 0 0.05168,-0.0119 0.53015321,0.53015321 0 0 0 0.05012,-0.0165 0.53015321,0.53015321 0 0 0 0.04857,-0.0217 0.53015321,0.53015321 0 0 0 0.04599,-0.0264 0.53015321,0.53015321 0 0 0 0.04289,-0.031 0.53015321,0.53015321 0 0 0 0.03979,-0.0346 0.53015321,0.53015321 0 0 0 0.03617,-0.0388 0.53015321,0.53015321 0 0 0 0.03204,-0.0424 0.53015321,0.53015321 0 0 0 0.0279,-0.0455 0.53015321,0.53015321 0 0 0 0.02274,-0.0476 0.53015321,0.53015321 0 0 0 0.01809,-0.0496 0.53015321,0.53015321 0 0 0 0.01344,-0.0517 0.53015321,0.53015321 0 0 0 0.0078,-0.0522 0.53015321,0.53015321 0 0 0 5.16e-4,-0.0103 v -0.0884 -0.48421 -3.17138 -0.52968 a 0.53015321,0.53015321 0 0 0 0,-5.2e-4 0.53015321,0.53015321 0 0 0 -0.001,-0.0372 0.53015321,0.53015321 0 0 0 -0.0067,-0.0527 0.53015321,0.53015321 0 0 0 -0.01137,-0.0517 0.53015321,0.53015321 0 0 0 -0.01654,-0.0501 0.53015321,0.53015321 0 0 0 -0.0217,-0.0486 0.53015321,0.53015321 0 0 0 -0.02635,-0.046 0.53015321,0.53015321 0 0 0 -0.03101,-0.0429 0.53015321,0.53015321 0 0 0 -0.03514,-0.0398 0.53015321,0.53015321 0 0 0 -0.03876,-0.0362 0.53015321,0.53015321 0 0 0 -0.04186,-0.032 0.53015321,0.53015321 0 0 0 -0.04548,-0.0279 0.53015321,0.53015321 0 0 0 -0.04754,-0.0227 0.53015321,0.53015321 0 0 0 -0.04961,-0.0186 0.53015321,0.53015321 0 0 0 -0.05168,-0.0129 0.53015321,0.53015321 0 0 0 -0.05219,-0.008 0.53015321,0.53015321 0 0 0 -0.05323,-0.003 h -0.529685 -3.701066 a 0.53015321,0.53015321 0 0 0 -5.16e-4,0 z m 0.530199,1.06092 h 3.171383 v 3.17138 h -1.745112 c 0.269126,-0.23358 0.245512,-0.57256 0.237712,-0.84439 0.09355,0.045 0.280847,0.27887 0.319876,0.40359 0.09807,-0.72606 -0.70862,-1.71569 -1.062985,-1.80299 0.06415,0.18078 0.216541,0.50112 0.122992,1.17667 0.121854,-0.011 0.237223,0.0567 0.248563,0.0987 0.13517,0.5002 -0.630021,0.76553 -1.292429,0.96841 z"
-       style="opacity:1;fill:#16a4ab;fill-opacity:1;stroke:none;stroke-width:0.13229166;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:fill markers stroke"
-       inkscape:export-filename="C:\My\Projects\Web\sibur_arenda_1.0\src\resource\img\expandAppFormBtnHvr.png"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96" />
-    <rect
-       style="opacity:1;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.26458332;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:fill markers stroke"
-       id="rect835"
-       width="5.285255"
-       height="5.285255"
-       x="-63.759178"
-       y="311.36069" />
-    <path
-       style="fill:none;stroke:#efefef;stroke-width:0.5291667;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m -57.518679,314.92702 0.963338,0.7736 1.151184,-1.58863"
-       id="path837"
-       inkscape:connector-curvature="0"
-       sodipodi:nodetypes="ccc"
-       inkscape:export-filename="C:\My\Projects\Web\sibur_arenda_1.0\src\resource\img\tick.png"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96" />
-    <path
-       sodipodi:nodetypes="ccc"
-       inkscape:connector-curvature="0"
-       id="path839"
-       d="m -55.06314,315.1258 0.963338,0.7736 1.151184,-1.58863"
-       style="fill:none;stroke:#16a4ab;stroke-width:0.5291667;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       inkscape:export-filename="C:\My\Projects\Web\sibur_arenda_1.0\src\resource\img\tickHvr.png"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96" />
-    <path
-       style="opacity:1;fill:#16a4ab;fill-opacity:1;stroke:none;stroke-width:0.66145837;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:fill markers stroke"
-       d="m -14.029589,279.14067 a 0.53007926,0.53007926 0 0 0 -0.366895,0.15502 0.53007926,0.53007926 0 0 0 0,0.74981 l 1.741459,1.74044 -1.740428,1.74145 a 0.53007926,0.53007926 0 0 0 0,0.74929 0.53007926,0.53007926 0 0 0 0.749813,5.2e-4 l 1.740424,-1.74093 -5.29e-4,-5.2e-4 h 5.29e-4 v 5.2e-4 l 1.73991,1.74093 a 0.53007926,0.53007926 0 0 0 0.7498103,-5.2e-4 0.53007926,0.53007926 0 0 0 0,-0.74929 l -1.7404283,-1.74145 1.7414603,-1.74044 a 0.53007926,0.53007926 0 0 0 0,-0.74981 0.53007926,0.53007926 0 0 0 -0.7492933,5.4e-4 l -1.741459,1.74043 h -5.29e-4 l -1.740943,-1.74043 a 0.53007926,0.53007926 0 0 0 -0.382914,-0.15556 z"
-       id="path1964"
-       inkscape:connector-curvature="0"
-       inkscape:export-filename="C:\My\Projects\Web\sibur_arenda_1.0\src\resource\img\removeRoomBtnHover.png"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96" />
   </g>
 </svg>

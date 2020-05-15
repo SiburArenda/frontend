@@ -367,7 +367,7 @@ input[type='email']{
 }
 
 .waiting{
-    background: center no-repeat url("../img/waiting.svg");
+    background: center no-repeat url("../img/waiting.png");
     width: 24px;
     height: 24px;
 }

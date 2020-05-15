@@ -15,7 +15,7 @@
    version="1.1"
    id="svg8"
    inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
-   sodipodi:docname="inksc2.svg">
+   sodipodi:docname="backToRooms.svg">
   <defs
      id="defs2">
     <inkscape:path-effect
@@ -40,9 +40,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="11.313708"
-     inkscape:cx="28.97811"
-     inkscape:cy="11.904763"
+     inkscape:zoom="2.828427"
+     inkscape:cx="253.84793"
+     inkscape:cy="8.4431295"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -93,16 +93,6 @@
        x="0"
        y="291.70834" />
     <rect
-       style="opacity:1;fill:none;fill-opacity:1;stroke:none;stroke-width:0.79374999;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:fill markers stroke"
-       id="rect864"
-       width="5.2916532"
-       height="5.2916532"
-       x="-29.279379"
-       y="282.54099"
-       inkscape:export-filename="C:\My\Projects\Web\sibur_arenda_1.0\src\resource\img\search.png"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96" />
-    <rect
        style="opacity:1;fill:none;fill-opacity:1;stroke:none;stroke-width:0.21166667;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:fill markers stroke"
        id="rect992"
        width="3.96875"
@@ -110,243 +100,9 @@
        x="15.154182"
        y="273.85468" />
     <path
-       style="opacity:1;fill:#da6509;fill-opacity:1;stroke:none;stroke-width:0.52916664;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:fill markers stroke"
-       d="m 17.121511,274.03343 -0.07439,0.0536 c 0.278869,0.38865 0.162463,0.83732 -0.18442,1.14451 -0.01906,0.041 -0.04458,0.0789 -0.08369,0.10691 -0.03947,0.0283 -0.08413,0.041 -0.129404,0.0458 -0.401431,0.22834 -0.862436,0.19473 -1.140611,-0.19296 l -0.07516,0.0536 0.865532,1.20648 -0.03254,-0.0479 0.469572,-0.33628 c -0.116608,-0.20583 -0.06878,-0.46796 0.127853,-0.60905 0.196494,-0.14095 0.461942,-0.10381 0.619897,0.0722 l 0.469573,-0.3364 z m -0.109258,0.0784 -0.445551,0.32001 0.0217,-0.008 0.03099,0.0769 -0.03952,0.0171 -0.031,-0.0722 -0.54241,0.38899 0.05889,0.0528 -0.02944,0.0319 -0.06199,-0.0542 0.01473,-0.0171 -0.444777,0.31924 c 0.250836,0.34952 0.65472,0.39588 1.021281,0.2162 -0.06456,-0.0134 -0.124558,-0.0478 -0.165823,-0.10542 -0.01358,-0.0188 -0.01981,-0.0403 -0.02789,-0.0611 l -0.01084,-0.008 0.0047,-0.006 c -0.0058,-0.0179 -0.0096,-0.0351 -0.01162,-0.0536 l -0.0248,0.0286 -0.06509,-0.0572 0.0279,-0.0326 0.06199,0.0542 c -0.0077,-0.0923 0.02719,-0.18705 0.107706,-0.24485 0.08102,-0.0582 0.182658,-0.0609 0.268106,-0.0233 l -0.03254,-0.0775 0.04029,-0.0155 0.03409,0.079 -0.0372,0.0155 c 0.01659,0.007 0.03157,0.0169 0.04649,0.0279 l 0.0078,-0.002 0.007,0.0164 c 0.01606,0.0134 0.03363,0.0255 0.04649,0.0432 0.04142,0.0577 0.05543,0.12656 0.04727,0.19217 0.289026,-0.28978 0.37456,-0.68877 0.123205,-1.03907 z m -0.376588,0.42772 0.03409,0.079 -0.03952,0.0179 -0.03409,-0.0798 z m 0.05114,0.11936 0.03332,0.0798 -0.03874,0.0171 -0.03409,-0.0798 z m -0.588902,0.25571 0.06509,0.0566 -0.02944,0.0326 -0.06431,-0.0572 z m 0.550159,0.0319 c -0.04349,-0.007 -0.08952,0.002 -0.128629,0.0311 -0.07823,0.0561 -0.09565,0.1627 -0.03952,0.24097 0.05613,0.0782 0.162758,0.0957 0.240985,0.0396 0.07823,-0.0561 0.09565,-0.16274 0.03952,-0.241 -0.02806,-0.039 -0.06887,-0.0634 -0.112356,-0.0704 z m -0.4533,0.0543 0.06431,0.0572 -0.02867,0.0319 -0.06509,-0.0572 z m 1.816299,0.27275 -0.469572,0.33705 c 0.11544,0.2061 0.06754,0.47065 -0.128629,0.6114 -0.196069,0.14065 -0.460333,0.10014 -0.618348,-0.0751 l -0.471122,0.33785 0.832212,1.16 0.07516,-0.0542 h -7.75e-4 c -0.278751,-0.38849 -0.162158,-0.8373 0.184419,-1.14451 0.01908,-0.0404 0.04506,-0.0777 0.08369,-0.10542 0.03856,-0.0278 0.0821,-0.0397 0.126305,-0.045 0.182682,-0.10473 0.377586,-0.15822 0.562556,-0.14487 0.222366,0.016 0.429581,0.12332 0.581929,0.33552 v 7.7e-4 l 0.07439,-0.0534 z m -0.812066,0.19914 c -0.09347,-0.015 -0.193114,0.007 -0.276629,0.0658 -0.153043,0.10978 -0.192443,0.31034 -0.106932,0.4719 l 0.588127,-0.42237 c -0.05708,-0.0602 -0.126793,-0.10312 -0.204566,-0.11541 z m 0.261907,0.19604 -0.588128,0.42154 c 0.126013,0.13194 0.329377,0.15981 0.481971,0.0504 0.15242,-0.1092 0.1905,-0.3103 0.106157,-0.47189 z m 0.667164,0.52304 c -0.138464,-2e-5 -0.281388,0.0364 -0.419205,0.10473 0.06576,0.0134 0.126985,0.0485 0.168922,0.10691 0.01237,0.0172 0.017,0.037 0.0248,0.0557 l 0.01472,0.0124 -0.0062,0.007 c 0.0057,0.0173 0.0096,0.0341 0.01162,0.052 l 0.02635,-0.0294 0.06431,0.0572 -0.0279,0.0326 -0.06276,-0.0551 c 0.0088,0.0935 -0.02552,0.18877 -0.106933,0.2472 -0.08081,0.0582 -0.182015,0.0606 -0.267331,0.0233 l 0.03177,0.0758 -0.04029,0.0155 -0.03332,-0.079 0.03564,-0.015 c -0.01679,-0.007 -0.03221,-0.0166 -0.04727,-0.0279 l -0.0062,0.002 -0.0062,-0.015 c -0.01632,-0.0134 -0.03423,-0.0252 -0.04727,-0.0432 -0.04158,-0.0581 -0.05565,-0.127 -0.04727,-0.19294 -0.28811,0.28973 -0.373435,0.68773 -0.122429,1.03755 l 0.462598,-0.33241 -0.01782,0.0124 -0.02092,0.008 -0.03177,-0.0769 0.03952,-0.0171 0.031,0.0721 0.54241,-0.38899 -0.05812,-0.0527 0.02867,-0.0319 0.06277,0.0543 -0.0155,0.0171 0.445551,-0.31926 c -0.15733,-0.21763 -0.37519,-0.31834 -0.605964,-0.31839 z m -0.443226,0.19913 c -0.04349,-0.007 -0.08951,0.002 -0.128629,0.0311 -0.07823,0.0561 -0.09642,0.16275 -0.04029,0.24098 0.05613,0.0783 0.163532,0.0957 0.24176,0.0396 0.07823,-0.0561 0.09565,-0.16275 0.03952,-0.24098 -0.02806,-0.039 -0.06887,-0.0634 -0.112356,-0.0704 z m 0.36264,0.19683 0.06431,0.0572 -0.02867,0.0319 -0.06509,-0.0572 z m 0.09608,0.086 0.06509,0.0582 -0.02867,0.0311 -0.06509,-0.0565 z m -0.54706,0.24796 0.03409,0.0798 -0.04029,0.0171 -0.03332,-0.0798 z m 0.05114,0.11938 0.03332,0.0798 -0.03952,0.0179 -0.03332,-0.0798 z"
-       id="rect846"
-       inkscape:connector-curvature="0" />
-    <rect
-       style="opacity:1;fill:none;fill-opacity:1;stroke:none;stroke-width:0.52916664;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:fill markers stroke"
-       id="rect890"
-       width="4.4979167"
-       height="4.4979167"
-       x="54.16217"
-       y="308.26428" />
-    <rect
-       style="opacity:1;fill:none;fill-opacity:1;stroke:#ff00ff;stroke-width:0.13229166;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:fill markers stroke"
-       id="rect1382"
-       width="5.2916665"
-       height="5.2916665"
-       x="-84.005135"
-       y="305.27957"
-       inkscape:export-filename="C:\My\Projects\Web\sibur_arenda_1.0\src\resource\img\appFormMinBtn.png"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96" />
-    <path
        style="opacity:1;fill:#efefef;fill-opacity:1;stroke:none;stroke-width:0.66145831;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:fill markers stroke"
        d="m 2.7884599,291.84082 a 0.50358553,0.50358553 0 0 0 -0.3632852,0.1478 l -1.65467933,1.65313 -0.71210121,0.7121 0.71210121,0.71262 1.65364583,1.65416 a 0.50358553,0.50358553 0 0 0 0.7115844,-5.2e-4 0.50358553,0.50358553 0 0 0 5.167e-4,-0.7121 l -1.1229287,-1.12344 5.8099811,-5.2e-4 c 0.3229793,6e-5 0.5850506,-0.23735 0.5849773,-0.5302 -2.791e-4,-0.1433 -0.064694,-0.2807 -0.1782836,-0.38034 l -5.17e-4,5.2e-4 c -0.108884,-0.0959 -0.2548575,-0.14932 -0.4066934,-0.14935 l -5.810498,-5.2e-4 1.1244793,-1.12396 a 0.50358553,0.50358553 0 0 0 5.167e-4,-0.7121 0.50358553,0.50358553 0 0 0 -0.3488161,-0.14728 z"
        id="rect831"
        inkscape:connector-curvature="0" />
-    <path
-       inkscape:export-ydpi="96"
-       inkscape:export-xdpi="96"
-       inkscape:transform-center-y="-1.2734895"
-       inkscape:transform-center-x="-0.00037595099"
-       inkscape:connector-curvature="0"
-       id="path829"
-       d="m 50.335341,290.89732 a 0.39756745,0.39756745 0 0 1 1.35e-4,0.56225 l -1.305967,1.30538 -0.562403,0.56211 -0.562102,-0.56237 -1.305382,-1.30599 a 0.39756745,0.39756745 0 0 1 -1.35e-4,-0.56225 0.39756745,0.39756745 0 0 1 0.562238,1.7e-4 l 1.305381,1.30598 1.30599,-1.30537 a 0.39756745,0.39756745 0 0 1 0.562245,1.6e-4 z"
-       style="opacity:1;fill:#16a4ab;fill-opacity:1;stroke:none;stroke-width:0.66145831;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:fill markers stroke"
-       inkscape:export-filename="C:\My\Projects\Web\sibur_arenda_1.0\src\resource\img\prevMonthIcon.png" />
-    <path
-       style="opacity:1;fill:#da6509;fill-opacity:1;stroke:none;stroke-width:0.66145837;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:fill markers stroke"
-       d="m 29.858159,306.31457 a 0.39755972,0.39755972 0 0 0 -0.275171,0.11626 0.39755972,0.39755972 0 0 0 0,0.56236 l 1.306095,1.30533 -1.305322,1.30609 a 0.39755972,0.39755972 0 0 0 0,0.56197 0.39755972,0.39755972 0 0 0 0.56236,3.9e-4 l 1.305319,-1.3057 -3.97e-4,-3.9e-4 h 3.97e-4 v 3.9e-4 l 1.304933,1.3057 a 0.39755972,0.39755972 0 0 0 0.562358,-3.9e-4 0.39755972,0.39755972 0 0 0 0,-0.56197 l -1.305322,-1.30609 1.306096,-1.30533 a 0.39755972,0.39755972 0 0 0 0,-0.56236 0.39755972,0.39755972 0 0 0 -0.56197,4.1e-4 l -1.306095,1.30532 h -3.97e-4 l -1.305708,-1.30532 a 0.39755972,0.39755972 0 0 0 -0.287186,-0.11667 z"
-       id="path822"
-       inkscape:connector-curvature="0"
-       inkscape:export-filename="C:\My\Projects\Web\sibur_arenda_1.0\src\resource\img\removeRoomBtn.png"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96" />
-    <path
-       inkscape:export-ydpi="96"
-       inkscape:export-xdpi="96"
-       inkscape:export-filename="C:\My\Projects\Web\sibur_arenda_1.0\src\resource\img\removeRoomBtnHover.png"
-       inkscape:connector-curvature="0"
-       id="path823"
-       d="m 45.385029,279.7235 a 0.53007926,0.53007926 0 0 0 -0.366895,0.15502 0.53007926,0.53007926 0 0 0 0,0.74981 l 1.741459,1.74044 -1.740428,1.74145 a 0.53007926,0.53007926 0 0 0 0,0.74929 0.53007926,0.53007926 0 0 0 0.749813,5.2e-4 l 1.740424,-1.74093 -5.29e-4,-5.2e-4 h 5.29e-4 v 5.2e-4 l 1.73991,1.74093 a 0.53007926,0.53007926 0 0 0 0.74981,-5.2e-4 0.53007926,0.53007926 0 0 0 0,-0.74929 l -1.740428,-1.74145 1.74146,-1.74044 a 0.53007926,0.53007926 0 0 0 0,-0.74981 0.53007926,0.53007926 0 0 0 -0.749293,5.4e-4 l -1.741459,1.74043 h -5.29e-4 l -1.740943,-1.74043 a 0.53007926,0.53007926 0 0 0 -0.382914,-0.15556 z"
-       style="opacity:1;fill:#efefef;fill-opacity:1;stroke:none;stroke-width:0.66145837;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:fill markers stroke" />
-    <path
-       inkscape:export-filename="C:\My\Projects\Web\sibur_arenda_1.0\src\resource\img\nextMonthIconHover.png"
-       inkscape:export-ydpi="96"
-       inkscape:export-xdpi="96"
-       inkscape:transform-center-y="0.00050175847"
-       inkscape:transform-center-x="1.6979872"
-       inkscape:connector-curvature="0"
-       id="path825"
-       d="m 20.040982,312.56294 a 0.53009016,0.53009016 0 0 0 0.74967,1.8e-4 l 1.740506,-1.74129 0.749486,-0.74987 -0.749834,-0.74947 -1.741318,-1.74051 a 0.53009016,0.53009016 0 0 0 -0.749668,-1.8e-4 0.53009016,0.53009016 0 0 0 2.23e-4,0.74965 l 1.741317,1.74051 -1.740506,1.74132 a 0.53009016,0.53009016 0 0 0 2.22e-4,0.74966 z"
-       style="opacity:1;fill:#16a4ab;fill-opacity:1;stroke:none;stroke-width:0.66145831;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:fill markers stroke" />
-    <path
-       inkscape:export-filename="C:\My\Projects\Web\sibur_arenda_1.0\src\resource\img\prevMonthIconHover.png"
-       style="opacity:1;fill:#16a4ab;fill-opacity:1;stroke:none;stroke-width:0.66145831;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:fill markers stroke"
-       d="m 39.020371,287.30311 a 0.53009016,0.53009016 0 0 1 -0.74967,1.8e-4 l -1.740506,-1.74129 -0.749486,-0.74987 0.749834,-0.74947 1.741318,-1.74051 a 0.53009016,0.53009016 0 0 1 0.749668,-1.8e-4 0.53009016,0.53009016 0 0 1 -2.23e-4,0.74965 l -1.741317,1.74051 1.740506,1.74132 a 0.53009016,0.53009016 0 0 1 -2.22e-4,0.74966 z"
-       id="path827"
-       inkscape:connector-curvature="0"
-       inkscape:transform-center-x="-1.6979872"
-       inkscape:transform-center-y="0.00050175847"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96" />
-    <path
-       inkscape:export-ydpi="96"
-       inkscape:export-xdpi="96"
-       inkscape:export-filename="C:\My\Projects\Web\sibur_arenda_1.0\src\resource\img\appFormMinBtnHvr.png"
-       style="opacity:1;fill:#16a4ab;fill-opacity:1;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m -61.407019,302.47015 c -0.07416,-0.0959 -0.173537,-0.14943 -0.276951,-0.14946 l -4.495154,-3.6e-4 c -0.219766,1.3e-4 -0.397899,0.23727 -0.397997,0.52984 -2.04e-4,0.29286 0.178012,0.53045 0.397994,0.53058 l 4.495406,-6.3e-4 c 0.219978,6e-5 0.398317,-0.23736 0.398267,-0.53021 -1.9e-4,-0.1433 -0.04395,-0.28039 -0.121315,-0.38003 z"
-       id="path891"
-       inkscape:connector-curvature="0"
-       sodipodi:nodetypes="ccccccccc" />
-    <path
-       style="opacity:1;fill:#efefef;fill-opacity:1;stroke:none;stroke-width:0.13229166;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:fill markers stroke"
-       d="m 53.999706,296.84167 v 10e-4 c -0.01241,-10e-5 -0.02482,2.3e-4 -0.03721,10e-4 -0.01766,0.001 -0.03525,0.003 -0.05271,0.006 -0.01741,0.003 -0.03466,0.007 -0.05168,0.0119 -0.01697,0.005 -0.0337,0.0102 -0.05013,0.0165 -0.01654,0.006 -0.03275,0.0137 -0.04857,0.0217 -0.01576,0.008 -0.03111,0.0168 -0.04599,0.0263 -0.0148,0.01 -0.02912,0.02 -0.04289,0.031 -0.01383,0.0109 -0.02711,0.0224 -0.03979,0.0346 -0.01271,0.0125 -0.02478,0.0256 -0.03617,0.0393 -0.01137,0.0134 -0.02206,0.0274 -0.03204,0.0419 -0.01006,0.0147 -0.01937,0.0299 -0.0279,0.0455 -0.0085,0.0154 -0.01629,0.0313 -0.02325,0.0475 -0.0069,0.0162 -0.01289,0.0328 -0.01809,0.0496 -0.0052,0.017 -0.0095,0.0343 -0.01292,0.0517 -0.0035,0.0173 -0.0061,0.0347 -0.0078,0.0522 -0.0019,0.0175 -0.0029,0.0351 -0.0031,0.0527 v 0.5302 3.70159 c 9.8e-5,0.0124 6.31e-4,0.0248 0.0016,0.0372 0.0012,0.0177 0.0033,0.0352 0.0062,0.0527 0.0031,0.0174 0.0071,0.0347 0.01189,0.0517 0.0047,0.017 0.0102,0.0337 0.01654,0.0501 0.0064,0.0165 0.01366,0.0328 0.0217,0.0486 0.008,0.0158 0.01681,0.0311 0.02636,0.046 0.0096,0.0148 0.01996,0.0291 0.03101,0.0429 0.01087,0.0138 0.02243,0.0271 0.03462,0.0398 0.01231,0.0127 0.02524,0.0248 0.03876,0.0362 0.01358,0.0114 0.02773,0.022 0.04238,0.032 0.01451,0.01 0.02952,0.0193 0.04496,0.0279 0.01562,0.009 0.03166,0.0163 0.04806,0.0233 0.01623,0.007 0.03278,0.0129 0.04961,0.0181 0.017,0.005 0.03425,0.009 0.05168,0.0129 0.01725,0.004 0.03467,0.006 0.05219,0.008 0.01751,0.002 0.0351,0.003 0.05271,0.003 h 0.530199 3.171383 0.531752 c 0.01259,-2.2e-4 0.02517,-8.9e-4 0.03772,-0.002 0.01766,-10e-4 0.03525,-0.003 0.05271,-0.006 0.01741,-0.003 0.03466,-0.007 0.05168,-0.0119 0.01697,-0.005 0.0337,-0.0102 0.05012,-0.0165 0.01654,-0.006 0.03275,-0.0137 0.04857,-0.0217 0.01576,-0.008 0.03111,-0.0168 0.04599,-0.0264 0.0148,-0.01 0.02912,-0.02 0.04289,-0.031 0.01383,-0.0109 0.02711,-0.0224 0.03979,-0.0346 0.0127,-0.0123 0.02477,-0.0253 0.03617,-0.0388 0.01138,-0.0136 0.02208,-0.0277 0.03204,-0.0424 0.01006,-0.0147 0.01937,-0.0299 0.0279,-0.0455 0.0084,-0.0155 0.01595,-0.0314 0.02274,-0.0476 0.0069,-0.0162 0.01289,-0.0328 0.01809,-0.0496 0.0053,-0.017 0.0098,-0.0342 0.01344,-0.0517 0.0035,-0.0173 0.0061,-0.0347 0.0078,-0.0522 2.05e-4,-0.003 3.77e-4,-0.007 5.16e-4,-0.0103 v -0.0884 -0.48421 -3.17138 -0.52968 -5.2e-4 c 1.02e-4,-0.0124 -2.31e-4,-0.0248 -10e-4,-0.0372 -0.0014,-0.0177 -0.0036,-0.0353 -0.0067,-0.0527 -0.0029,-0.0174 -0.0067,-0.0347 -0.01137,-0.0517 -0.0047,-0.017 -0.0102,-0.0337 -0.01654,-0.0501 -0.0064,-0.0165 -0.01366,-0.0328 -0.0217,-0.0486 -0.008,-0.0158 -0.0168,-0.0311 -0.02635,-0.046 -0.0096,-0.0148 -0.01996,-0.0291 -0.03101,-0.0429 -0.01104,-0.0138 -0.02277,-0.0271 -0.03514,-0.0398 -0.01231,-0.0127 -0.02524,-0.0248 -0.03876,-0.0362 -0.01341,-0.0113 -0.02739,-0.022 -0.04186,-0.032 -0.01468,-0.0101 -0.02986,-0.0194 -0.04548,-0.0279 -0.01546,-0.008 -0.03133,-0.0159 -0.04754,-0.0227 -0.01622,-0.007 -0.03277,-0.0132 -0.04961,-0.0186 -0.017,-0.005 -0.03425,-0.009 -0.05168,-0.0129 -0.01725,-0.004 -0.03467,-0.006 -0.05219,-0.008 -0.01768,-0.002 -0.03545,-0.003 -0.05323,-0.003 h -0.529685 -3.701066 -5.16e-4 z m 0.530199,1.06092 h 3.171383 v 3.17138 h -0.698787 c 0.150854,-0.39078 -0.04547,-0.62885 -0.102878,-0.76839 0.09355,0.045 0.286694,0.20287 0.325723,0.32759 -0.0013,-1.04762 -1.420204,-1.88105 -1.774569,-1.96835 0.06415,0.18078 0.23408,0.76003 0.01191,1.41219 0.121854,-0.011 0.348307,-0.0135 0.359647,0.0285 0.13517,0.5002 -0.630021,0.76553 -1.292429,0.96841 z"
-       id="path951"
-       inkscape:connector-curvature="0"
-       inkscape:export-filename="C:\My\Projects\Web\sibur_arenda_1.0\src\resource\img\expandAppFormBtn.png"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96"
-       sodipodi:nodetypes="ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc" />
-    <rect
-       style="opacity:1;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.26458332;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:fill markers stroke"
-       id="rect835"
-       width="5.285255"
-       height="5.285255"
-       x="-63.759178"
-       y="311.36069" />
-    <path
-       style="fill:none;stroke:#efefef;stroke-width:0.5291667;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m 40.067321,304.03561 0.963338,0.7736 1.151184,-1.58863"
-       id="path837"
-       inkscape:connector-curvature="0"
-       sodipodi:nodetypes="ccc"
-       inkscape:export-filename="C:\My\Projects\Web\sibur_arenda_1.0\src\resource\img\tick.png"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96" />
-    <path
-       sodipodi:nodetypes="ccc"
-       inkscape:connector-curvature="0"
-       id="path839"
-       d="m 45.366304,306.51737 0.963338,0.7736 1.151184,-1.58863"
-       style="fill:none;stroke:#16a4ab;stroke-width:0.5291667;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       inkscape:export-filename="C:\My\Projects\Web\sibur_arenda_1.0\src\resource\img\tickHvr.png"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96" />
-    <path
-       style="opacity:1;fill:#16a4ab;fill-opacity:1;stroke:none;stroke-width:0.66145837;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:fill markers stroke"
-       d="m 56.397018,289.11621 a 0.53007926,0.53007926 0 0 0 -0.366895,0.15502 0.53007926,0.53007926 0 0 0 0,0.74981 l 1.741459,1.74044 -1.740428,1.74145 a 0.53007926,0.53007926 0 0 0 0,0.74929 0.53007926,0.53007926 0 0 0 0.749813,5.2e-4 l 1.740424,-1.74093 -5.29e-4,-5.2e-4 h 5.29e-4 v 5.2e-4 l 1.73991,1.74093 a 0.53007926,0.53007926 0 0 0 0.74981,-5.2e-4 0.53007926,0.53007926 0 0 0 0,-0.74929 l -1.740428,-1.74145 1.74146,-1.74044 a 0.53007926,0.53007926 0 0 0 0,-0.74981 0.53007926,0.53007926 0 0 0 -0.749293,5.4e-4 l -1.741459,1.74043 h -5.29e-4 l -1.740943,-1.74043 a 0.53007926,0.53007926 0 0 0 -0.382914,-0.15556 z"
-       id="path1964"
-       inkscape:connector-curvature="0"
-       inkscape:export-filename="C:\My\Projects\Web\sibur_arenda_1.0\src\resource\img\removeRoomBtnHover.png"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96" />
-    <path
-       sodipodi:nodetypes="ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
-       inkscape:export-ydpi="96"
-       inkscape:export-xdpi="96"
-       inkscape:export-filename="C:\My\Projects\Web\sibur_arenda_1.0\src\resource\img\expandAppFormBtn.png"
-       inkscape:connector-curvature="0"
-       id="path1966"
-       d="m 31.63432,290.23971 v 10e-4 c -0.01241,-10e-5 -0.02482,2.3e-4 -0.03721,0.001 -0.01766,10e-4 -0.03525,0.003 -0.05271,0.006 -0.01741,0.003 -0.03466,0.007 -0.05168,0.0119 -0.01697,0.005 -0.0337,0.0102 -0.05013,0.0165 -0.01654,0.006 -0.03275,0.0137 -0.04857,0.0217 -0.01576,0.008 -0.03111,0.0168 -0.04599,0.0263 -0.0148,0.01 -0.02912,0.02 -0.04289,0.031 -0.01383,0.0109 -0.02711,0.0224 -0.03979,0.0346 -0.01271,0.0125 -0.02478,0.0256 -0.03617,0.0393 -0.01137,0.0134 -0.02206,0.0274 -0.03204,0.0419 -0.01006,0.0147 -0.01937,0.0299 -0.0279,0.0455 -0.0085,0.0154 -0.01629,0.0313 -0.02325,0.0475 -0.0069,0.0162 -0.01289,0.0328 -0.01809,0.0496 -0.0052,0.017 -0.0095,0.0343 -0.01292,0.0517 -0.0035,0.0173 -0.0061,0.0347 -0.0078,0.0522 -0.0019,0.0175 -0.0029,0.0351 -0.0031,0.0527 v 0.5302 3.70159 c 9.8e-5,0.0124 6.31e-4,0.0248 0.0016,0.0372 0.0012,0.0177 0.0033,0.0352 0.0062,0.0527 0.0031,0.0174 0.0071,0.0347 0.01189,0.0517 0.0047,0.017 0.0102,0.0337 0.01654,0.0501 0.0064,0.0165 0.01366,0.0328 0.0217,0.0486 0.008,0.0158 0.01681,0.0311 0.02636,0.046 0.0096,0.0148 0.01996,0.0291 0.03101,0.0429 0.01087,0.0138 0.02243,0.0271 0.03462,0.0398 0.01231,0.0127 0.02524,0.0248 0.03876,0.0362 0.01358,0.0114 0.02773,0.022 0.04238,0.032 0.01451,0.01 0.02952,0.0193 0.04496,0.0279 0.01562,0.009 0.03166,0.0163 0.04806,0.0233 0.01623,0.007 0.03278,0.0129 0.04961,0.0181 0.017,0.005 0.03425,0.009 0.05168,0.0129 0.01725,0.004 0.03467,0.006 0.05219,0.008 0.01751,0.002 0.0351,0.003 0.05271,0.003 h 0.530199 3.171383 0.531752 c 0.01259,-2.2e-4 0.02517,-8.9e-4 0.03772,-0.002 0.01766,-0.001 0.03525,-0.003 0.05271,-0.006 0.01741,-0.003 0.03466,-0.007 0.05168,-0.0119 0.01697,-0.005 0.0337,-0.0102 0.05012,-0.0165 0.01654,-0.006 0.03275,-0.0137 0.04857,-0.0217 0.01576,-0.008 0.03111,-0.0168 0.04599,-0.0264 0.0148,-0.01 0.02912,-0.02 0.04289,-0.031 0.01383,-0.0109 0.02711,-0.0224 0.03979,-0.0346 0.0127,-0.0123 0.02477,-0.0253 0.03617,-0.0388 0.01138,-0.0136 0.02208,-0.0277 0.03204,-0.0424 0.01006,-0.0147 0.01937,-0.0299 0.0279,-0.0455 0.0084,-0.0155 0.01595,-0.0314 0.02274,-0.0476 0.0069,-0.0162 0.01289,-0.0328 0.01809,-0.0496 0.0053,-0.017 0.0098,-0.0342 0.01344,-0.0517 0.0035,-0.0173 0.0061,-0.0347 0.0078,-0.0522 2.05e-4,-0.003 3.77e-4,-0.007 5.16e-4,-0.0103 v -0.0884 -0.48421 -3.17138 -0.52968 -5.2e-4 c 1.02e-4,-0.0124 -2.31e-4,-0.0248 -0.001,-0.0372 -0.0014,-0.0177 -0.0036,-0.0353 -0.0067,-0.0527 -0.0029,-0.0174 -0.0067,-0.0347 -0.01137,-0.0517 -0.0047,-0.017 -0.0102,-0.0337 -0.01654,-0.0501 -0.0064,-0.0165 -0.01366,-0.0328 -0.0217,-0.0486 -0.008,-0.0158 -0.0168,-0.0311 -0.02635,-0.046 -0.0096,-0.0148 -0.01996,-0.0291 -0.03101,-0.0429 -0.01104,-0.0138 -0.02277,-0.0271 -0.03514,-0.0398 -0.01231,-0.0127 -0.02524,-0.0248 -0.03876,-0.0362 -0.01341,-0.0113 -0.02739,-0.022 -0.04186,-0.032 -0.01468,-0.0101 -0.02986,-0.0194 -0.04548,-0.0279 -0.01546,-0.008 -0.03133,-0.0159 -0.04754,-0.0227 -0.01622,-0.007 -0.03277,-0.0132 -0.04961,-0.0186 -0.017,-0.005 -0.03425,-0.009 -0.05168,-0.0129 -0.01725,-0.004 -0.03467,-0.006 -0.05219,-0.008 -0.01768,-0.002 -0.03545,-0.003 -0.05323,-0.003 h -0.529685 -3.701066 -5.16e-4 z m 0.530199,1.06092 h 3.171383 v 3.17138 h -0.698787 c 0.150854,-0.39078 -0.04547,-0.62885 -0.102878,-0.76839 0.09355,0.045 0.286694,0.20287 0.325723,0.32759 -0.0013,-1.04762 -1.420204,-1.88105 -1.774569,-1.96835 0.06415,0.18078 0.23408,0.76003 0.01191,1.41219 0.121854,-0.011 0.348307,-0.0135 0.359647,0.0285 0.13517,0.5002 -0.630021,0.76553 -1.292429,0.96841 z"
-       style="opacity:1;fill:#16a4ab;fill-opacity:1;stroke:none;stroke-width:0.13229166;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:fill markers stroke" />
-    <path
-       inkscape:export-filename="C:\My\Projects\Web\sibur_arenda_1.0\src\resource\img\prevMonthIcon.png"
-       style="opacity:1;fill:#efefef;fill-opacity:1;stroke:none;stroke-width:0.66145831;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:fill markers stroke"
-       d="m 66.373994,312.88161 a 0.53009016,0.53009016 0 0 1 -0.74967,1.8e-4 l -1.740506,-1.74129 -0.749486,-0.74987 0.749834,-0.74947 1.741318,-1.74051 a 0.53009016,0.53009016 0 0 1 0.749668,-1.8e-4 0.53009016,0.53009016 0 0 1 -2.23e-4,0.74965 l -1.741317,1.74051 1.740506,1.74132 a 0.53009016,0.53009016 0 0 1 -2.22e-4,0.74966 z"
-       id="path835"
-       inkscape:connector-curvature="0"
-       inkscape:transform-center-x="-1.6979872"
-       inkscape:transform-center-y="0.00050175847"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96" />
-    <circle
-       style="opacity:1;fill:#16a4ab;fill-opacity:1;stroke:none;stroke-width:0.52916664;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:fill markers stroke"
-       id="path836"
-       cx="28.279734"
-       cy="299.26251"
-       r="1.0583333" />
-    <path
-       style="fill:#ff0000;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 56.411164,308.74935 a 0.3693981,0.3693981 0 0 0 -0.03721,0.002 0.3693981,0.3693981 0 0 0 -0.03617,0.006 0.3693981,0.3693981 0 0 0 -0.03617,0.009 0.3693981,0.3693981 0 0 0 -0.03462,0.0124 0.3693981,0.3693981 0 0 0 -0.03307,0.016 0.3693981,0.3693981 0 0 0 -0.03152,0.0196 0.3693981,0.3693981 0 0 0 -0.02946,0.0222 0.3693981,0.3693981 0 0 0 -0.02687,0.0253 0.3693981,0.3693981 0 0 0 -0.02429,0.0279 0.3693981,0.3693981 0 0 0 -0.02119,0.03 l -0.01757,0.03 -1.593184,2.75952 c -0.07435,0.1161 -0.07775,0.26403 -0.0088,0.38344 0.0691,0.11933 0.198677,0.19052 0.336413,0.18397 h 3.184819 c 0.137824,0.007 0.269853,-0.0646 0.338998,-0.18397 0.0691,-0.11965 0.06539,-0.26823 -0.0093,-0.38447 l -1.592668,-2.75849 -0.0186,-0.032 a 0.3693981,0.3693981 0 0 0 -0.0217,-0.03 0.3693981,0.3693981 0 0 0 -0.02429,-0.0279 0.3693981,0.3693981 0 0 0 -0.02739,-0.0248 0.3693981,0.3693981 0 0 0 -0.02946,-0.0222 0.3693981,0.3693981 0 0 0 -0.03152,-0.0191 0.3693981,0.3693981 0 0 0 -0.03307,-0.016 0.3693981,0.3693981 0 0 0 -0.03514,-0.0124 0.3693981,0.3693981 0 0 0 -0.03566,-0.009 0.3693981,0.3693981 0 0 0 -0.03669,-0.005 0.3693981,0.3693981 0 0 0 -0.03462,-0.002 z"
-       id="path874"
-       inkscape:connector-curvature="0" />
-    <g
-       id="g920"
-       transform="matrix(0.54009254,0,0,0.54009254,53.214869,150.62996)"
-       style="fill:#ffffff;stroke-width:1.85153449">
-      <path
-         id="path905"
-         transform="matrix(0.26458333,0,0,0.26458333,0,292.50208)"
-         d="m 22.367188,7.7265625 c -1.181537,0.044511 -2.127617,1.0105467 -2.126954,2.203125 0.263895,3.5854345 0.968763,6.2948755 1.5625,8.5332035 0.04503,0.169752 0.09898,0.246544 0.203125,0.357421 0.01707,0.01818 0.04103,0.02833 0.0625,0.04102 0.02157,0.01275 0.04374,0.02445 0.06641,0.03516 0.02297,0.01085 0.04627,0.02109 0.07031,0.0293 0.02363,0.0081 0.04792,0.014 0.07227,0.01953 0.02455,0.0056 0.04926,0.01043 0.07422,0.01367 0.0052,6.8e-4 0.01041,0.0014 0.01563,0.002 0.0053,-6.05e-4 0.01041,-0.0013 0.01562,-0.002 0.02496,-0.0038 0.04965,-0.0099 0.07422,-0.01367 0.02435,-0.0038 0.04864,-0.01197 0.07227,-0.01953 0.02404,-0.0076 0.04733,-0.01796 0.07031,-0.0293 0.02267,-0.01134 0.04483,-0.02382 0.06641,-0.03516 0.02147,-0.01474 0.04542,-0.02212 0.0625,-0.04102 0.104145,-0.111118 0.158095,-0.187721 0.203125,-0.357421 0.593737,-2.238312 1.298605,-4.947755 1.5625,-8.5332035 6.63e-4,-1.1925921 -0.945416,-2.1585266 -2.126953,-2.203125 z"
-         style="opacity:1;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:3.70306897;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:fill markers stroke"
-         inkscape:connector-curvature="0" />
-      <circle
-         r="0.3175"
-         cy="297.92987"
-         cx="5.917985"
-         id="path915"
-         style="opacity:1;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.9797703;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:fill markers stroke" />
-    </g>
-    <circle
-       style="opacity:1;fill:#16a4ab;fill-opacity:1;stroke:none;stroke-width:0.52916658;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:fill markers stroke"
-       id="path842"
-       cx="71.25396"
-       cy="300.58151"
-       r="1.8520833" />
-    <path
-       inkscape:connector-curvature="0"
-       style="opacity:1;fill:#efefef;fill-opacity:1;stroke:none;stroke-width:0.52916664;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:fill markers stroke"
-       d="m 70.891446,300.1293 v 0.19896 h 0.09819 v 1.50171 h -0.09819 v 0.19896 h 0.09819 0.529167 0.09767 v -0.19896 h -0.09767 v -1.50171 h 0.09767 v -0.19896 h -0.09767 -0.529166 z"
-       id="rect861" />
-    <circle
-       style="opacity:1;fill:#efefef;fill-opacity:1;stroke:none;stroke-width:0.52916658;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:fill markers stroke"
-       id="path863"
-       cx="71.254036"
-       cy="299.46484"
-       r="0.33072916" />
-    <path
-       style="fill:none;stroke:#efefef;stroke-width:0.21166666;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m 20.825918,273.62577 h 0.671248 v 1.66016"
-       id="path941"
-       inkscape:connector-curvature="0"
-       sodipodi:nodetypes="ccc" />
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:2.42324471px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#efefef;fill-opacity:1;stroke:none;stroke-width:0.26458332"
-       x="22.00034"
-       y="277.15253"
-       id="text947"><tspan
-         sodipodi:role="line"
-         id="tspan945"
-         x="22.00034"
-         y="277.15253"
-         style="fill:#efefef;fill-opacity:1;stroke-width:0.26458332">2</tspan></text>
-    <path
-       style="fill:none;stroke:#efefef;stroke-width:0.21166666;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m 20.871042,276.2201 2.427345,-1.76772"
-       id="path949"
-       inkscape:connector-curvature="0"
-       sodipodi:nodetypes="cc" />
-    <g
-       id="g862"
-       transform="translate(-29.341188,-9.1055435)"
-       inkscape:export-filename="C:\My\Projects\Web\sibur_arenda_1.0\src\resource\img\search.png"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96">
-      <ellipse
-         ry="1.4577667"
-         rx="1.4577668"
-         transform="scale(-1,1)"
-         cy="293.67303"
-         cx="-3.3269784"
-         id="path851"
-         style="opacity:1;fill:none;fill-opacity:1;stroke:#efefef;stroke-width:0.79374999;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:fill markers stroke" />
-      <path
-         inkscape:connector-curvature="0"
-         id="path853"
-         d="M 0.63453644,296.36546 2.1649851,294.83501"
-         style="fill:none;stroke:#efefef;stroke-width:0.79374999;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
-      <path
-         sodipodi:nodetypes="cc"
-         inkscape:original-d="m 2.5631511,293.41986 c 0.1525403,-0.54594 0.6788978,-0.77635 1.2485027,-0.33074"
-         inkscape:path-effect="#path-effect857"
-         inkscape:connector-curvature="0"
-         id="path855"
-         d="m 2.5631511,293.41986 c -0.029894,-0.008 -0.022092,-0.43498 0.4994637,-0.56769 0.5217751,-0.13278 0.7639824,0.21785 0.7490408,0.23695 -0.033155,0.0424 -0.3461093,-0.14314 -0.7049301,-0.0581 -0.3588209,0.085 -0.4917509,0.40333 -0.5435744,0.38885 z"
-         style="fill:#efefef;fill-opacity:1;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
-    </g>
   </g>
 </svg>
