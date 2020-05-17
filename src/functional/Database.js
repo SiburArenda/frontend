@@ -1,24 +1,28 @@
-function connectDatabase(interaction, method, onGet = () => console.log('Done')) {
+function connectDatabase(
+    interaction,
+    method,
+    onSuccess = () => {},
+    onDBError = e => console.error('Database error: ' + e.target.errorCode),
+    onTError = e => console.error('Transaction error: ' + e.target.errorCode),
+    onNoSupport = () => console.error('This browser doesn\'t support IndexedDB')
+) {
 
     if (!('indexedDB' in window)) {
-        console.error('This browser doesn\'t support IndexedDB');
+        onNoSupport();
         return;
     }
 
     const idb = window.indexedDB;
     const dbPromise = idb.open('sibur-db', 1);
 
-    dbPromise.onerror = e => {
-        console.error('Database error: ' + e.target.errorCode);
-    };
+    dbPromise.onerror = e => onDBError(e);
 
     dbPromise.onsuccess = e => {
+
         const actualDB = e.target.result;
         const transaction = actualDB.transaction(['componentStates'], method === 'get' ? 'readonly' : 'readwrite');
 
-        transaction.onerror = e => {
-            console.error('Transaction error: ' + e.target.errorCode);
-        };
+        transaction.onerror = e => onTError(e);
 
         const store = transaction.objectStore('componentStates');
 
@@ -28,22 +32,24 @@ function connectDatabase(interaction, method, onGet = () => console.log('Done'))
             request = store.get(interaction);
 
             request.onsuccess = e => {
-                onGet(e.target.result);
+
+                onSuccess(e.target.result);
             }
         } else {
             interaction.forEach(i => {
                 switch (method) {
                     case 'put': {
-                        try {
-                            request = store.put(i);
-                        } catch (e) {
-                            console.log('Error: ' + e + ' with ' + i.componentName)
-                        }
+                        const delRequest = store.delete(i.componentName);
+                        delRequest.onsuccess = () => {
+                            request = store.add(i);
+                            request.onsuccess = () => onSuccess();
+                        };
                         break;
                     }
 
                     case 'delete': {
                         request = store.delete(i);
+                        request.onsuccess = () => onSuccess();
                         break;
                     }
 

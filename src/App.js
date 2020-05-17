@@ -1,4 +1,3 @@
-/* eslint-disable react/no-direct-mutation-state */
 import React, {Component} from 'react';
 import {BrowserRouter as Router} from "react-router-dom"
 import './resource/styles/Main.css'
@@ -11,18 +10,27 @@ import LogIn from "./components/client/LogIn";
 import {connectServer} from "./functional/ServerConnect";
 import RoomInfo from "./functional/RoomInfo";
 import {connectDatabase} from "./functional/Database";
+import {flyBird} from "./functional/Design";
 
 class App extends Component {
 
     // happens first and once before any rendering; the state object does not exist yet
     constructor(props) {
+
         super(props);
 
         this.appFormRef = React.createRef();
-        this.minAppRef = React.createRef();
 
         const screen = window.innerWidth;
         this.state.headerWidth =  screen > 1200 ? screen - 20 : 1430;
+
+        const sessionState = sessionStorage.getItem('App');
+        if (sessionState != null) {
+            const sessionStateParsed = JSON.parse(sessionState);
+            const {applicationFormVisible, logInFormVisible} = sessionStateParsed;
+            this.state.applicationFormVisible = applicationFormVisible;
+            this.state.logInFormVisible = logInFormVisible;
+        }
 
         connectDatabase(
             'App',
@@ -34,17 +42,17 @@ class App extends Component {
 
     setInitState = dbData => {
         if (dbData !== undefined) {
-            const {userLogin, userName, password, token, role, roomArray, logInFormVisible, applicationFormVisible} = dbData;
-            const objRooms = JSON.parse(roomArray).map(r => new RoomInfo(r.serverName, r.name, r.auditory, r.description, r.tags, r.isAdditionTo));
+            const {userLogin, userName, password, token, role, roomArray} = dbData;
             this.state.userLogin = userLogin;
             this.state.userName = userName;
             this.state.password = password; //TODO: security!
             this.state.token = token;
             this.state.role = role;
-            this.state.roomArray = objRooms;
-            if (logInFormVisible !== undefined && applicationFormVisible !== undefined) {
-                this.state.logInFormVisible = logInFormVisible;
-                this.state.applicationFormVisible = applicationFormVisible;
+
+            if (roomArray.length !== 0) {
+                this.state.roomArray = JSON
+                    .parse(roomArray)
+                    .map(r => new RoomInfo(r.serverName, r.name, r.auditory, r.description, r.tags, r.isAdditionTo));
             }
         }
     };
@@ -64,21 +72,28 @@ class App extends Component {
         userName: '',
         password: '', // TODO: Security!
         token: '',
-        role: ['USER']
+        role: ['USER'],
+        bird: []
     };
 
     // happens once after constructor, right after the first render
     componentDidMount() {
 
         window.addEventListener('resize', this.headerWidth, false);
-        window.addEventListener('beforeunload', () => this.saveState(true), false);
-        window.addEventListener('close', () => this.saveState(false), false);
+        window.addEventListener('beforeunload', this.saveState, false);
 
-        if (this.state.roomArray.length === 0) {
+        if (this.state.roomArray.length < 11) {
             const headers = [
                 {name: 'Content-Type', value: 'application/json'}
             ];
-            connectServer(null, this.getRoomsFromServer, 'get', headers, 'api/public/rooms');
+            connectServer(
+                null,
+                this.getRoomsFromServer,
+                'get', headers,
+                'api/public/rooms',
+                this.roomsError,
+                this.roomsError
+            );
         }
     }
 
@@ -91,11 +106,9 @@ class App extends Component {
     };
 
     // save the website state when the page is reloaded (reload = true) or closed (reload = false)
-    saveState = (reload) => {
+    saveState = () => {
 
         const {logInFormVisible, applicationFormVisible, roomArray, userLogin, userName, token, role, password} = this.state;
-
-        const interactionArray = [];
 
         const toSave = {
             componentName: 'App',
@@ -103,41 +116,22 @@ class App extends Component {
             userName: userName,
             token: token,
             role: role,
-            roomArray: JSON.stringify(roomArray),
+            roomArray: (roomArray.length === 11) ? JSON.stringify(roomArray) : [],
             password: password //TODO: Security!
         };
 
-        if (reload) {
-            toSave.applicationFormVisible = applicationFormVisible;
-            toSave.logInFormVisible = logInFormVisible;
+        sessionStorage.setItem(
+            'App',
+            JSON.stringify({logInFormVisible: logInFormVisible, applicationFormVisible: applicationFormVisible})
+        );
 
-            if (this.appFormRef.current != null) {
-                const af = Object.assign({}, this.appFormRef.current.state);
-                af.componentName = 'ApplicationForm';
-                interactionArray.push(af);
-            }
+        connectDatabase([toSave], 'put');
+    };
 
-            if (this.minAppRef.current != null) {
-                const {x, y} = this.minAppRef.current.state;
-                const coords = {componentName: 'MinifiedApplicationForm', x: x, y: y};
-                interactionArray.push(coords);
-            }
-        } else {
-            connectDatabase(
-                [
-                    'App',
-                    'ApplicationForm',
-                    'Calendar',
-                    'MinifiedApplicationForm',
-                    'LogInForm'
-                ],
-                'delete'
-            );
-        }
-
-        interactionArray.push(toSave);
-
-        connectDatabase(interactionArray, 'put');
+    roomsError = code => {
+        this.setState({
+            roomArray: [code]
+        })
     };
 
     // get rooms if they are not saved from last session
@@ -196,7 +190,7 @@ class App extends Component {
     // happens once right before the component is removed
     componentWillUnmount() {
         window.removeEventListener('resize', this.headerWidth, false);
-        window.removeEventListener('beforeunload', () => this.saveState(true), false);
+        window.removeEventListener('beforeunload', this.saveState, false);
     }
 
     // happens on each state change
@@ -217,7 +211,8 @@ class App extends Component {
             hintHPos,
             hintX,
             hintY,
-            password
+            password,
+            bird
         } = this.state;
 
         return (
@@ -243,6 +238,7 @@ class App extends Component {
                                 logOut={this.logOut}
                                 closeHint={this.closeHint}
                                 showHint={this.showHint}
+                                storePassword={this.storePassword} //TODO: Security!
                             />
                             :
                             null
@@ -284,9 +280,7 @@ class App extends Component {
                             role.includes('USER')
                                 ?
                                 <ClientMainContent
-                                    logInFormVisible={logInFormVisible}
                                     applicationFormVisible={applicationFormVisible}
-                                    closeLogInForm={this.closeLogInForm}
                                     closeAppWindow={this.closeApplicationForm}
                                     showHint={this.showHint}
                                     closeHint={this.closeHint}
@@ -295,9 +289,8 @@ class App extends Component {
                                     userLogin={userLogin}
                                     token={token}
                                     password={password} //TODO: Security!
-                                    minAppRef={this.minAppRef}
-                                    openLogInForm={this.openLogInForm}
                                     refreshToken={this.refreshToken}
+                                    sendBird={this.sendBird}
                                 />
                                 :
                                 <AdminMainContent/>
@@ -305,15 +298,28 @@ class App extends Component {
 
                         {
                             showHint
-                            ?
-                            <Hint
-                                hintText={this.getHintText()}
-                                x={hintX}
-                                y={hintY}
-                                hintHPos={this.getHintText().length > 8 ? hintHPos : 8}
-                                hintVPos={hintVPos}
-                            />
-                            : null
+                                ?
+                                <Hint
+                                    hintText={this.getHintText()}
+                                    x={hintX}
+                                    y={hintY}
+                                    hintHPos={this.getHintText().length > 8 ? hintHPos : 8}
+                                    hintVPos={hintVPos}
+                                />
+                                : null
+                        }
+
+                        {
+                            bird.map(b =>
+                                <div
+                                    key={b.id}
+                                    id={b.id}
+                                    style={{left: b.left, top: b.top, opacity: '1'}}
+                                    className='bird'
+                                >
+                                    {''}
+                                </div>
+                            )
                         }
 
                     </section>
@@ -322,6 +328,30 @@ class App extends Component {
             </div>
         );
     }
+
+    sendBird = (id, left, top) => {
+        const bird = this.state.bird.slice();
+        const newBird = {id: id, left: left, top: top};
+        bird.push(newBird);
+        this.setState({
+            bird: bird
+        });
+        setTimeout(() => flyBird(id, this.removeBird), 1);
+    };
+
+    removeBird = id => {
+        const bird = this.state.bird.slice();
+        for (let i in bird) {
+            const b = bird[i];
+            if (b.id === id) {
+                bird.splice(+i, 1);
+                break;
+            }
+        }
+        this.setState({
+            bird: bird
+        })
+    };
 
     getHintText = () => {
 
@@ -347,41 +377,13 @@ class App extends Component {
             return `Таких помещений в комплексе ${split[1]}, на данный момент в Вашу заявку об аренде включены ${split[2]} из них`
         }
 
-        if (whichHint.startsWith('notFilled')) {
-            const split = whichHint.split(/%/g).filter(tag => tag !== '');
+        if (whichHint.startsWith('badTimings')) {
+            const split = whichHint.split('&');
 
-            let message = '<p>Пожалуйста, исправьте следующие ошибки:</p>';
+            let message = '<p>Для следующих дат некорректно указаны временные рамки:</p>';
 
             for (let i = 1; i < split.length; i++) {
-                const tag = split[i];
-
-                if (tag.startsWith('timings')) {
-
-                    const t = tag.split('->')[1].split('&').filter(p => p !== '');
-
-                    message += '<p>- Для следующих дат некорректно указаны временные рамки:' + t.toString() + '</p>';
-
-                } else {
-                    // eslint-disable-next-line default-case
-                    switch (tag) {
-                        case 'name': {
-                            message += '<p>- Не введено название мероприятия</p>';
-                            break;
-                        }
-                        case 'viewers': {
-                            message += '<p>- Не указано количество зрителей\n</p>';
-                            break;
-                        }
-                        case 'days': {
-                            message += '<p>- Не выбрано ни одной даты</p>';
-                            break;
-                        }
-                        case 'rooms': {
-                            message += '<p>- Не выбрано ни одного помещения</p>';
-                            break;
-                        }
-                    }
-                }
+                message += '<p>- ' + split[i].toString() + '</p>';
             }
 
             return message;
@@ -395,7 +397,11 @@ class App extends Component {
             case 'expAppFormBtn':
                 return 'Открыть форму';
             case 'openAppFormBtn':
-                return 'Окно заполнения заявки откроется параллельно с остальным содержимым сервиса' +
+                return this.state.userLogin === ''
+                    ?
+                    'Только авторизованные пользователи могут отправлять заявки!'
+                    :
+                    'Окно заполнения заявки откроется параллельно с остальным содержимым сервиса' +
                     ' - Вы сможете переходить по разделам, не закрывая его и не заполняя заново!';
             case 'sendAppBtn':
                 return 'Заявка будет отправлена, но Вы всегда сможете отредактировать её:' +
@@ -428,6 +434,14 @@ class App extends Component {
                 return this.state.userName === '' ? 'Войти' : 'Мой аккаунт';
             case 'invalidLogIn':
                 return 'Что-то пошло не так. Возможно, Вы неверно ввели адрес электронной почты или пароль';
+            case 'compulsoryFields':
+                return 'Пожалуйста, заполните обязательные поля';
+            case 'responseError':
+                return 'Нам очень жаль, но, похоже, на сервере какие-то неполадки; мы уже работаем над этим - попробуйте ещё раз через пару минут!';
+            case 'sendError':
+                return 'Что-то пошло не так; пожалуйста, проверьте, подключён ли Ваш компьютер к интернету';
+            case 'sendErrorSignUp':
+                return 'Что-то пошло не так; возможно, аккаунт для такого адреса электронной почты уже существует, или Ваш компьютер не подключён к сети';
             default:
                 return '';
         }
@@ -457,6 +471,7 @@ class App extends Component {
     };
 
     logOut = () => {
+        this.closeApplicationForm();
         this.setState({
             userLogin: '',
             userName: '',
@@ -467,9 +482,13 @@ class App extends Component {
     };
 
     openApplicationForm = () => {
-        this.setState({
-            applicationFormVisible: true
-        })
+        if (this.state.userLogin !== '') {
+            this.setState({
+                applicationFormVisible: true
+            })
+        } else {
+            this.openLogInForm();
+        }
     };
 
     openLogInForm = () => {
@@ -480,7 +499,8 @@ class App extends Component {
     };
 
     closeApplicationForm = () => {
-        connectDatabase(['ApplicationForm', 'Calendar', 'MinifiedApplicationForm'], 'delete');
+        sessionStorage.removeItem('ApplicationForm');
+        sessionStorage.removeItem('Calendar');
         this.setState({
             applicationFormVisible: false
         })
@@ -492,14 +512,25 @@ class App extends Component {
         })
     };
 
-    storeResponse = (userName, userLogin, token, roles, password) => {
+    storePassword = password => {
+        this.setState({
+            password: password
+        })
+    };
+    //TODO: Security!
+
+    storeResponse = (
+        userName,
+        userLogin,
+        token,
+        roles
+    ) => {
         this.setState({
             userLogin: userLogin,
             userName: userName,
             token: token,
-            role: roles,
-            password: password //TODO: Security!
-        })
+            role: roles
+        });
     };
 
     refreshToken = (response) => {

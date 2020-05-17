@@ -204,3 +204,7 @@ p, label{
 #hidden-half:not(:disabled):checked+label:hover::before {
     background-image: url("../img/fullFieldHvr.svg");
 }
+
+#waiting-for-app-confirm{
+    margin-right: 15px;
+}

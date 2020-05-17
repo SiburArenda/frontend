@@ -64,8 +64,7 @@ AllApplications.propTypes = {
     token: PropTypes.string.isRequired,
     userLogin: PropTypes.string.isRequired,
     newApplication: PropTypes.func.isRequired,
-    refresh: PropTypes.bool.isRequired,
-    openLogInForm: PropTypes.func.isRequired
+    refresh: PropTypes.bool.isRequired
 };
 
 export default AllApplications;

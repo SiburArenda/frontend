@@ -8,6 +8,7 @@ import MinifiedApplicationForm from "./MinifiedApplicationForm";
 import Dropdown from "../Dropdown";
 import moment from "moment";
 import {connectServer, checkToken} from "../../functional/ServerConnect";
+import {waiting} from "../../functional/Design";
 
 class FromTo {
     constructor(from, to) {
@@ -18,6 +19,84 @@ class FromTo {
 }
 
 class ApplicationForm extends Component {
+
+    constructor(props) {
+        super(props);
+
+        const sessionState = sessionStorage.getItem('ApplicationForm');
+        if (sessionState != null) {
+            const sessionStateParsed = JSON.parse(sessionState);
+            const {
+                eventName,
+                eventType,
+                rooms,
+                viewersExpected,
+                viewers,
+                comment,
+                minimized,
+                warning,
+                y,
+                x,
+                someDatesChosen
+            } = sessionStateParsed;
+            this.state.eventName = eventName;
+            this.state.eventType = eventType;
+            this.state.rooms = rooms;
+            this.state.viewersExpected = viewersExpected;
+            this.state.viewers = viewers;
+            this.state.comment = comment;
+            this.state.minimized = minimized;
+            this.state.warning = warning;
+            this.state.y = y;
+            this.state.x = x;
+            this.state.someDatesChosen = someDatesChosen;
+        }
+
+        this.calendarRef = React.createRef();
+    }
+
+    state = {
+        eventName: '',
+        eventType: 'PARTY',
+        rooms: [],
+        viewersExpected: 'false',
+        viewers: 0,
+        comment: '',
+        offsetX: 0,
+        offsetY: 0,
+        dragged: false,
+        minimized: false,
+        warning: [],
+        grabbed: null,
+        badTimings: '',
+        y: 50,
+        x: 400,
+        someDatesChosen: false,
+        waiting: false
+    };
+
+    componentDidMount() {
+        window.addEventListener('resize', this.handleResize, false);
+        window.addEventListener('beforeunload', this.saveState, false);
+    }
+
+    saveState = () => {
+        const {eventName, eventType, rooms, viewersExpected, viewers, comment, minimized, warning, y, x, someDatesChosen} = this.state;
+        const toSave = {
+            eventName: eventName,
+            eventType: eventType,
+            rooms: rooms,
+            viewersExpected: viewersExpected,
+            viewers: viewers,
+            comment: comment,
+            minimized: minimized,
+            warning: warning,
+            y: y,
+            x: x,
+            someDatesChosen: someDatesChosen
+        };
+        sessionStorage.setItem('ApplicationForm', JSON.stringify(toSave));
+    };
 
     handleResize = () => {
 
@@ -39,43 +118,10 @@ class ApplicationForm extends Component {
 
     };
 
-
-    componentDidMount() {
-        window.addEventListener('resize', this.handleResize, false)
-    }
-
     componentWillUnmount() {
-        window.removeEventListener('resize', this.handleResize, false)
+        window.removeEventListener('resize', this.handleResize, false);
+        window.removeEventListener('beforeunload', this.saveState, false);
     }
-
-    constructor(props) {
-        super(props);
-
-        const prevState = sessionStorage.getItem('appFormState');
-        if (prevState != null) {
-            this.state = JSON.parse(prevState);
-        }
-
-        this.calendarRef = React.createRef();
-    }
-
-    state = {
-        eventName: '',
-        eventType: 'PARTY',
-        rooms: [],
-        viewersExpected: 'false',
-        viewers: 0,
-        comment: '',
-        offsetX: 0,
-        offsetY: 0,
-        dragged: false,
-        minimized: false,
-        warning: [],
-        grabbed: null,
-        notFilled: '',
-        y: 50,
-        x: 400
-    };
 
     eventTypeOptions = [
         {rusName: 'Концерт, представление', additional: null},
@@ -89,7 +135,6 @@ class ApplicationForm extends Component {
             <Link
                 to='/rooms'
                 className='hover-text'
-                style={{textDecoration: 'none'}}
                 onMouseEnter={e => this.props.showHint(e, 'goToRooms')}
                 onMouseLeave={() => this.props.closeHint()}
                 onClick={() => this.props.closeHint()}
@@ -98,14 +143,15 @@ class ApplicationForm extends Component {
             </Link>
         </p>;
 
+    eventTypeId = ['PARTY', 'DRINKING_PARTY', 'TRAINING', 'OTHER'];
+
     render() {
 
-        const roomOptions = this.props.roomArray.map(roomInfo =>
-        {
+        const roomOptions = this.props.roomArray.map(roomInfo => {
             let parentChosenOrIndependent = roomInfo.isAdditionTo === 'independent';
             if (!parentChosenOrIndependent) {
                 for (let roomIndex in this.state.rooms) {
-                    if (this.state.rooms[roomIndex].name.startsWith(roomInfo.isAdditionTo)){
+                    if (this.state.rooms[roomIndex].name.startsWith(roomInfo.isAdditionTo)) {
                         parentChosenOrIndependent = true;
                         break;
                     }
@@ -143,7 +189,6 @@ class ApplicationForm extends Component {
                             expand={this.expand}
                             posX={this.state.x}
                             posY={this.state.y}
-                            ref={this.props.minAppRef}
                         />
                         :
                         <div id='application-form'
@@ -175,12 +220,22 @@ class ApplicationForm extends Component {
                             </div>
 
                             <div className='block-container ninety-container drag-detector'>
+                                <p>
+                                    Поля, помеченные <span className='red-star'>*</span>, обязательны к заполнению
+                                </p>
+                            </div>
+
+                            <div className='block-container ninety-container drag-detector'>
 
                                 <div className='block-col drag-detector'>
 
-                                    <p className='drag-detector'>Название мероприятия</p>
+                                    <p className='drag-detector'>
+                                        Название мероприятия<span className='red-star'>*</span>
+                                    </p>
 
-                                    <p className='drag-detector'>Тип мероприятия</p>
+                                    <p className='drag-detector'>
+                                        Тип мероприятия<span className='red-star'>*</span>
+                                    </p>
 
                                     {['MATCH', 'TRAINING'].includes(this.state.eventType)
                                         ?
@@ -189,7 +244,9 @@ class ApplicationForm extends Component {
                                         null
                                     }
 
-                                    <p className='drag-detector'>Помещения</p>
+                                    <p className='drag-detector'>
+                                        Помещения<span className='red-star'>*</span>
+                                    </p>
 
                                 </div>
 
@@ -198,15 +255,14 @@ class ApplicationForm extends Component {
                                     <input
                                         type='text'
                                         name='eventName'
-                                        onChange={(e) => {
-                                            this.handleInput(e)
-                                        }}
+                                        onChange={e => this.handleInput(e)}
+                                        onKeyUp={e => this.handleKeyUp(e)}
                                         className='medium-text-input'
                                         defaultValue={this.state.eventName}
                                     />
 
                                     <Dropdown
-                                        header=''
+                                        header={this.getEventTypeHeader()}
                                         options={this.eventTypeOptions}
                                         onChoose={this.pickEventType}
                                         withButton={true}
@@ -228,9 +284,7 @@ class ApplicationForm extends Component {
                                                     name='eventType'
                                                     className='hidden-radio'
                                                     value='TRAINING'
-                                                    onChange={(e) => {
-                                                        this.handleInput(e)
-                                                    }}
+                                                    onChange={e => this.handleInput(e)}
                                                     checked={this.state.eventType === 'TRAINING'}
                                                 />
                                                 <label htmlFor='training-radio'>
@@ -243,9 +297,7 @@ class ApplicationForm extends Component {
                                                     name='eventType'
                                                     className='hidden-radio'
                                                     value='MATCH'
-                                                    onChange={(e) => {
-                                                        this.handleInput(e)
-                                                    }}
+                                                    onChange={e => this.handleInput(e)}
                                                     checked={this.state.eventType === 'MATCH'}
                                                 />
                                                 <label htmlFor='match-radio'>
@@ -282,8 +334,9 @@ class ApplicationForm extends Component {
                                     {
                                         ['DRINKING_PARTY', 'OTHER'].includes(this.state.eventType)
                                             ?
-                                            <p className='drag-detector'>Ожидается ли на Вашем мероприятии
-                                                зрительская аудитория?</p>
+                                            <p className='drag-detector'>
+                                                Ожидается ли на Вашем мероприятии зрительская аудитория?<span className='red-star'>*</span>
+                                            </p>
                                             :
                                             null
                                     }
@@ -291,7 +344,10 @@ class ApplicationForm extends Component {
                                     {
                                         ['MATCH', 'PARTY'].includes(this.state.eventType)
                                         || (this.state.eventType !== 'TRAINING' && this.state.viewersExpected === 'true')
-                                            ? <p className='drag-detector'>Количество зрителей</p>
+                                            ?
+                                            <p className='drag-detector'>
+                                                Количество зрителей<span className='red-star'>*</span>
+                                            </p>
                                             : null
                                     }
                                 </div>
@@ -312,9 +368,7 @@ class ApplicationForm extends Component {
                                                         name='viewersExpected'
                                                         className='hidden-radio'
                                                         value={true}
-                                                        onChange={(e) => {
-                                                            this.handleInput(e)
-                                                        }}
+                                                        onChange={e => this.handleInput(e)}
                                                         checked={this.state.viewersExpected === 'true'}
                                                     />
                                                     <label htmlFor='yes-viewers-radio'>
@@ -327,9 +381,7 @@ class ApplicationForm extends Component {
                                                         name='viewersExpected'
                                                         className='hidden-radio'
                                                         value={false}
-                                                        onChange={(e) => {
-                                                            this.handleInput(e)
-                                                        }}
+                                                        onChange={e => this.handleInput(e)}
                                                         checked={this.state.viewersExpected === 'false'}
                                                     />
                                                     <label htmlFor='no-viewers-radio'>
@@ -353,6 +405,7 @@ class ApplicationForm extends Component {
                                                     type='text'
                                                     name='viewers'
                                                     onChange={e => this.invalidInput(e, 'viewers')}
+                                                    onKeyUp={e => this.handleKeyUp(e)}
                                                     className='small-text-input'
                                                     defaultValue={this.state.viewers === 0 ? '' : this.state.viewers}
                                                 />
@@ -386,6 +439,8 @@ class ApplicationForm extends Component {
                                 showHint={this.props.showHint}
                                 closeHint={this.props.closeHint}
                                 hideSendWarning={this.hideSendWarning}
+                                chooseSomeDate={this.chooseSomeDate}
+                                handleKeyUp={this.handleKeyUp}
                             />
 
                             <div className='block-container ninety-container drag-detector'>
@@ -404,30 +459,46 @@ class ApplicationForm extends Component {
                                 />
                             </div>
                             <div className='btn-pusher drag-detector'>
+
                                 {
-                                    this.state.warning.includes('notFilled')
+                                    this.state.waiting
                                         ?
                                         <div
-                                            className='warning'
-                                            onMouseEnter={e => this.props.showHint(e, 'notFilled' + this.state.notFilled)}
-                                            onMouseLeave={() => this.props.closeHint()}
+                                            id='waiting-for-app-confirm'
+                                            className='waiting'
                                         >
+                                            {''}
                                         </div>
                                         :
-                                        <div
-                                            className='empty-warning'
-                                        >
-                                        </div>
+                                        <React.Fragment>
+                                            {
+                                                this.state.warning.includes('badTimings')
+                                                    ?
+                                                    <div
+                                                        className='warning'
+                                                        id='w3'
+                                                        onMouseEnter={e => this.props.showHint(e, this.state.badTimings)}
+                                                        onMouseLeave={() => this.props.closeHint()}
+                                                    >
+                                                    </div>
+                                                    :
+                                                    <div
+                                                        className='empty-warning'
+                                                    >
+                                                    </div>
+                                            }
+                                            <button
+                                                id='send-btn'
+                                                className='hover-text'
+                                                onClick={e => this.sendApplication(e)}
+                                                onMouseEnter={e => this.props.showHint(e, 'sendAppBtn')}
+                                                onMouseLeave={() => this.props.closeHint()}
+                                                disabled={this.getSendDisabled()}
+                                            >
+                                                Отправить заявку
+                                            </button>
+                                        </React.Fragment>
                                 }
-                                <button
-                                    id='send-btn'
-                                    className='hover-text'
-                                    onClick={e => this.sendApplication(e)}
-                                    onMouseEnter={e => this.props.showHint(e, 'sendAppBtn')}
-                                    onMouseLeave={() => this.props.closeHint()}
-                                >
-                                    Отправить заявку
-                                </button>
                             </div>
                         </div>
                 }
@@ -436,17 +507,47 @@ class ApplicationForm extends Component {
         );
     }
 
-    handleInput = (e) => {
-        this.props.closeHint();
-        const warning = this.state.warning.slice();
-        const index = warning.indexOf('notFilled');
-        if (index !== -1) {
-            warning.splice(index, 1);
-        }
+    handleKeyUp = e => {
+        if (e.which === 13) {
 
+            const {eventName, rooms, viewersExpected, viewers, someDatesChosen} = this.state;
+            if (eventName !== '' && rooms.length !== 0 && (!viewersExpected || viewers !== 0) && someDatesChosen) {
+                this.sendApplication();
+            } else {
+                const currentInput = e.target;
+                const appFormInputs = document.getElementById('application-form');
+                const allInputs = appFormInputs.getElementsByTagName('input');
+                let found = false;
+                let i = 0;
+                while (i < allInputs.length) {
+                    const inp = allInputs.item(i);
+
+                    if (found && inp.type === 'text') {
+                        inp.focus();
+                        break;
+                    } else if (inp === currentInput) {
+                        found = true;
+                    }
+
+                    i++;
+                    if (i === allInputs.length) {
+                        i = 0;
+                    }
+                }
+            }
+        }
+    };
+
+    chooseSomeDate = did => {
         this.setState({
-            [e.target.name]: e.target.value,
-            warning: warning
+            someDatesChosen: did
+        })
+    };
+
+    handleInput = e => {
+        this.props.closeHint();
+        this.setState({
+            [e.target.name]: e.target.value
         });
     };
 
@@ -469,59 +570,27 @@ class ApplicationForm extends Component {
 
     sendApplication = () => {
 
-        const {eventName, viewers, eventType, comment, viewersExpected, rooms, warning} = this.state;
+        this.props.closeHint();
+        const {eventName, eventType, viewersNeeded, viewers, comment, warning} = this.state;
         const {selectedDays, selectedTimings} = this.calendarRef.current.state;
 
-        const nameProblems = eventName === '';
-
-        const viewersNeeded = ['MATCH', 'PARTY'].includes(eventType) || viewersExpected === 'true';
-        const viewersProblems = viewersNeeded && +viewers === 0;
-
-        const noDays = selectedDays.length === 0;
-
-        let badTimings = '';
+        let badTimings = 'badTimings';
         for (let i in selectedTimings) {
             const {startH, startM, endH, endM} = selectedTimings[i];
             const bad = ((+startH) * 60 + (+startM)) >= ((+endH) * 60 + (+endM));
             if (bad) {
                 const correlatedDay = selectedDays[i];
-                const split = correlatedDay.split(/ /g);
-                const monthNum = moment.monthsShort().indexOf(split[1] + 1);
-                badTimings += `& ${split[2]}.${monthNum}.${split[3]}`;
+                const split = correlatedDay.split(' ');
+                const monthNum = moment.monthsShort().indexOf(split[1]) + 1;
+                badTimings += `&${split[2]}.${this.leadZero(monthNum)}.${split[3]}`;
             }
         }
 
-        const roomProblems = rooms.length === 0;
-
-        if (nameProblems || viewersProblems || noDays || badTimings.length !== 0 || roomProblems) {
-
-            let notFilled = '';
-
-            if (nameProblems) {
-                notFilled += '%name';
-            }
-
-            if (viewersProblems) {
-                notFilled += '%viewers';
-            }
-
-            if (noDays) {
-                notFilled += '%days';
-            }
-
-            if (roomProblems) {
-                notFilled += '%rooms';
-            }
-
-            if (badTimings.length !== 0) {
-                notFilled += '%timings->' + badTimings;
-            }
-
+        if (badTimings.length !== 10) {
             this.setState({
-                warning: warning.indexOf('notFilled') === -1 ? [...warning, 'notFilled'] : warning,
-                notFilled: notFilled
+                warning: warning.includes('badTimings') ? warning : [...warning, 'badTimings'],
+                badTimings: badTimings
             })
-
         } else {
             const nameJSON = `"name":"${eventName}",`;
             const audJSON = `"auditory":${viewersNeeded ? +viewers : 0},`;
@@ -536,28 +605,105 @@ class ApplicationForm extends Component {
 
             const toSend = '{' + nameJSON + audJSON + typeJSON + roomsJSON + userJSON + dateJSON + commentJSON + '}';
 
-            sessionStorage.removeItem('appFormState');
+            const {token, userLogin, password} = this.props; // TODO: Security!
 
-            console.log(toSend);
+            const newWarning = warning.slice();
+            const i = newWarning.indexOf('badTimings');
+            if (i !== -1) {
+                newWarning.splice(i, 1);
+            }
+            this.setState({
+                waiting: true,
+                warning: newWarning
+            });
+            setTimeout(() => waiting('waiting-for-app-confirm'), 1);
 
-            checkToken(this.props.refreshToken, this.props.token);
-
-            const headers = [
-                {name: 'Authorization', value: 'Bearer_' + this.props.token},
-                {name: 'Content-Type', value: 'application/json'}
-            ];
-            connectServer(
-                toSend,
-                this.onConnect,
-                'post',
-                headers,
-                '/api/user/order');
+            checkToken(
+                responseText => {
+                    console.log('Now actually sending an application');
+                    console.log(responseText);
+                    let newToken = token;
+                    if (responseText !== 'true') {
+                        this.props.refreshToken(responseText);
+                        newToken = JSON.parse(responseText).token;
+                    }
+                    const headers = [
+                        {name: 'Authorization', value: 'Bearer_' + newToken},
+                        {name: 'Content-Type', value: 'application/json'}
+                    ];
+                    connectServer(
+                        toSend,
+                        this.cleanUp,
+                        'post',
+                        headers,
+                        'api/user/order',
+                        this.onResponseError,
+                        this.onSendError);
+                },
+                token,
+                userLogin,
+                password,
+                this.onResponseError,
+                this.onSendError
+            );
         }
     };
 
-    onConnect = (responseText) => {
-        console.log(responseText);
-        this.props.newApplication(true);
+    cleanUp = () => {
+
+        const appForm = document.getElementById('application-form');
+        if (appForm != null) {
+            this.setState({
+                eventName: '',
+                eventType: 'PARTY',
+                rooms: [],
+                viewersExpected: 'false',
+                viewers: 0,
+                comment: '',
+                warning: [],
+                badTimings: '',
+                someDatesChosen: false,
+                waiting: false
+            });
+
+            const inputs = appForm.getElementsByTagName('input');
+            for (let i = 0; i < inputs.length; i++) {
+                inputs.item(i).value = inputs.item(i).defaultValue;
+            }
+
+            const textArea = appForm.getElementsByTagName('textarea');
+            for (let i = 0; i < textArea.length; i++) {
+                textArea.item(i).value = textArea.item(i).defaultValue;
+            }
+
+            const btn = document.getElementById('send-btn');
+            const top = btn.getBoundingClientRect().top + document.body.scrollTop - 18;
+            const left = btn.getBoundingClientRect().left + document.body.scrollLeft + 41;
+            this.props.sendBird('sign-up', left, top);
+
+            this.calendarRef.current.clearSelectedDates();
+        }
+
+        sessionStorage.removeItem('ApplicationForm');
+        sessionStorage.removeItem('Calendar');
+    };
+
+    onResponseError = () => {
+        this.setState({
+            warning: [...this.state.warning, 'badTimings'],
+            badTimings: 'responseError',
+            waiting: false
+        });
+        document.getElementById('w3').style.transform = 'rotate(0deg)';
+    };
+
+    onSendError = () => {
+        this.setState({
+            warning: [...this.state.warning, 'badTimings'],
+            badTimings: 'sendError',
+            waiting: false
+        });
+        document.getElementById('w3').style.transform = 'rotate(0deg)';
     };
 
     dateTimeConstruction = (datesArray, timesArray) => {
@@ -583,7 +729,7 @@ class ApplicationForm extends Component {
         return res;
     };
 
-    leadZero = (num) => {
+    leadZero = num => {
         let ans = num + "";
         while (ans.length < 2) {
             ans = '0' + ans;
@@ -591,13 +737,8 @@ class ApplicationForm extends Component {
         return ans;
     };
 
-    addRoom = (room) => {
+    addRoom = room => {
         this.props.closeHint();
-        const warning = this.state.warning.slice();
-        const index = warning.indexOf('notFilled');
-        if (index !== -1) {
-            warning.splice(index, 1);
-        }
 
         let toAdd = null;
 
@@ -619,8 +760,7 @@ class ApplicationForm extends Component {
 
         if (toAdd != null && !this.state.rooms.includes(toAdd)) {
             this.setState({
-                rooms: [...this.state.rooms, toAdd],
-                warning: warning
+                rooms: [...this.state.rooms, toAdd]
             })
         }
     };
@@ -634,7 +774,7 @@ class ApplicationForm extends Component {
         return [formX, formY]
     };
 
-    startFormDrag = (e) => {
+    startFormDrag = e => {
         if (e.target.className.indexOf('drag-detector') !== -1) {
 
             e.target.style.cursor = 'grab';
@@ -664,7 +804,7 @@ class ApplicationForm extends Component {
         }
     };
 
-    dragForm = (e) => {
+    dragForm = e => {
         if (this.state.dragged) {
             this.setState({
                 x: +e.screenX - this.state.offsetX,
@@ -685,7 +825,7 @@ class ApplicationForm extends Component {
         }
     };
 
-    PlusMinus = (props) => {
+    PlusMinus = props => {
         const room = props.room;
         const {amount, maxAmount} = room;
         return(
@@ -740,7 +880,7 @@ class ApplicationForm extends Component {
         )
     };
 
-    halfHint = (e) => {
+    halfHint = e => {
         const secondHalf = document.getElementById('hidden-half').checked ? 'full' : 'half';
         this.props.showHint(e, `trainingArena%${secondHalf}`)
     };
@@ -765,7 +905,7 @@ class ApplicationForm extends Component {
         );
     };
 
-    removeRoom = (room) => {
+    removeRoom = room => {
         const noRoom = this.state.rooms.slice();
         const index = noRoom.indexOf(room);
         noRoom.splice(index, 1);
@@ -801,7 +941,7 @@ class ApplicationForm extends Component {
 
     minimize = () => {
         this.props.closeHint();
-        sessionStorage.setItem('calendarState', JSON.stringify(this.calendarRef.current.state));
+        sessionStorage.setItem('Calendar', JSON.stringify(this.calendarRef.current.state));
         this.setState({
             minimized: true
         });
@@ -809,6 +949,7 @@ class ApplicationForm extends Component {
 
     expand = (x, y) => {
         this.props.closeHint();
+        sessionStorage.removeItem('MinifiedApplicationForm');
         this.setState({
             minimized: false,
             x: x,
@@ -816,9 +957,7 @@ class ApplicationForm extends Component {
         })
     };
 
-    eventTypeId = ['PARTY', 'DRINKING_PARTY', 'TRAINING', 'OTHER'];
-
-    pickEventType = (option) => {
+    pickEventType = option => {
         const index = this.eventTypeOptions.indexOf(option);
         this.setState({
             eventType: this.eventTypeId[index]
@@ -834,10 +973,6 @@ class ApplicationForm extends Component {
         } else {
 
             const warning = this.state.warning.slice();
-            const indexF = warning.indexOf('notFilled');
-            if (indexF !== -1) {
-                warning.splice(indexF, 1);
-            }
             const indexW = warning.indexOf(where);
             if (indexW !== -1) {
                 warning.splice(indexW, 1);
@@ -854,7 +989,7 @@ class ApplicationForm extends Component {
     hideSendWarning = () => {
         this.props.closeHint();
         const warning = this.state.warning.slice();
-        const index = warning.indexOf('notFilled');
+        const index = warning.indexOf('badTimings');
         if (index !== -1) {
             warning.splice(index, 1);
         }
@@ -888,6 +1023,17 @@ class ApplicationForm extends Component {
         this.setState({
             rooms: rooms
         })
+    };
+
+    getEventTypeHeader() {
+        const index = this.eventTypeId.indexOf(this.state.eventType);
+        return index === -1 ? 'Спорт' : this.eventTypeOptions[index].rusName;
+    }
+
+    getSendDisabled = () => {
+        const {eventName, rooms, viewersExpected, viewers, someDatesChosen} = this.state;
+
+        return eventName === '' || rooms.length === 0 || (viewersExpected === 'true' && viewers === 0) || !someDatesChosen;
     }
 }
 
@@ -898,9 +1044,9 @@ ApplicationForm.propTypes = {
     showHint: PropTypes.func.isRequired,
     closeHint: PropTypes.func.isRequired,
     roomArray: PropTypes.array.isRequired,
-    minAppRef: PropTypes.object.isRequired,
     newApplication: PropTypes.func.isRequired,
-    refreshToken: PropTypes.func.isRequired
+    refreshToken: PropTypes.func.isRequired,
+    sendBird: PropTypes.func.isRequired
 };
 
 export default ApplicationForm;

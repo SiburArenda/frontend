@@ -17,6 +17,18 @@ class ClientMainContent extends Component {
     };
 
     render() {
+        const {
+            roomArray,
+            showHint,
+            closeHint,
+            token,
+            userLogin,
+            password,
+            applicationFormVisible,
+            closeAppWindow,
+            refreshToken,
+            appFormRef
+        } = this.props;
         return (
             <React.Fragment>
                 <Route
@@ -31,9 +43,9 @@ class ClientMainContent extends Component {
                         (props) => (
                             <Rooms
                                 {...props}
-                                roomArray={this.props.roomArray}
-                                showHint={this.props.showHint}
-                                closeHint={this.props.closeHint}
+                                roomArray={roomArray}
+                                showHint={showHint}
+                                closeHint={closeHint}
                             />
                         )
                     }
@@ -44,13 +56,29 @@ class ClientMainContent extends Component {
                 />
                 <Route
                     path="/signup"
-                    component={SignUp}
+                    render={
+                        (props) => (
+                            <SignUp
+                                {...props}
+                                sendBird={this.props.sendBird}
+                                showHint={this.props.showHint}
+                                closeHint={this.props.closeHint}
+                            />
+                        )
+                    }
                 />
-                <EachRoom
-                    roomArray={this.props.roomArray}
-                    showHint={this.props.showHint}
-                    closeHint={this.props.closeHint}
-                />
+
+                {
+                    roomArray.length === 11
+                        ?
+                        <EachRoom
+                            roomArray={roomArray}
+                            showHint={showHint}
+                            closeHint={closeHint}
+                        />
+                        : null
+                }
+
                 <Route
                     path='/accountSettings'
                     component={AccountSettings}
@@ -61,29 +89,31 @@ class ClientMainContent extends Component {
                         (props) => (
                             <AllApplications
                                 {...props}
-                                token={this.props.token}
-                                userLogin={this.props.userLogin}
+                                token={token}
+                                userLogin={userLogin}
+                                password={password} //TODO: Security!
                                 newApplication={this.newApplication}
                                 refresh={this.state.newApplication}
-                                openLogInForm={this.props.openLogInForm}
+                                refreshToken={refreshToken}
                             />
                         )
                     }
                 />
                 {
-                    this.props.applicationFormVisible
+                    applicationFormVisible
                         ?
                         <ApplicationForm
-                            closeAppWindow={this.props.closeAppWindow}
-                            userLogin={this.props.userLogin}
-                            token={this.props.token}
-                            showHint={this.props.showHint}
-                            closeHint={this.props.closeHint}
-                            roomArray={this.props.roomArray}
-                            minAppRef={this.props.minAppRef}
+                            closeAppWindow={closeAppWindow}
+                            userLogin={userLogin}
+                            token={token}
+                            password={password} //TODO: Security!
+                            showHint={showHint}
+                            closeHint={closeHint}
+                            roomArray={roomArray}
                             newApplication={this.newApplication}
-                            ref={this.props.appFormRef}
-                            refreshToken={this.props.refreshToken}
+                            ref={appFormRef}
+                            refreshToken={refreshToken}
+                            sendBird={this.props.sendBird}
                         />
                         : null
                 }
@@ -92,6 +122,7 @@ class ClientMainContent extends Component {
     }
 
     newApplication = (what) => {
+        console.log('Wow! New application!');
         this.setState({
             newApplication: what
         })
@@ -107,9 +138,9 @@ ClientMainContent.propTypes = {
     appFormRef: PropTypes.object.isRequired,
     userLogin: PropTypes.string.isRequired,
     token: PropTypes.string.isRequired,
-    minAppRef: PropTypes.object.isRequired,
-    openLogInForm: PropTypes.func.isRequired,
-    refreshToken: PropTypes.func.isRequired
+    password: PropTypes.string.isRequired, //TODO: Security!
+    refreshToken: PropTypes.func.isRequired,
+    sendBird: PropTypes.func.isRequired
 };
 
 export default ClientMainContent;

@@ -9,18 +9,6 @@ import Dropdown from "../Dropdown";
 
 class Calendar extends React.Component {
 
-    componentDidMount() {
-        window.addEventListener('beforeunload', this.saveState, false);
-    };
-
-    componentWillUnmount() {
-        window.removeEventListener('beforeunload', this.saveState, false);
-    }
-
-    saveState = () => {
-        sessionStorage.setItem('calendarState', JSON.stringify(this.state));
-    };
-
     constructor(props) {
         super(props);
 
@@ -30,7 +18,7 @@ class Calendar extends React.Component {
         this.endMRef = React.createRef();
         this.checkBoxRef = React.createRef();
 
-        const savedStateStr = sessionStorage.getItem('calendarState');
+        const savedStateStr = sessionStorage.getItem('Calendar');
 
         if (savedStateStr!= null) {
 
@@ -78,226 +66,24 @@ class Calendar extends React.Component {
         showTimeSelect: false
     };
 
+    componentDidMount() {
+        this.props.chooseSomeDate(this.state.selectedDays.length !== 0);
+        window.addEventListener('beforeunload', this.saveState, false);
+    };
+
+    saveState = () => {
+        sessionStorage.setItem('Calendar', JSON.stringify(this.state));
+    };
+
+    componentWillUnmount() {
+        window.removeEventListener('beforeunload', this.saveState, false);
+    }
+
     weekdaysShort = ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ', 'ВС'];
     months = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
 
-    year = () => this.state.dateContext.format("Y");
-
-    month = () => {
-        const monthInd = this.state.dateContext.format("M");
-        return this.months[+monthInd - 1];
-    };
-
-    daysInMonth = () => this.state.dateContext.daysInMonth();
-
-    firstDayOfMonth = () => moment(this.state.dateContext).startOf('month').format('d');
-
-    setMonth = (monthOpt) => {
-        const month = monthOpt.rusName;
-        const monthNo = this.months.indexOf(month);
-        let dateContext = Object.assign({}, this.state.dateContext);
-        dateContext = moment(dateContext).set("month", monthNo);
-        this.setState({
-            dateContext: dateContext
-        });
-    };
-
-    moveMonth = (side) => {
-        let dateContext = Object.assign({}, this.state.dateContext);
-        dateContext = moment(dateContext).add(side, "month");
-        this.setState({
-            dateContext: dateContext
-        });
-    };
-
-    showYearEditor = () => {
-
-        document.addEventListener('click', this.handleClickOutside, false);
-
-        this.setState({
-            showYearNav: true
-        });
-    };
-
-    setYear = (userInput) => {
-        if (/\d+/.test(userInput)) {
-            let dateContext = Object.assign({}, this.state.dateContext);
-            dateContext = moment(dateContext).set("year", +userInput);
-            this.setState({
-                dateContext: dateContext
-            });
-        }
-    };
-
-    onKeyUpYear = (e) => {
-        if (/^\d*$/.test(e.target.value) && (e.which === 13 || e.which === 27)) {
-            if (e.target.value !== '') {
-                this.setYear(e.target.value);
-            }
-            document.removeEventListener('click', this.handleClickOutside, false);
-            this.setState({
-                showYearNav: false
-            })
-        }
-    };
-
-    YearNav = () => {
-        return (
-            this.state.showYearNav
-                ?
-                <span className='flex-container'>
-                    <input
-                        defaultValue={this.year()}
-                        onKeyUp={e => this.onKeyUpYear(e)}
-                        onChange={e => this.invalidInput(e, 'year')}
-                        type="text"
-                        className='small-text-input'
-                        id='year-inp-line'
-                    />
-                    <button
-                        className='transparent-element no-border-element hover-text'
-                        style={{marginLeft: '7px'}}
-                        id='ok-year'
-                        onClick={() => this.okYear()}
-                    >
-                        OK
-                    </button>
-                    {
-                        this.state.warning === 'year'
-                            ?
-                            <div
-                                className='warning'
-                                onMouseEnter={e => this.props.showHint(e, 'intPosNum')}
-                                onMouseLeave={() => this.props.closeHint()}
-                            >
-                            </div>
-                            :
-                            <div
-                                className='empty-warning'
-                            >
-                            </div>
-                    }
-                </span>
-                :
-                <span
-                    onClick={() => this.showYearEditor()}
-                    className='hover-text'
-                >
-                {this.year()}
-                </span>
-        );
-    };
-
-    exactDayDescription = (day) => {
-        const monthShort = this.state.dateContext.format("MMM");
-        const weekdayShort = moment.weekdaysShort()[(+this.firstDayOfMonth() + day - 1) % 7];
-        return `${weekdayShort} ${monthShort} ${day} ${this.year()}`
-    };
-
-    shiftSelect = (e, day) => {
-
-        const {dateContext, selectedDays, selectedTimings, lastChosenWithShift} = this.state;
-
-        const clickedDayDescription = this.exactDayDescription(day);
-        const additionDays = [];
-        const additionTimings = [];
-        const dateContextStr = dateContext.format('YYYY-MM-%Thh:mm:ss');
-        const chosen = dateContextStr.replace('%', this.leadZero(day));
-
-        if (lastChosenWithShift === null) {
-            if (!selectedDays.includes(clickedDayDescription)) {
-                additionDays.push(clickedDayDescription);
-                additionTimings.push(new Timing());
-            }
-            this.setState({
-                lastChosenWithShift: chosen,
-                selectedDays: [...selectedDays, ...additionDays],
-                selectedTimings: [...selectedTimings, ...additionTimings]
-            });
-
-        } else {
-
-            const lcsM = moment.utc(lastChosenWithShift);
-            const cM = moment.utc(chosen);
-            const lcsIsEarlier = lcsM.isSameOrBefore(cM);
-            const startDate = lcsIsEarlier ? lcsM : cM;
-            const endDate = lcsIsEarlier ? cM : lcsM;
-            if (lcsIsEarlier) {
-                startDate.add(1, 'd');
-            }
-
-            while (startDate.isSameOrBefore(endDate)) {
-                additionDays.push(startDate.format('ddd MMM D YYYY'));
-                additionTimings.push(new Timing());
-                startDate.add(1, 'd');
-            }
-
-            this.setState({
-                lastChosenWithShift: null,
-                selectedDays: [...this.state.selectedDays, ...additionDays],
-                selectedTimings: [...this.state.selectedTimings, ...additionTimings]
-            })
-        }
-    };
-
-    leadZero = (num) => {
-        let ans = num + "";
-        while (ans.length < 2) {
-            ans = '0' + ans;
-        }
-        return ans;
-    };
-
-    onDayClick = (e, day) => {
-        const {dateContext, selectedTimings, selectedDays} = this.state;
-        let {showTimeSelect, currentlyManagedDayIndex}= this.state;
-        const now = moment();
-        const thenYM = dateContext.format('YYYY-MM-');
-        const thenT = dateContext.format('Thh:mm:ss');
-        const then = moment.utc(thenYM + this.leadZero(day) + thenT);
-        if (then.isAfter(now) && e.target.className.indexOf('time-set-button') === -1) {
-            this.props.hideSendWarning();
-            const clickedDayDescription = this.exactDayDescription(day);
-            if (e.shiftKey) {
-                this.shiftSelect(e, day);
-            } else {
-                const newSelectedDays = selectedDays.slice();
-                const newSelectedTimings = selectedTimings.slice();
-                const index = newSelectedDays.indexOf(clickedDayDescription);
-                if (index > -1) {
-                    newSelectedDays.splice(index, 1);
-                    newSelectedTimings.splice(index, 1);
-                    if (index === +currentlyManagedDayIndex){
-                        showTimeSelect = false;
-                        currentlyManagedDayIndex = -1;
-                    } else {
-                        currentlyManagedDayIndex -= (index < currentlyManagedDayIndex) ? 1 : 0;
-                    }
-                } else {
-                    newSelectedDays.push(clickedDayDescription);
-                    newSelectedTimings.push(new Timing());
-                }
-                this.setState({
-                    lastChosenWithShift: null,
-                    selectedDays: newSelectedDays,
-                    selectedTimings: newSelectedTimings,
-                    currentlyManagedDayIndex: currentlyManagedDayIndex,
-                    showTimeSelect: showTimeSelect
-                });
-            }
-        }
-    };
-
-    changeTiming = (attr, timing) => {
-        const newTimings = this.state.selectedTimings.slice();
-        newTimings[this.state.currentlyManagedDayIndex].setTiming(attr, timing);
-        this.setState({
-            selectedTimings: newTimings
-        })
-    };
-
     render() {
-        const weekdays = this.weekdaysShort.map((day) => {
+        const weekdays = this.weekdaysShort.map(day => {
             return (
                 <td key={day} className='weekday drag-detector'>{day}</td>
             )
@@ -461,6 +247,7 @@ class Calendar extends React.Component {
                         closeHint={this.props.closeHint}
                         defaultTiming={this.state.selectedTimings[this.state.currentlyManagedDayIndex]}
                         header={this.getHeaderForTiming()}
+                        handleKeyUp={this.props.handleKeyUp}
                     />
                     :
                     null
@@ -469,6 +256,230 @@ class Calendar extends React.Component {
 
         );
     }
+
+    year = () => this.state.dateContext.format("Y");
+
+    month = () => {
+        const monthInd = this.state.dateContext.format("M");
+        return this.months[+monthInd - 1];
+    };
+
+    daysInMonth = () => this.state.dateContext.daysInMonth();
+
+    firstDayOfMonth = () => moment(this.state.dateContext).startOf('month').format('d');
+
+    setMonth = (monthOpt) => {
+        const month = monthOpt.rusName;
+        const monthNo = this.months.indexOf(month);
+        let dateContext = Object.assign({}, this.state.dateContext);
+        dateContext = moment(dateContext).set("month", monthNo);
+        this.setState({
+            dateContext: dateContext
+        });
+    };
+
+    moveMonth = (side) => {
+        let dateContext = Object.assign({}, this.state.dateContext);
+        dateContext = moment(dateContext).add(side, "month");
+        this.setState({
+            dateContext: dateContext
+        });
+    };
+
+    showYearEditor = () => {
+
+        document.addEventListener('click', this.handleClickOutside, false);
+
+        this.setState({
+            showYearNav: true
+        });
+    };
+
+    setYear = (userInput) => {
+        if (/\d+/.test(userInput)) {
+            let dateContext = Object.assign({}, this.state.dateContext);
+            dateContext = moment(dateContext).set("year", +userInput);
+            this.setState({
+                dateContext: dateContext
+            });
+        }
+    };
+
+    onKeyUpYear = e => {
+        if (/^\d*$/.test(e.target.value) && (e.which === 13)) {
+            if (e.target.value !== '') {
+                this.setYear(e.target.value);
+            }
+            document.removeEventListener('click', this.handleClickOutside, false);
+            this.setState({
+                showYearNav: false
+            })
+        }
+    };
+
+    YearNav = () => {
+        return (
+            this.state.showYearNav
+                ?
+                <span className='flex-container'>
+                    <input
+                        defaultValue={this.year()}
+                        onKeyUp={e => this.onKeyUpYear(e)}
+                        onChange={e => this.invalidInput(e, 'year')}
+                        type="text"
+                        className='small-text-input'
+                        id='year-inp-line'
+                    />
+                    <button
+                        className='transparent-element no-border-element hover-text'
+                        style={{marginLeft: '7px'}}
+                        id='ok-year'
+                        onClick={() => this.okYear()}
+                    >
+                        OK
+                    </button>
+                    {
+                        this.state.warning === 'year'
+                            ?
+                            <div
+                                className='warning'
+                                onMouseEnter={e => this.props.showHint(e, 'intPosNum')}
+                                onMouseLeave={() => this.props.closeHint()}
+                            >
+                            </div>
+                            :
+                            <div
+                                className='empty-warning'
+                            >
+                            </div>
+                    }
+                </span>
+                :
+                <span
+                    onClick={() => this.showYearEditor()}
+                    className='hover-text'
+                >
+                {this.year()}
+                </span>
+        );
+    };
+
+    exactDayDescription = day => {
+        const monthShort = this.state.dateContext.format("MMM");
+        const weekdayShort = moment.weekdaysShort()[(+this.firstDayOfMonth() + day - 1) % 7];
+        return `${weekdayShort} ${monthShort} ${day} ${this.year()}`
+    };
+
+    shiftSelect = (e, day) => {
+
+        const {dateContext, selectedDays, selectedTimings, lastChosenWithShift} = this.state;
+
+        const clickedDayDescription = this.exactDayDescription(day);
+        const additionDays = [];
+        const additionTimings = [];
+        const dateContextStr = dateContext.format('YYYY-MM-%Thh:mm:ss');
+        const chosen = dateContextStr.replace('%', this.leadZero(day));
+
+        if (lastChosenWithShift === null) {
+            if (!selectedDays.includes(clickedDayDescription)) {
+                additionDays.push(clickedDayDescription);
+                additionTimings.push(new Timing());
+            }
+            this.setState({
+                lastChosenWithShift: chosen
+            });
+
+        } else {
+
+            const lcsM = moment.utc(lastChosenWithShift);
+            const cM = moment.utc(chosen);
+            const lcsIsEarlier = lcsM.isSameOrBefore(cM);
+            const startDate = lcsIsEarlier ? lcsM : cM;
+            const endDate = lcsIsEarlier ? cM : lcsM;
+            if (lcsIsEarlier) {
+                startDate.add(1, 'd');
+            }
+
+            while (startDate.isSameOrBefore(endDate)) {
+                additionDays.push(startDate.format('ddd MMM D YYYY'));
+                additionTimings.push(new Timing());
+                startDate.add(1, 'd');
+            }
+
+            this.setState({
+                lastChosenWithShift: null
+            })
+        }
+
+        this.setState({
+            selectedDays: [...selectedDays, ...additionDays],
+            selectedTimings: [...selectedTimings, ...additionTimings]
+        });
+
+        this.props.chooseSomeDate(true);
+    };
+
+    leadZero = (num) => {
+        let ans = num + "";
+        while (ans.length < 2) {
+            ans = '0' + ans;
+        }
+        return ans;
+    };
+
+    onDayClick = (e, day) => {
+        const {dateContext, selectedTimings, selectedDays} = this.state;
+        let {showTimeSelect, currentlyManagedDayIndex}= this.state;
+        const now = moment();
+        const thenYM = dateContext.format('YYYY-MM-');
+        const thenT = dateContext.format('Thh:mm:ss');
+        const then = moment.utc(thenYM + this.leadZero(day) + thenT);
+        if (then.isAfter(now) && e.target.className.indexOf('time-set-button') === -1) {
+            this.props.hideSendWarning();
+            const clickedDayDescription = this.exactDayDescription(day);
+            if (e.shiftKey) {
+                this.shiftSelect(e, day);
+            } else {
+                const newSelectedDays = selectedDays.slice();
+                const newSelectedTimings = selectedTimings.slice();
+                const index = newSelectedDays.indexOf(clickedDayDescription);
+                if (index > -1) {
+                    newSelectedDays.splice(index, 1);
+                    newSelectedTimings.splice(index, 1);
+                    if (index === +currentlyManagedDayIndex){
+                        showTimeSelect = false;
+                        currentlyManagedDayIndex = -1;
+                    } else {
+                        currentlyManagedDayIndex -= (index < currentlyManagedDayIndex) ? 1 : 0;
+                    }
+                    if (newSelectedDays.length === 0) {
+                        this.props.chooseSomeDate(false);
+                    }
+                } else {
+                    newSelectedDays.push(clickedDayDescription);
+                    newSelectedTimings.push(new Timing());
+                    if (newSelectedDays.length === 1) {
+                        this.props.chooseSomeDate(true);
+                    }
+                }
+                this.setState({
+                    lastChosenWithShift: null,
+                    selectedDays: newSelectedDays,
+                    selectedTimings: newSelectedTimings,
+                    currentlyManagedDayIndex: currentlyManagedDayIndex,
+                    showTimeSelect: showTimeSelect
+                });
+            }
+        }
+    };
+
+    changeTiming = (attr, timing) => {
+        const newTimings = this.state.selectedTimings.slice();
+        newTimings[this.state.currentlyManagedDayIndex].setTiming(attr, timing);
+        this.setState({
+            selectedTimings: newTimings
+        })
+    };
 
     getHeaderForTiming = () => {
         const {currentlyManagedDayIndex, selectedDays} = this.state;
@@ -487,7 +498,8 @@ class Calendar extends React.Component {
             this.setState({
                 selectedDays: [...this.state.selectedDays, dayDesc],
                 selectedTimings: [...this.state.selectedTimings, new Timing()]
-            })
+            });
+            this.props.chooseSomeDate(true);
         }
         if (!e.shiftKey) {
             const prob = this.state.selectedDays.indexOf(dayDesc);
@@ -561,6 +573,7 @@ class Calendar extends React.Component {
     };
 
     clearSelectedDates = () => {
+        this.props.chooseSomeDate(false);
         this.setState({
             selectedDays: [],
             selectedTimings: [],
@@ -604,7 +617,9 @@ class Calendar extends React.Component {
 Calendar.propTypes = {
     showHint: PropTypes.func.isRequired,
     closeHint: PropTypes.func.isRequired,
-    hideSendWarning: PropTypes.func.isRequired
+    hideSendWarning: PropTypes.func.isRequired,
+    chooseSomeDate: PropTypes.func.isRequired,
+    handleKeyUp: PropTypes.func.isRequired
 };
 
 export default Calendar;

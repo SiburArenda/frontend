@@ -3,54 +3,37 @@ import PropTypes from 'prop-types';
 import '../../resource/styles/LogInForm.css'
 import '../../resource/styles/Main.css'
 import {Link} from "react-router-dom";
-import {connectDatabase} from "../../functional/Database";
 import {connectServer} from "../../functional/ServerConnect";
+import {waiting} from "../../functional/Design";
 
 class LogIn extends Component {
 
     constructor(props) {
         super(props);
 
-        connectDatabase(['LogInForm'], 'get', this.setInitState)
-    }
-
-    setInitState = dbData => {
-        if (dbData !== undefined) {
-            const {userLogin, invalid} = dbData;
-            // eslint-disable-next-line react/no-direct-mutation-state
-            this.state.userLogin = userLogin;
-            // eslint-disable-next-line react/no-direct-mutation-state
-            this.state.invalid = invalid;
+        const sessionState = sessionStorage.getItem('LogIn');
+        if (sessionState != null) {
+            this.state.userLogin = sessionState;
         }
-    };
+    }
 
     state = {
         userLogin: '',
         password: '',
         invalid: false,
-        waiting: false,
-        waitingRotation: 0
+        waiting: false
     };
 
     componentDidMount() {
         document.addEventListener('click', this.close, false);
-        window.addEventListener('beforeunload', this.saveState, false)
+        window.addEventListener('beforeunload', this.saveState, false);
     }
 
-    saveState = () =>
-        connectDatabase(
-            [
-                {
-                    componentName: 'LogInForm',
-                    userLogin: this.state.userLogin,
-                    invalid: this.state.invalid
-                }
-                ],
-            'put'
-        );
+    saveState = () => sessionStorage.setItem('LogIn', this.state.userLogin);
 
-    close = (e) => {
+    close = e => {
         if (e.target.className.indexOf('log-in-inside') === -1) {
+            this.saveState();
             this.props.closeLogInForm();
         }
     };
@@ -61,7 +44,6 @@ class LogIn extends Component {
     }
 
     render() {
-
         const {userName} = this.props;
         const {userLogin, password, invalid, waiting} = this.state;
 
@@ -128,56 +110,48 @@ class LogIn extends Component {
 
                             <div className='log-in-inside flex-100 btn-center'>
 
-                                <div
-                                    style={{display: 'flex'}}
-                                >
+                                {
+                                    waiting
+                                        ?
+                                        <div
+                                            id='waiting-for-log-in'
+                                            className='waiting log-in-inside'
+                                        >
+                                            {''}
+                                        </div>
+                                        :
+                                        <React.Fragment>
+                                            {
+                                                invalid
+                                                    ?
+                                                    <div
+                                                        id='w'
+                                                        className='warning log-in-inside'
+                                                        onMouseEnter={e => this.props.showHint(e, 'invalidLogIn')}
+                                                        onMouseLeave={() => this.props.closeHint()}
+                                                    >
+                                                    </div>
+                                                    :
+                                                    null
+                                            }
 
-                                    {
-                                        invalid
-                                            ?
-                                            <div
-                                                className='warning'
-                                                onMouseEnter={e => this.props.showHint(e, 'invalidLogIn')}
-                                                onMouseLeave={() => this.props.closeHint()}
+                                            <button
+                                                onClick={() => this.submitLogIn()}
+                                                className='log-in-inside no-border-element transparent-element hover-text'
+                                                id='submit-log-in'
+                                                disabled={userLogin === '' || password === ''}
                                             >
-                                            </div>
-                                            :
-                                            <div
-                                                className='empty-warning'
-                                            >
-                                                {''}
-                                            </div>
-                                    }
+                                                Войти
+                                            </button>
+                                        </React.Fragment>
+                                }
 
-                                    {
-                                        waiting
-                                            ?
-                                            <div
-                                                id='waiting-for-log-in'
-                                                className='waiting'
-                                            >
-                                                {''}
-                                            </div>
-                                            :
-                                            null
-                                    }
-
-                                    <button
-                                        onClick={() => this.submitLogIn()}
-                                        className='log-in-inside no-border-element transparent-element hover-text'
-                                        id='submit-log-in'
-                                        disabled={userLogin === '' || password === ''}
-                                    >
-                                        Войти
-                                    </button>
-
-                                </div>
 
                             </div>
 
                             <Link
                                 to='/signUp'
-                                className='turquoise-hover'
+                                className='turquoise-hover log-in-inside'
                             >
                                 У меня ещё нет аккаунта
                             </Link>
@@ -225,44 +199,58 @@ class LogIn extends Component {
         const toSend = JSON.stringify({ username: this.state.userLogin, password: this.state.password });
         const headers = [{name: 'Content-Type', value: 'application/json'}];
         const url = 'api/public/login';
-        document.getElementById('submit-log-in').disabled = true;
+        this.props.storePassword(this.state.password);
         this.setState({
             waiting: true
         });
-
-        connectServer(toSend, this.onResponse, 'post', headers, url, this.waiting);
+        setTimeout(() => waiting('waiting-for-log-in'), 1);
+        connectServer(
+            toSend,
+            this.onResponse,
+            'post',
+            headers,
+            url,
+            this.error,
+            this.error
+        );
     };
 
-    onResponse = response => {
-        if (response === '') {
+    error = () => {
+        if (document.getElementById('log-in-form') != null) {
             this.setState({
-                invalid: true
-            })
-        } else {
-            const parsedResponse = JSON.parse(response);
-
-            const {firstName, lastName, roles, username, token, id} = parsedResponse;
-
-            const fullName = lastName + ' ' + firstName;
-
-            this.props.storeResponse(fullName, username, token, roles, id);
-
-            this.setState({
-                password: '',
-                userLogin: '',
+                invalid: true,
                 waiting: false
-            })
+            });
+            document.getElementById('w').style.transform = 'rotate(0deg)';
         }
     };
 
-    waiting = () => {
-        const waitIcon = document.getElementById('waiting-for-log-in');
-        console.log(waitIcon);
+    onResponse = response => {
+        const parsedResponse = JSON.parse(response);
+
+        const {firstName, lastName, roles, username, token, id} = parsedResponse;
+
+        const fullName = lastName + ' ' + firstName;
+
+        const stillVisible = document.getElementById('log-in-form') != null;
+
+        this.props.storeResponse(fullName, username, token, roles, id);
+        //TODO: Security!
+
+        if (stillVisible) {
+            this.setState({
+                password: '',
+                userLogin: '',
+                waiting: false,
+                invalid: false
+            });
+        }
     };
 
     handleInput = (e) => {
         this.setState({
-            [e.target.name]: e.target.value
+            [e.target.name]: e.target.value,
+            invalid: false
         })
     };
 
@@ -294,7 +282,8 @@ LogIn.propTypes = {
     userName: PropTypes.string.isRequired,
     logOut: PropTypes.func.isRequired,
     showHint: PropTypes.func.isRequired,
-    closeHint: PropTypes.func.isRequired
+    closeHint: PropTypes.func.isRequired,
+    storePassword: PropTypes.func.isRequired //TODO: Security!
 };
 
 export default LogIn;

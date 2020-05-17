@@ -371,3 +371,11 @@ input[type='email']{
     width: 24px;
     height: 24px;
 }
+
+.bird{
+    background: center no-repeat url("../img/sendBird.svg");
+    width: 52px;
+    height: 31px;
+    position: absolute;
+    z-index: 10;
+}

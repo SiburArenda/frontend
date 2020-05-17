@@ -3,6 +3,35 @@ import PropTypes from 'prop-types';
 
 class MinifiedApplicationForm extends Component {
 
+    constructor(props) {
+        super(props);
+
+        const coords = sessionStorage.getItem('MinifiedApplicationForm');
+        if (coords != null) {
+            const parsedCoords = JSON.parse(coords);
+            this.state.x = parsedCoords.x;
+            this.state.y = parsedCoords.y;
+        }
+    }
+
+    state = {
+        offsetX: 0,
+        offsetY: 0,
+        dragged: false,
+        grabbed: null,
+        x: this.props.posX,
+        y: this.props.posY
+    };
+
+    componentDidMount() {
+        window.addEventListener('resize', this.handleResize, false);
+        window.addEventListener('beforeunload', this.saveState, false);
+    }
+
+    saveState = () => {
+        sessionStorage.setItem('MinifiedApplicationForm', JSON.stringify({x : this.state.x, y: this.state.y}));
+    };
+
     handleResize = () => {
 
         const screenW = window.innerWidth;
@@ -23,34 +52,10 @@ class MinifiedApplicationForm extends Component {
 
     };
 
-
-    componentDidMount() {
-        window.addEventListener('resize', this.handleResize, false)
-    }
-
     componentWillUnmount() {
-        window.removeEventListener('resize', this.handleResize, false)
+        window.removeEventListener('resize', this.handleResize, false);
+        window.removeEventListener('beforeunload', this.saveState, false);
     }
-
-    constructor(props) {
-        super(props);
-
-        const coords = sessionStorage.getItem('minAppForm');
-        if (coords != null) {
-            const parsedCoords = JSON.parse(coords);
-            this.state.x = parsedCoords.x;
-            this.state.y = parsedCoords.y;
-        }
-    }
-
-    state = {
-        offsetX: 0,
-        offsetY: 0,
-        dragged: false,
-        grabbed: null,
-        x: this.props.posX,
-        y: this.props.posY
-    };
 
     render() {
         return (

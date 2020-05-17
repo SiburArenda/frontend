@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import '../../resource/styles/TimeSelectDialogue.css'
+import '../../resource/styles/Main.css'
 
 class TimeSelectDialogue extends Component {
 
@@ -45,9 +46,9 @@ class TimeSelectDialogue extends Component {
 
                     <div className='block-col-left drag-detector'>
 
-                        <p className='drag-detector'>Время начала</p>
+                        <p className='drag-detector'>Время начала<span className='red-star'>*</span></p>
 
-                        <p className='drag-detector'>Время окончания</p>
+                        <p className='drag-detector'>Время окончания<span className='red-star'>*</span></p>
 
                     </div>
 
@@ -66,6 +67,7 @@ class TimeSelectDialogue extends Component {
                                 onClick={e => this.addClickOutside(e)}
                                 onChange={e => this.handleInput(e)}
                                 ref={startHRef}
+                                onKeyUp={e => this.props.handleKeyUp(e)}
                             />
 
                             <label className='drag-detector hour-min'>ч</label>
@@ -97,6 +99,7 @@ class TimeSelectDialogue extends Component {
                                 onChange={e => this.handleInput(e)}
                                 onClick={e => this.addClickOutside(e)}
                                 ref={startMRef}
+                                onKeyUp={e => this.props.handleKeyUp(e)}
                             />
 
                             <label className='drag-detector hour-min'>мин</label>
@@ -132,6 +135,7 @@ class TimeSelectDialogue extends Component {
                                 onChange={e => this.handleInput(e)}
                                 onClick={e => this.addClickOutside(e)}
                                 ref={endHRef}
+                                onKeyUp={e => this.props.handleKeyUp(e)}
                             />
 
                             <label className='drag-detector hour-min'>ч</label>
@@ -163,6 +167,7 @@ class TimeSelectDialogue extends Component {
                                 onChange={e => this.handleInput(e)}
                                 onClick={e => this.addClickOutside(e)}
                                 ref={endMRef}
+                                onKeyUp={e => this.props.handleKeyUp(e)}
                             />
 
                             <label className='drag-detector hour-min'>мин</label>
@@ -251,7 +256,7 @@ class TimeSelectDialogue extends Component {
 }
 
 TimeSelectDialogue.propTypes = {
-    header: PropTypes.object.isRequired,
+    header: PropTypes.string.isRequired,
     defaultTiming: PropTypes.object.isRequired,
     changeTiming: PropTypes.func.isRequired,
     setForAll: PropTypes.func.isRequired,
@@ -262,7 +267,8 @@ TimeSelectDialogue.propTypes = {
     endMRef: PropTypes.object.isRequired,
     checkBoxRef: PropTypes.object.isRequired,
     showHint: PropTypes.func.isRequired,
-    closeHint: PropTypes.func.isRequired
+    closeHint: PropTypes.func.isRequired,
+    handleKeyUp: PropTypes.func.isRequired
 };
 
 export default TimeSelectDialogue;

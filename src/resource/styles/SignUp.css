@@ -1,5 +1,6 @@
 #sign-up-btn{
     margin-top: 20px;
+    margin-left: 8px;
 }
 
 #flex-for-sign-up p{
@@ -13,4 +14,12 @@ input{
 
 #flex-for-sign-up{
     margin-top: 10px;
+}
+
+#waiting-for-sign-up-confirm{
+    margin-right: 15px;
+}
+
+#w2{
+    margin-top: 20px;
 }

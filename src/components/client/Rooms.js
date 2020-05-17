@@ -13,6 +13,124 @@ class Rooms extends Component {
 
     allTags = [];
 
+    render() {
+
+        const {roomArray} = this.props;
+
+        let roomDisplay = [];
+        if (roomArray.length === 11) {
+
+            if (this.allTags.length === 0) {
+                for (let i in roomArray) {
+                    const tags = roomArray[i].tags;
+                    for (let j in tags) {
+                        if (!this.allTags.includes(tags[j])) {
+                            this.allTags.push(tags[j]);
+                        }
+                    }
+                }
+            }
+
+            const filteredRooms = roomArray.filter(roomInfo => {
+                for (let i in this.state.tags) {
+                    if (!roomInfo.tags.includes(this.state.tags[i])) {
+                        return false;
+                    }
+                }
+
+                const searchString = this.state.searchString.toLowerCase();
+
+                const inName = roomInfo.name.toLowerCase().indexOf(searchString) !== -1;
+
+                let inTags = false;
+                for (let i in roomInfo.tags) {
+                    if (roomInfo.tags[i].toLowerCase().indexOf(searchString) !== -1) {
+                        inTags = true;
+                        break;
+                    }
+                }
+
+                const noHTMLDescription = roomInfo.description.replace(/(<\/?[A-za-z:/='. ]*>)|(%parameters%)/g, '');
+                const inDescription = noHTMLDescription.toLowerCase().indexOf(searchString) !== -1;
+
+                const sameAmount = searchString === roomInfo.amount + '';
+
+                const inAdditions = roomInfo.isAdditionTo !== 'independent' && roomInfo.isAdditionTo.toLowerCase().indexOf(searchString) !== -1;
+
+                return inName || inTags || inDescription || sameAmount || inAdditions;
+            });
+
+            roomDisplay = filteredRooms.map(room => this.getRoomLayout(room));
+        }
+
+        return (
+            <div
+                className='info-container'
+            >
+                <h1>Помещения</h1>
+
+                {
+                    roomArray.length < 11
+                        ?
+                        <p
+                            className='info-paragraph'
+                        >
+                            {this.getErrorLayout()}
+                        </p>
+                        :
+                        <React.Fragment>
+                            <div className='flex-container flex-end'>
+                                <div id='search-icon'>
+                                </div>
+                                <input
+                                    type='text'
+                                    className='search'
+                                    name='searchString'
+                                    onChange={e => this.handleInput(e)}
+                                />
+                                <label id='divider'>|</label>
+                                <Dropdown
+                                    header='Искать по тэгам'
+                                    options={this.allTags.map(tag => {return {rusName: tag, additional: null}})}
+                                    onChoose={this.addTag}
+                                    withButton={false}
+                                    showHint={this.props.showHint}
+                                    closeHint={this.props.closeHint}
+                                />
+                            </div>
+                            {
+                                this.state.tags.length === 0
+                                    ?
+                                    null
+                                    :
+                                    <div className='map-display'>
+                                        <label style={{marginRight: '8px'}}>Тэги:</label>
+                                        {
+                                            this.state.tags.map(
+                                                tag =>
+                                                    <span
+                                                        key={tag}
+                                                        className='map-span'
+                                                        style={{order: tag.length}}
+                                                    >
+                                            {tag}
+                                                        <button
+                                                            className='remove-btn'
+                                                            onClick={() => this.removeTag(tag)}
+                                                        >{''}
+                                            </button>
+                                        </span>
+                                            )
+                                        }
+                                    </div>
+                            }
+                            {roomDisplay}
+                        </React.Fragment>
+                }
+            </div>
+        );
+    }
+
     rentGiverLink = (room) => {
         const description = room.description;
         const link = description.replace(/.*(<a href=')|('>http.*)/g, '');
@@ -116,105 +234,6 @@ class Rooms extends Component {
         </div>
     };
 
-    render() {
-
-        if (this.allTags.length === 0) {
-            for (let i in this.props.roomArray) {
-                const tags = this.props.roomArray[i].tags;
-                for (let j in tags) {
-                    if (!this.allTags.includes(tags[j])){
-                        this.allTags.push(tags[j]);
-                    }
-                }
-            }
-        }
-
-        const filteredRooms = this.props.roomArray.filter(roomInfo => {
-            for (let i in this.state.tags) {
-                if (!roomInfo.tags.includes(this.state.tags[i])) {
-                    return false;
-                }
-            }
-
-            const searchString = this.state.searchString.toLowerCase();
-
-            const inName = roomInfo.name.toLowerCase().indexOf(searchString) !== -1;
-
-            let inTags = false;
-            for (let i in roomInfo.tags) {
-                if (roomInfo.tags[i].toLowerCase().indexOf(searchString) !== -1) {
-                    inTags = true;
-                    break;
-                }
-            }
-
-            const noHTMLDescription = roomInfo.description.replace(/(<\/?[A-za-z:/='. ]*>)|(%parameters%)/g, '');
-            const inDescription = noHTMLDescription.toLowerCase().indexOf(searchString) !== -1;
-
-            const sameAmount = searchString === roomInfo.amount + '';
-
-            const inAdditions = roomInfo.isAdditionTo !== 'independent' && roomInfo.isAdditionTo.toLowerCase().indexOf(searchString) !== -1;
-
-            return inName || inTags || inDescription || sameAmount || inAdditions;
-        });
-
-        const roomDisplay = filteredRooms.map(room => this.getRoomLayout(room));
-
-        return (
-            <div
-                className='info-container'
-            >
-                <h1>Помещения</h1>
-                <div className='flex-container flex-end'>
-                    <div id='search-icon'>
-                    </div>
-                    <input
-                        type='text'
-                        className='search'
-                        name='searchString'
-                        onChange={e => this.handleInput(e)}
-                    />
-                    <label id='divider'>|</label>
-                    <Dropdown
-                        header='Искать по тэгам'
-                        options={this.allTags.map(tag => {return {rusName: tag, additional: null}})}
-                        onChoose={this.addTag}
-                        withButton={false}
-                        showHint={this.props.showHint}
-                        closeHint={this.props.closeHint}
-                    />
-                </div>
-                {
-                    this.state.tags.length === 0
-                        ?
-                        null
-                        :
-                        <div className='map-display'>
-                            <label style={{marginRight: '8px'}}>Тэги:</label>
-                            {
-                                this.state.tags.map(
-                                    tag =>
-                                        <span
-                                            key={tag}
-                                            className='map-span'
-                                            style={{order: tag.length}}
-                                        >
-                                            {tag}
-                                            <button
-                                                className='remove-btn'
-                                                onClick={() => this.removeTag(tag)}
-                                            >{''}
-                                            </button>
-                                        </span>
-                                )
-                            }
-                        </div>
-                }
-                {roomDisplay}
-            </div>
-        );
-    }
-
     handleInput = (e) => {
         this.setState({
             [e.target.name]: e.target.value
@@ -236,6 +255,15 @@ class Rooms extends Component {
         this.setState({
             tags: noTag
         })
+    };
+
+    getErrorLayout = () => {
+        const err = this.props.roomArray[0];
+        if (typeof err === 'string' || +err > 499) {
+            return 'Ох! Похоже, на сервере какие-то неполадки! Мы уже вовсю работаем над этим и извиняемся за неудобства.'
+        } else {
+            return 'Нам не удалось отобразить эту информацию. Возможно, Ваш компьютер не подключён к интернету.'
+        }
     }
 }
 

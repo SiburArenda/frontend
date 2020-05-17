@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import PropTypes from 'prop-types';
 import '../../resource/styles/Main.css'
 import '../../resource/styles/Contacts.css'
 
@@ -132,7 +131,5 @@ class Contacts extends Component {
         );
     }
 }
-
-Contacts.propTypes = {};
 
 export default Contacts;
