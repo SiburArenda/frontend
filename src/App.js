@@ -1,16 +1,13 @@
 import React, {Component} from 'react';
-import {BrowserRouter as Router} from "react-router-dom"
+import {BrowserRouter as Router} from 'react-router-dom'
 import './resource/styles/Main.css'
-import ClientNavList from "./components/client/ClientNavList";
-import AdminNavList from "./components/admin/AdminNavList";
-import ClientMainContent from "./components/client/ClientMainContent";
-import AdminMainContent from "./components/admin/AdminMainContent";
-import Hint from "./components/client/Hint";
-import LogIn from "./components/client/LogIn";
-import {connectServer} from "./functional/ServerConnect";
-import RoomInfo from "./functional/RoomInfo";
-import {connectDatabase} from "./functional/Database";
-import {flyBird} from "./functional/Design";
+import ClientNavList from './components/client/ClientNavList';
+import AdminNavList from './components/admin/AdminNavList';
+import ClientMainContent from './components/client/ClientMainContent';
+import AdminMainContent from './components/admin/AdminMainContent';
+import Hint from './components/client/Hint';
+import LogIn from './components/client/LogIn';
+import {flyBird} from './functional/Design';
 
 class App extends Component {
 
@@ -20,6 +17,7 @@ class App extends Component {
         super(props);
 
         this.appFormRef = React.createRef();
+        this.allApplicationsRef = React.createRef();
 
         const screen = window.innerWidth;
         this.state.headerWidth =  screen > 1200 ? screen - 20 : 1430;
@@ -27,74 +25,44 @@ class App extends Component {
         const sessionState = sessionStorage.getItem('App');
         if (sessionState != null) {
             const sessionStateParsed = JSON.parse(sessionState);
-            const {applicationFormVisible, logInFormVisible} = sessionStateParsed;
+            const { applicationFormVisible, logInFormVisible } = sessionStateParsed;
             this.state.applicationFormVisible = applicationFormVisible;
             this.state.logInFormVisible = logInFormVisible;
         }
 
-        connectDatabase(
-            'App',
-            'get',
-            this.setInitState
-        );
-
-    }
-
-    setInitState = dbData => {
-        if (dbData !== undefined) {
-            const {userLogin, userName, password, token, role, roomArray} = dbData;
+        const localState = localStorage.getItem('App');
+        if (localState != null) {
+            const { userLogin, userName, password, token, role } = JSON.parse(localState);
             this.state.userLogin = userLogin;
             this.state.userName = userName;
             this.state.password = password; //TODO: security!
             this.state.token = token;
             this.state.role = role;
-
-            if (roomArray.length !== 0) {
-                this.state.roomArray = JSON
-                    .parse(roomArray)
-                    .map(r => new RoomInfo(r.serverName, r.name, r.auditory, r.description, r.tags, r.isAdditionTo));
-            }
         }
-    };
 
+    }
     state = {
         logInFormVisible: false,
         applicationFormVisible: false,
-        showHint: false,
         whichHint: '',
         hintHPos: 8,
         hintVPos: 8,
         hintX: 0,
         hintY: 0,
-        roomArray: [],
         headerWidth: 1430,
         userLogin: '',
         userName: '',
         password: '', // TODO: Security!
         token: '',
         role: ['USER'],
-        bird: []
+        bird: [],
+        applicationFormState: undefined
     };
 
     // happens once after constructor, right after the first render
     componentDidMount() {
-
         window.addEventListener('resize', this.headerWidth, false);
         window.addEventListener('beforeunload', this.saveState, false);
-
-        if (this.state.roomArray.length < 11) {
-            const headers = [
-                {name: 'Content-Type', value: 'application/json'}
-            ];
-            connectServer(
-                null,
-                this.getRoomsFromServer,
-                'get', headers,
-                'api/public/rooms',
-                this.roomsError,
-                this.roomsError
-            );
-        }
     }
 
     // tweak the header width so that the LogIn button is positioned nicely
@@ -107,84 +75,22 @@ class App extends Component {
 
     // save the website state when the page is reloaded (reload = true) or closed (reload = false)
     saveState = () => {
-
-        const {logInFormVisible, applicationFormVisible, roomArray, userLogin, userName, token, role, password} = this.state;
+        const { logInFormVisible, applicationFormVisible, userLogin, userName, token, role, password } = this.state;
 
         const toSave = {
-            componentName: 'App',
             userLogin: userLogin,
             userName: userName,
             token: token,
             role: role,
-            roomArray: (roomArray.length === 11) ? JSON.stringify(roomArray) : [],
             password: password //TODO: Security!
         };
 
+        localStorage.setItem('App', JSON.stringify(toSave));
+
         sessionStorage.setItem(
             'App',
-            JSON.stringify({logInFormVisible: logInFormVisible, applicationFormVisible: applicationFormVisible})
+            JSON.stringify({ logInFormVisible: logInFormVisible, applicationFormVisible: applicationFormVisible })
         );
-
-        connectDatabase([toSave], 'put');
-    };
-
-    roomsError = code => {
-        this.setState({
-            roomArray: [code]
-        })
-    };
-
-    // get rooms if they are not saved from last session
-    getRoomsFromServer = (responseText) => {
-        const pureResponse = JSON.parse(responseText);
-        const roomArray = [];
-
-        for (let roomIndex in pureResponse) {
-
-            const roomObj = pureResponse[roomIndex];
-
-            const priorName = roomObj.name;
-            let name = '';
-            let serverName = '';
-            if (priorName.indexOf('#') !== -1) {
-                const splitSpace = priorName.split(' ');
-                name = `${splitSpace[0]} ${splitSpace[1]}`;
-                const splitHash = priorName.split(' #');
-                serverName = splitHash[0];
-            } else {
-                name = priorName;
-                serverName = priorName;
-            }
-
-            const auditory = roomObj.auditory === -1 ? 0 : roomObj.auditory;
-            if (name === 'VIP ложи') {
-                name += ` на ${auditory} персон`
-            }
-
-            let add = false;
-            for (let i in roomArray) {
-                if (roomArray[i].name === name) {
-                    roomArray[i].increaseAmount();
-                    add = true;
-                }
-            }
-
-            if (!add) {
-                const description = roomObj.description;
-
-                const tags = roomObj.tags.slice(0, roomObj.tags.length - 1);
-
-                const isAdditionTo = roomObj.tags[roomObj.tags.length - 1];
-
-                const newRoomInfo = new RoomInfo(serverName, name, auditory, description, tags, isAdditionTo);
-                roomArray.push(newRoomInfo);
-            }
-
-        }
-
-        this.setState({
-            roomArray: roomArray
-        })
     };
 
     // happens once right before the component is removed
@@ -195,7 +101,6 @@ class App extends Component {
 
     // happens on each state change
     render() {
-
         const scroll = !window.screenTop && !window.screenY ? 'hidden' : 'scroll';
         const {
             logInFormVisible,
@@ -203,23 +108,27 @@ class App extends Component {
             headerWidth,
             userName,
             role,
-            roomArray,
             userLogin,
             token,
-            showHint,
+            whichHint,
             hintVPos,
             hintHPos,
             hintX,
             hintY,
             password,
-            bird
+            bird,
+            applicationFormState
         } = this.state;
 
         return (
-            <div style={{overflowX: {scroll}}}>
+            <div
+                style={{overflowX: {scroll}}}
+            >
                 <Router>
 
-                    <header style={{width: headerWidth}}>
+                    <header
+                        style={{width: headerWidth}}
+                    >
 
                         <button
                             id='open-log-in-button'
@@ -229,19 +138,21 @@ class App extends Component {
                         >
                         </button>
 
-                        {logInFormVisible
-                            ?
-                            <LogIn
-                                closeLogInForm={this.closeLogInForm}
-                                storeResponse={this.storeResponse}
-                                userName={userName}
-                                logOut={this.logOut}
-                                closeHint={this.closeHint}
-                                showHint={this.showHint}
-                                storePassword={this.storePassword} //TODO: Security!
-                            />
-                            :
-                            null
+                        {
+                            logInFormVisible
+                                ?
+                                <LogIn
+                                    closeLogInForm={this.closeLogInForm}
+                                    storeResponse={this.storeResponse}
+                                    userName={userName}
+                                    logOut={this.logOut}
+                                    closeHint={this.closeHint}
+                                    showHint={this.showHint}
+                                    storePassword={this.storePassword} //TODO: Security!
+                                    allApplicationsRef={this.allApplicationsRef}
+                                />
+                                :
+                                null
                         }
 
                     </header>
@@ -275,7 +186,9 @@ class App extends Component {
                         </div>
                     </nav>
 
-                    <section id='main-content'>
+                    <section
+                        id='main-content'
+                    >
                         {
                             role.includes('USER')
                                 ?
@@ -284,20 +197,23 @@ class App extends Component {
                                     closeAppWindow={this.closeApplicationForm}
                                     showHint={this.showHint}
                                     closeHint={this.closeHint}
-                                    roomArray={roomArray}
                                     appFormRef={this.appFormRef}
                                     userLogin={userLogin}
                                     token={token}
                                     password={password} //TODO: Security!
                                     refreshToken={this.refreshToken}
                                     sendBird={this.sendBird}
+                                    applicationFormState={applicationFormState}
+                                    openApplicationForm={this.openApplicationForm}
+                                    allApplicationsRef={this.allApplicationsRef}
+                                    userName={userName}
                                 />
                                 :
                                 <AdminMainContent/>
                         }
 
                         {
-                            showHint
+                            whichHint !== ''
                                 ?
                                 <Hint
                                     hintText={this.getHintText()}
@@ -310,15 +226,16 @@ class App extends Component {
                         }
 
                         {
-                            bird.map(b =>
-                                <div
-                                    key={b.id}
-                                    id={b.id}
-                                    style={{left: b.left, top: b.top, opacity: '1'}}
-                                    className='bird'
-                                >
-                                    {''}
-                                </div>
+                            bird.map(
+                                b =>
+                                    <div
+                                        key={b.id}
+                                        id={b.id}
+                                        style={{left: b.left, top: b.top, opacity: '1'}}
+                                        className='bird'
+                                    >
+                                        {''}
+                                    </div>
                             )
                         }
 
@@ -354,8 +271,7 @@ class App extends Component {
     };
 
     getHintText = () => {
-
-        const whichHint = this.state.whichHint;
+        const { whichHint } = this.state;
 
         if (whichHint.startsWith('trainingArena')) {
             const split = whichHint.split('%');
@@ -397,12 +313,14 @@ class App extends Component {
             case 'expAppFormBtn':
                 return 'Открыть форму';
             case 'openAppFormBtn':
-                return this.state.userLogin === ''
-                    ?
-                    'Только авторизованные пользователи могут отправлять заявки!'
-                    :
-                    'Окно заполнения заявки откроется параллельно с остальным содержимым сервиса' +
-                    ' - Вы сможете переходить по разделам, не закрывая его и не заполняя заново!';
+                return (
+                    this.state.userLogin === ''
+                        ?
+                        'Только авторизованные пользователи могут отправлять заявки!'
+                        :
+                        'Окно заполнения заявки откроется параллельно с остальным содержимым сервиса' +
+                        ' - Вы сможете переходить по разделам, не закрывая его и не заполняя заново!'
+                );
             case 'sendAppBtn':
                 return 'Заявка будет отправлена, но Вы всегда сможете отредактировать её:' +
                     ' просто отыщите её в Отправленных Заявках в Вашем профиле';
@@ -442,6 +360,10 @@ class App extends Component {
                 return 'Что-то пошло не так; пожалуйста, проверьте, подключён ли Ваш компьютер к интернету';
             case 'sendErrorSignUp':
                 return 'Что-то пошло не так; возможно, аккаунт для такого адреса электронной почты уже существует, или Ваш компьютер не подключён к сети';
+            case 'timeSetNoEdit':
+                return 'Временные рамки для этой даты';
+            case 'clearAccEdit':
+                return 'Вернуть значения всех полей к текущим';
             default:
                 return '';
         }
@@ -455,7 +377,6 @@ class App extends Component {
         const vPos = +e.clientY + 95 <= height ? 8 : -95;
         const hPos = +e.clientX + length <= width ? 8 : -length;
         this.setState({
-            showHint: true,
             whichHint: which,
             hintX: +e.clientX,
             hintY: +e.clientY,
@@ -466,12 +387,14 @@ class App extends Component {
 
     closeHint = () => {
         this.setState({
-            showHint: false
+            whichHint: ''
         })
     };
 
     logOut = () => {
         this.closeApplicationForm();
+        localStorage.removeItem('AllApplications');
+        localStorage.removeItem('App');
         this.setState({
             userLogin: '',
             userName: '',
@@ -481,10 +404,11 @@ class App extends Component {
         });
     };
 
-    openApplicationForm = () => {
+    openApplicationForm = (applicationFormState = undefined) => {
         if (this.state.userLogin !== '') {
             this.setState({
-                applicationFormVisible: true
+                applicationFormVisible: true,
+                applicationFormState: applicationFormState
             })
         } else {
             this.openLogInForm();
@@ -502,7 +426,8 @@ class App extends Component {
         sessionStorage.removeItem('ApplicationForm');
         sessionStorage.removeItem('Calendar');
         this.setState({
-            applicationFormVisible: false
+            applicationFormVisible: false,
+            applicationFormState: undefined
         })
     };
 
@@ -519,12 +444,7 @@ class App extends Component {
     };
     //TODO: Security!
 
-    storeResponse = (
-        userName,
-        userLogin,
-        token,
-        roles
-    ) => {
+    storeResponse = (userName, userLogin, token, roles) => {
         this.setState({
             userLogin: userLogin,
             userName: userName,
@@ -533,7 +453,7 @@ class App extends Component {
         });
     };
 
-    refreshToken = (response) => {
+    refreshToken = response => {
         this.setState({
             token: JSON.parse(response).token
         })

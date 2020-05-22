@@ -35,7 +35,7 @@
 
 .room-in-list h2{
     text-transform: uppercase;
-    font-size: 16px;
+    font-size: 18px;
     margin-bottom: 5px;
 }
 
@@ -63,21 +63,6 @@
     color: #efefef;
     padding-left: 15px;
     padding-bottom: 12px;
-}
-
-#back-to-rooms{
-    color: transparent;
-    position: absolute;
-    top: 26px;
-    right: 35px;
-    border: none;
-    background: center no-repeat url("../img/backToRooms.svg");
-    width: 32px;
-    height: 20px;
-}
-
-#back-to-rooms:hover{
-    background-image: url("../img/backToRoomsHvr.svg");
 }
 
 .addition-to-inside{

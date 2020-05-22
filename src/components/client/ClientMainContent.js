@@ -1,24 +1,84 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import {Route} from "react-router-dom";
-import About from "./About";
-import Rooms from "./Rooms";
-import Contacts from "./Contacts";
-import SignUp from "./SignUp";
-import ApplicationForm from "./ApplicationForm";
-import EachRoom from "./EachRoom";
-import AccountSettings from "./AccountSettings";
-import AllApplications from "./AllApplications";
+import {Route} from 'react-router-dom';
+import About from './About';
+import Contacts from './Contacts';
+import SignUp from './SignUp';
+import ApplicationForm from './ApplicationForm';
+import AllApplications from './AllApplications';
+import RoomsSection from './RoomsSection';
+import {roomArrayFormation, RoomInfo} from '../../functional/RoomInfo';
+import {connectServer} from '../../functional/ServerConnect';
 
 class ClientMainContent extends Component {
 
+    constructor(props) {
+        super(props);
+
+        this.sentApplicationRef = React.createRef();
+
+        const localState = localStorage.getItem('ClientMainContent');
+        if (localState != null) {
+            const roomArray = JSON.parse(localState);
+
+            if (roomArray.length !== 0) {
+                this.state.roomArray = roomArray
+                    .map(r => new RoomInfo(r.serverName, r.name, r.auditory, r.description, r.tags, r.isAdditionTo));
+            }
+        }
+    }
+
     state = {
-        newApplication: true
+        roomArray: []
     };
 
+    componentDidMount() {
+        window.addEventListener('beforeunload', this.saveState, false);
+
+        if (this.state.roomArray.length < 11) {
+            const headers = [
+                {name: 'Content-Type', value: 'application/json'}
+            ];
+            connectServer(
+                null,
+                this.getRoomsFromServer,
+                'get', headers,
+                'api/public/rooms',
+                this.roomsError,
+                this.roomsError
+            );
+        }
+    }
+
+    saveState = () => {
+        const { roomArray } = this.state;
+        const toSave =  (roomArray.length === 11) ? roomArray : [];
+        localStorage.setItem('ClientMainContent', JSON.stringify(toSave));
+    };
+
+    // get rooms if they are not saved from last session
+    getRoomsFromServer = responseText => {
+        const pureResponse = JSON.parse(responseText);
+        const roomArray = roomArrayFormation(pureResponse);
+
+        this.setState({
+            roomArray: roomArray
+        })
+    };
+
+    roomsError = code => {
+        this.setState({
+            roomArray: [code]
+        })
+    };
+
+    componentWillUnmount() {
+        window.removeEventListener('beforeunload', this.saveState, false);
+    }
+
     render() {
+
         const {
-            roomArray,
             showHint,
             closeHint,
             token,
@@ -27,78 +87,96 @@ class ClientMainContent extends Component {
             applicationFormVisible,
             closeAppWindow,
             refreshToken,
-            appFormRef
+            appFormRef,
+            applicationFormState,
+            openApplicationForm,
+            sendBird,
+            allApplicationsRef,
+            userName
         } = this.props;
+
+        const { roomArray } = this.state;
+
         return (
             <React.Fragment>
+
                 <Route
-                    path="/"
+                    path='/'
                     exact
                     component={About}
                 />
+
                 <Route
-                    path="/rooms"
-                    exact
+                    path='/contacts'
+                    component={Contacts}
+                />
+
+                <Route
+                    path='/signup'
                     render={
-                        (props) => (
-                            <Rooms
+                        props => (
+                            <SignUp
                                 {...props}
-                                roomArray={roomArray}
+                                sendBird={sendBird}
                                 showHint={showHint}
                                 closeHint={closeHint}
                             />
                         )
                     }
                 />
+
                 <Route
-                    path="/contacts"
-                    component={Contacts}
-                />
-                <Route
-                    path="/signup"
+                    path='/rooms'
                     render={
-                        (props) => (
-                            <SignUp
+                        props => (
+                            <RoomsSection
                                 {...props}
-                                sendBird={this.props.sendBird}
-                                showHint={this.props.showHint}
-                                closeHint={this.props.closeHint}
+                                showHint={showHint}
+                                closeHint={closeHint}
+                                roomArray={roomArray}
                             />
                         )
                     }
                 />
 
-                {
-                    roomArray.length === 11
-                        ?
-                        <EachRoom
-                            roomArray={roomArray}
-                            showHint={showHint}
-                            closeHint={closeHint}
-                        />
-                        : null
-                }
-
                 <Route
                     path='/accountSettings'
-                    component={AccountSettings}
+                    render={
+                        props => (
+                            <SignUp //TODO: pass organization as prop
+                                {...props}
+                                sendBird={sendBird}
+                                showHint={showHint}
+                                closeHint={closeHint}
+                                edit={true}
+                                userLogin={userLogin}
+                                userName={userName}
+                                //orgName={orgName}
+                            />
+                        )
+                    }
                 />
+
                 <Route
                     path='/applications'
                     render={
-                        (props) => (
+                        props => (
                             <AllApplications
                                 {...props}
                                 token={token}
                                 userLogin={userLogin}
                                 password={password} //TODO: Security!
-                                newApplication={this.newApplication}
-                                refresh={this.state.newApplication}
                                 refreshToken={refreshToken}
+                                ref={allApplicationsRef}
+                                openApplicationForm={openApplicationForm}
+                                showHint={showHint}
+                                closeHint={closeHint}
+                                sentApplicationRef={this.sentApplicationRef}
                             />
                         )
                     }
                 />
+
                 {
                     applicationFormVisible
                         ?
@@ -110,22 +188,18 @@ class ClientMainContent extends Component {
                             showHint={showHint}
                             closeHint={closeHint}
                             roomArray={roomArray}
-                            newApplication={this.newApplication}
                             ref={appFormRef}
                             refreshToken={refreshToken}
-                            sendBird={this.props.sendBird}
+                            sendBird={sendBird}
+                            allApplicationsRef={allApplicationsRef}
+                            initState={applicationFormState}
+                            sentApplicationRef={this.sentApplicationRef}
                         />
-                        : null
+                        :
+                        null
                 }
             </React.Fragment>
         );
-    }
-
-    newApplication = (what) => {
-        console.log('Wow! New application!');
-        this.setState({
-            newApplication: what
-        })
     }
 }
 
@@ -134,13 +208,16 @@ ClientMainContent.propTypes = {
     closeAppWindow: PropTypes.func.isRequired,
     showHint: PropTypes.func.isRequired,
     closeHint: PropTypes.func.isRequired,
-    roomArray: PropTypes.array.isRequired,
     appFormRef: PropTypes.object.isRequired,
     userLogin: PropTypes.string.isRequired,
     token: PropTypes.string.isRequired,
     password: PropTypes.string.isRequired, //TODO: Security!
     refreshToken: PropTypes.func.isRequired,
-    sendBird: PropTypes.func.isRequired
+    sendBird: PropTypes.func.isRequired,
+    applicationFormState: PropTypes.object,
+    openApplicationForm: PropTypes.func.isRequired,
+    allApplicationsRef: PropTypes.object.isRequired,
+    userName: PropTypes.string.isRequired
 };
 
 export default ClientMainContent;

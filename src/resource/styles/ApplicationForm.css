@@ -24,6 +24,9 @@
 #send-btn{
     border: none;
     margin-right: 20px;
+}
+
+#application-form .btn-pusher button{
     margin-bottom: 15px;
 }
 
@@ -85,11 +88,6 @@ select{
 
 .ninety-container{
     width: 90%;
-}
-
-.block-container{
-    display: flex;
-    margin: 0 auto 12px auto;
 }
 
 .block-col{
@@ -207,4 +205,8 @@ p, label{
 
 #waiting-for-app-confirm{
     margin-right: 15px;
+}
+#application-form #w3,
+#application-form .btn-pusher .empty-warning {
+    margin-right: 8px;
 }

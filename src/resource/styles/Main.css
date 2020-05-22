@@ -208,6 +208,7 @@ header{
     font-family: MontserratMedium, sans-serif;
     padding: 16px 35px;
     position: relative;
+    line-height: 1.7em;
 }
 
 .info-container *{
@@ -285,6 +286,7 @@ input[type='email']{
     width: 100%;
     display: flex;
     justify-content: flex-end;
+    align-content: center;
 }
 
 .hidden-radio {
@@ -370,6 +372,7 @@ input[type='email']{
     background: center no-repeat url("../img/waiting.png");
     width: 24px;
     height: 24px;
+    border-radius: 50%;
 }
 
 .bird{
@@ -379,3 +382,24 @@ input[type='email']{
     position: absolute;
     z-index: 10;
 }
+
+.back-btn{
+    color: transparent;
+    position: absolute;
+    top: 26px;
+    right: 35px;
+    border: none;
+    background: center no-repeat url("../img/backToRooms.svg");
+    width: 32px;
+    height: 20px;
+}
+
+.back-btn:hover{
+    background-image: url("../img/backToRoomsHvr.svg");
+}
+
+.block-container{
+    display: flex;
+    margin: 0 auto 12px auto;
+}
+

@@ -2,9 +2,9 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import '../../resource/styles/LogInForm.css'
 import '../../resource/styles/Main.css'
-import {Link} from "react-router-dom";
-import {connectServer} from "../../functional/ServerConnect";
-import {waiting} from "../../functional/Design";
+import {Link} from 'react-router-dom';
+import {connectServer} from '../../functional/ServerConnect';
+import {waiting} from '../../functional/Design';
 
 class LogIn extends Component {
 
@@ -44,7 +44,7 @@ class LogIn extends Component {
     }
 
     render() {
-        const {userName} = this.props;
+        const {userName, showHint, closeHint, logOut} = this.props;
         const {userLogin, password, invalid, waiting} = this.state;
 
         return (
@@ -127,8 +127,8 @@ class LogIn extends Component {
                                                     <div
                                                         id='w'
                                                         className='warning log-in-inside'
-                                                        onMouseEnter={e => this.props.showHint(e, 'invalidLogIn')}
-                                                        onMouseLeave={() => this.props.closeHint()}
+                                                        onMouseEnter={e => showHint(e, 'invalidLogIn')}
+                                                        onMouseLeave={() => closeHint()}
                                                     >
                                                     </div>
                                                     :
@@ -162,7 +162,7 @@ class LogIn extends Component {
 
                         <React.Fragment>
 
-                            <p style={{marginBottom: '10px'}}>Вы вошли как {this.props.userName}</p>
+                            <p style={{marginBottom: '10px'}}>Вы вошли как {userName}</p>
 
                             <Link
                                 to='/applications'
@@ -181,7 +181,7 @@ class LogIn extends Component {
                             <div className='log-in-inside flex-100 btn-center'>
                                 <Link
                                     className='hover-text log-in-inside'
-                                    onClick={() => this.props.logOut()}
+                                    onClick={() => logOut()}
                                     to={this.getLinkForLogOut()}
                                 >
                                     Выйти
@@ -195,11 +195,11 @@ class LogIn extends Component {
     }
 
     submitLogIn = () => {
-
-        const toSend = JSON.stringify({ username: this.state.userLogin, password: this.state.password });
-        const headers = [{name: 'Content-Type', value: 'application/json'}];
+        const { userLogin, password } = this.state;
+        const toSend = JSON.stringify({ username: userLogin, password: password });
+        const headers = [{ name: 'Content-Type', value: 'application/json' }];
         const url = 'api/public/login';
-        this.props.storePassword(this.state.password);
+        this.props.storePassword(password);
         this.setState({
             waiting: true
         });
@@ -228,7 +228,7 @@ class LogIn extends Component {
     onResponse = response => {
         const parsedResponse = JSON.parse(response);
 
-        const {firstName, lastName, roles, username, token, id} = parsedResponse;
+        const { firstName, lastName, roles, username, token, id } = parsedResponse;
 
         const fullName = lastName + ' ' + firstName;
 
@@ -245,16 +245,21 @@ class LogIn extends Component {
                 invalid: false
             });
         }
+
+        const {allApplicationsRef} = this.props;
+        if (allApplicationsRef.current != null) {
+            allApplicationsRef.current.getApplications();
+        }
     };
 
-    handleInput = (e) => {
+    handleInput = e => {
         this.setState({
             [e.target.name]: e.target.value,
             invalid: false
         })
     };
 
-    handleKeyUp = (e) => {
+    handleKeyUp = e => {
         const code = e.which;
         const target = e.target.name;
         const {password, userLogin} = this.state;
@@ -262,17 +267,15 @@ class LogIn extends Component {
             if (password !== '' && userLogin !== '') {
                 this.submitLogIn();
             } else {
-
                 const toFocus = target === 'password' ? 'userLogin' : 'password';
                 document.getElementById(toFocus).focus();
-
             }
         }
     };
 
     getLinkForLogOut = () => {
         const currentURL = window.location.pathname;
-        return (['/applications', '/accountSetting'].includes(currentURL)) ? '' : currentURL;
+        return (currentURL === '/accountSettings' || currentURL.startsWith('/applications')) ? '/' : currentURL;
     }
 }
 
@@ -283,7 +286,8 @@ LogIn.propTypes = {
     logOut: PropTypes.func.isRequired,
     showHint: PropTypes.func.isRequired,
     closeHint: PropTypes.func.isRequired,
-    storePassword: PropTypes.func.isRequired //TODO: Security!
+    storePassword: PropTypes.func.isRequired, //TODO: Security!
+    allApplicationsRef: PropTypes.object.isRequired
 };
 
 export default LogIn;

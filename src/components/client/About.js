@@ -3,6 +3,10 @@ import '../../resource/styles/Main.css'
 
 class About extends Component {
 
+    componentDidMount() {
+        sessionStorage.removeItem('SignUp');
+    }
+
     render() {
         return (
             <React.Fragment>

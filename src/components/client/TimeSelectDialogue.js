@@ -35,20 +35,33 @@ class TimeSelectDialogue extends Component {
     };
 
     render() {
-        const { startHRef, startMRef, endHRef, endMRef, checkBoxRef, defaultTiming } = this.props;
+        const { startHRef, startMRef, endHRef, endMRef, checkBoxRef, defaultTiming, showHint, closeHint, noEdit, header, handleKeyUp, setForAll, closeTimeSelectDialogue } = this.props;
         const { startH, startM, endH, endM } = defaultTiming;
+        const { warning } = this.state;
         return (
             <div id='timing-container' className='drag-detector'>
 
-                <p className='drag-detector'>{this.props.header}</p>
+                <p className='drag-detector'>{header}</p>
 
                 <div className='flex-container drag-detector' style={{width: '100%'}}>
 
                     <div className='block-col-left drag-detector'>
 
-                        <p className='drag-detector'>Время начала<span className='red-star'>*</span></p>
+                        <p className='drag-detector'>Время начала{
+                            !noEdit
+                                ?
+                                <span className='red-star'>*</span>
+                                :
+                                ''
+                        }</p>
 
-                        <p className='drag-detector'>Время окончания<span className='red-star'>*</span></p>
+                        <p className='drag-detector'>Время окончания{
+                            !noEdit
+                                ?
+                                <span className='red-star'>*</span>
+                                :
+                                ''
+                        }</p>
 
                     </div>
 
@@ -67,18 +80,19 @@ class TimeSelectDialogue extends Component {
                                 onClick={e => this.addClickOutside(e)}
                                 onChange={e => this.handleInput(e)}
                                 ref={startHRef}
-                                onKeyUp={e => this.props.handleKeyUp(e)}
+                                onKeyUp={e => handleKeyUp(e)}
+                                readOnly={noEdit}
                             />
 
                             <label className='drag-detector hour-min'>ч</label>
 
                             {
-                                this.state.warning.includes('s-h-i')
+                                warning.includes('s-h-i')
                                     ?
                                     <div
                                         className='warning'
-                                        onMouseEnter={e => this.props.showHint(e, 'interval%0%23')}
-                                        onMouseLeave={() => this.props.closeHint()}
+                                        onMouseEnter={e => showHint(e, 'interval%0%23')}
+                                        onMouseLeave={() => closeHint()}
                                     >
                                     </div>
                                     :
@@ -99,18 +113,19 @@ class TimeSelectDialogue extends Component {
                                 onChange={e => this.handleInput(e)}
                                 onClick={e => this.addClickOutside(e)}
                                 ref={startMRef}
-                                onKeyUp={e => this.props.handleKeyUp(e)}
+                                onKeyUp={e => handleKeyUp(e)}
+                                readOnly={noEdit}
                             />
 
                             <label className='drag-detector hour-min'>мин</label>
 
                             {
-                                this.state.warning.includes('s-m-i')
+                                warning.includes('s-m-i')
                                     ?
                                     <div
                                         className='warning'
-                                        onMouseEnter={e => this.props.showHint(e, 'interval%0%59')}
-                                        onMouseLeave={() => this.props.closeHint()}
+                                        onMouseEnter={e => showHint(e, 'interval%0%59')}
+                                        onMouseLeave={() => closeHint()}
                                     >
                                     </div>
                                     :
@@ -135,18 +150,19 @@ class TimeSelectDialogue extends Component {
                                 onChange={e => this.handleInput(e)}
                                 onClick={e => this.addClickOutside(e)}
                                 ref={endHRef}
-                                onKeyUp={e => this.props.handleKeyUp(e)}
+                                onKeyUp={e => handleKeyUp(e)}
+                                readOnly={noEdit}
                             />
 
                             <label className='drag-detector hour-min'>ч</label>
 
                             {
-                                this.state.warning.includes('e-h-i')
+                                warning.includes('e-h-i')
                                     ?
                                     <div
                                         className='warning'
-                                        onMouseEnter={e => this.props.showHint(e, 'interval%0%23')}
-                                        onMouseLeave={() => this.props.closeHint()}
+                                        onMouseEnter={e => showHint(e, 'interval%0%23')}
+                                        onMouseLeave={() => closeHint()}
                                     >
                                     </div>
                                     :
@@ -167,18 +183,19 @@ class TimeSelectDialogue extends Component {
                                 onChange={e => this.handleInput(e)}
                                 onClick={e => this.addClickOutside(e)}
                                 ref={endMRef}
-                                onKeyUp={e => this.props.handleKeyUp(e)}
+                                onKeyUp={e => handleKeyUp(e)}
+                                readOnly={noEdit}
                             />
 
                             <label className='drag-detector hour-min'>мин</label>
 
                             {
-                                this.state.warning.includes('e-m-i')
+                                warning.includes('e-m-i')
                                     ?
                                     <div
                                         className='warning'
-                                        onMouseEnter={e => this.props.showHint(e, 'interval%0%59')}
-                                        onMouseLeave={() => this.props.closeHint()}
+                                        onMouseEnter={e => showHint(e, 'interval%0%59')}
+                                        onMouseLeave={() => closeHint()}
                                     >
                                     </div>
                                     :
@@ -194,31 +211,38 @@ class TimeSelectDialogue extends Component {
 
                 </div>
 
-                <div id='checkbox-aligner'>
-                    <input
-                        type='checkbox'
-                        onChange={e => {this.props.setForAll(e)}}
-                        ref={checkBoxRef}
-                        id='hidden-check'
-                    />
-                    <label
-                        htmlFor='hidden-check'
-                        onMouseEnter={e => this.props.showHint(e, 'forAllCheck')}
-                        onMouseLeave={() => this.props.closeHint()}
-                    >
-                    </label>
-                    <label className='drag-detector'>Установить такие временные рамки для всех выбранных дат</label><br/>
-                </div>
+                {
+                    noEdit
+                        ?
+                        null
+                        :
+                        <div id='checkbox-aligner'>
+                            <input
+                                type='checkbox'
+                                onChange={e => {setForAll(e)}}
+                                ref={checkBoxRef}
+                                id='hidden-check'
+                            />
+                            <label
+                                htmlFor='hidden-check'
+                                onMouseEnter={e => showHint(e, 'forAllCheck')}
+                                onMouseLeave={() => closeHint()}
+                            >
+                            </label>
+                            <label className='drag-detector'>Установить такие временные рамки для всех выбранных дат</label><br/>
+                        </div>
+                }
+
                 <div className='btn-pusher drag-detector'>
                     <button
                         onClick={() => {
-                            this.props.closeHint();
-                            this.props.closeTimeSelectDialogue()
+                            closeHint();
+                            closeTimeSelectDialogue()
                         }}
                         className='hover-text transparent-element no-border-element'
                         style={{marginRight: '15px'}}
-                        onMouseEnter={e => this.props.showHint(e, 'timeSelOK')}
-                        onMouseLeave={() => this.props.closeHint()}
+                        onMouseEnter={e => showHint(e, 'timeSelOK')}
+                        onMouseLeave={() => closeHint()}
                     >
                         OK
                     </button>
@@ -255,6 +279,11 @@ class TimeSelectDialogue extends Component {
     }
 }
 
+TimeSelectDialogue.defaultProps = {
+    noEdit: false
+};
+
+
 TimeSelectDialogue.propTypes = {
     header: PropTypes.string.isRequired,
     defaultTiming: PropTypes.object.isRequired,
@@ -268,7 +297,8 @@ TimeSelectDialogue.propTypes = {
     checkBoxRef: PropTypes.object.isRequired,
     showHint: PropTypes.func.isRequired,
     closeHint: PropTypes.func.isRequired,
-    handleKeyUp: PropTypes.func.isRequired
+    handleKeyUp: PropTypes.func.isRequired,
+    noEdit: PropTypes.bool
 };
 
 export default TimeSelectDialogue;

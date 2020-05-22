@@ -4,6 +4,10 @@ import '../../resource/styles/Contacts.css'
 
 class Contacts extends Component {
 
+    componentDidMount() {
+        sessionStorage.removeItem('SignUp');
+    }
+
     render() {
         return (
             <div

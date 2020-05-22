@@ -3,133 +3,163 @@ import PropTypes from 'prop-types';
 import Dropdown from "../Dropdown";
 import '../../resource/styles/Rooms.css'
 import {Link} from "react-router-dom";
+import {waiting} from "../../functional/Design";
 
 class Rooms extends Component {
+
+    constructor(props) {
+        super(props);
+
+        const {roomArray} = this.props;
+        if (roomArray.length === 11 && this.allTags.length === 0) {
+            for (let i in roomArray) {
+                const tags = roomArray[i].tags;
+                for (let j in tags) {
+                    if (!this.allTags.includes(tags[j])) {
+                        this.allTags.push(tags[j]);
+                    }
+                }
+            }
+        }
+    }
 
     state = {
         tags: [],
         searchString: ''
     };
 
+    componentDidMount() {
+        if (this.props.roomArray.length === 0) {
+            waiting('waiting-for-rooms');
+        }
+    }
+
     allTags = [];
 
     render() {
-
-        const {roomArray} = this.props;
-
-        let roomDisplay = [];
-        if (roomArray.length === 11) {
-
-            if (this.allTags.length === 0) {
-                for (let i in roomArray) {
-                    const tags = roomArray[i].tags;
-                    for (let j in tags) {
-                        if (!this.allTags.includes(tags[j])) {
-                            this.allTags.push(tags[j]);
-                        }
-                    }
-                }
-            }
-
-            const filteredRooms = roomArray.filter(roomInfo => {
-                for (let i in this.state.tags) {
-                    if (!roomInfo.tags.includes(this.state.tags[i])) {
-                        return false;
-                    }
-                }
-
-                const searchString = this.state.searchString.toLowerCase();
-
-                const inName = roomInfo.name.toLowerCase().indexOf(searchString) !== -1;
-
-                let inTags = false;
-                for (let i in roomInfo.tags) {
-                    if (roomInfo.tags[i].toLowerCase().indexOf(searchString) !== -1) {
-                        inTags = true;
-                        break;
-                    }
-                }
-
-                const noHTMLDescription = roomInfo.description.replace(/(<\/?[A-za-z:/='. ]*>)|(%parameters%)/g, '');
-                const inDescription = noHTMLDescription.toLowerCase().indexOf(searchString) !== -1;
-
-                const sameAmount = searchString === roomInfo.amount + '';
-
-                const inAdditions = roomInfo.isAdditionTo !== 'independent' && roomInfo.isAdditionTo.toLowerCase().indexOf(searchString) !== -1;
-
-                return inName || inTags || inDescription || sameAmount || inAdditions;
-            });
-
-            roomDisplay = filteredRooms.map(room => this.getRoomLayout(room));
-        }
 
         return (
             <div
                 className='info-container'
             >
                 <h1>Помещения</h1>
-
-                {
-                    roomArray.length < 11
-                        ?
-                        <p
-                            className='info-paragraph'
-                        >
-                            {this.getErrorLayout()}
-                        </p>
-                        :
-                        <React.Fragment>
-                            <div className='flex-container flex-end'>
-                                <div id='search-icon'>
-                                </div>
-                                <input
-                                    type='text'
-                                    className='search'
-                                    name='searchString'
-                                    onChange={e => this.handleInput(e)}
-                                />
-                                <label id='divider'>|</label>
-                                <Dropdown
-                                    header='Искать по тэгам'
-                                    options={this.allTags.map(tag => {return {rusName: tag, additional: null}})}
-                                    onChoose={this.addTag}
-                                    withButton={false}
-                                    showHint={this.props.showHint}
-                                    closeHint={this.props.closeHint}
-                                />
-                            </div>
-                            {
-                                this.state.tags.length === 0
-                                    ?
-                                    null
-                                    :
-                                    <div className='map-display'>
-                                        <label style={{marginRight: '8px'}}>Тэги:</label>
-                                        {
-                                            this.state.tags.map(
-                                                tag =>
-                                                    <span
-                                                        key={tag}
-                                                        className='map-span'
-                                                        style={{order: tag.length}}
-                                                    >
-                                            {tag}
-                                                        <button
-                                                            className='remove-btn'
-                                                            onClick={() => this.removeTag(tag)}
-                                                        >{''}
-                                            </button>
-                                        </span>
-                                            )
-                                        }
-                                    </div>
-                            }
-                            {roomDisplay}
-                        </React.Fragment>
-                }
+                {this.getOverallLayout()}
             </div>
         );
     }
+
+    getOverallLayout = () => {
+        const {roomArray} = this.props;
+        switch (roomArray.length) {
+
+            case 0:
+                return <div
+                    className='flex-100'
+                    style={{justifyContent: 'center'}}
+                >
+                    <div
+                        className='waiting'
+                        style={{display: 'flex'}}
+                        id='waiting-for-rooms'
+                    >
+                        {''}
+                    </div>
+                </div>;
+
+            case 11: {
+
+                const filteredRooms = roomArray.filter(roomInfo => {
+                    for (let i in this.state.tags) {
+                        if (!roomInfo.tags.includes(this.state.tags[i])) {
+                            return false;
+                        }
+                    }
+
+                    const searchString = this.state.searchString.toLowerCase();
+
+                    const inName = roomInfo.name.toLowerCase().indexOf(searchString) !== -1;
+
+                    let inTags = false;
+                    for (let i in roomInfo.tags) {
+                        if (roomInfo.tags[i].toLowerCase().indexOf(searchString) !== -1) {
+                            inTags = true;
+                            break;
+                        }
+                    }
+
+                    const noHTMLDescription = roomInfo.description.replace(/(<\/?[A-za-z:/='. ]*>)|(%parameters%)/g, '');
+                    const inDescription = noHTMLDescription.toLowerCase().indexOf(searchString) !== -1;
+
+                    const sameAmount = searchString === roomInfo.amount + '';
+
+                    const inAdditions = roomInfo.isAdditionTo !== 'independent' && roomInfo.isAdditionTo.toLowerCase().indexOf(searchString) !== -1;
+
+                    return inName || inTags || inDescription || sameAmount || inAdditions;
+                });
+
+                const roomDisplay = filteredRooms.map(room => this.getRoomLayout(room));
+
+                return <React.Fragment>
+                    <div className='flex-container flex-end'>
+                        <div id='search-icon'>
+                        </div>
+                        <input
+                            type='text'
+                            className='search'
+                            name='searchString'
+                            onChange={e => this.handleInput(e)}
+                        />
+                        <label id='divider'>|</label>
+                        <Dropdown
+                            header='Искать по тэгам'
+                            options={this.allTags.map(tag => {
+                                return {rusName: tag, additional: null}
+                            })}
+                            onChoose={this.addTag}
+                            withButton={false}
+                            showHint={this.props.showHint}
+                            closeHint={this.props.closeHint}
+                        />
+                    </div>
+                    {
+                        this.state.tags.length === 0
+                            ?
+                            null
+                            :
+                            <div className='map-display'>
+                                <label style={{marginRight: '8px'}}>Тэги:</label>
+                                {
+                                    this.state.tags.map(
+                                        tag =>
+                                            <span
+                                                key={tag}
+                                                className='map-span'
+                                                style={{order: tag.length}}
+                                            >
+                                            {tag}
+                                                <button
+                                                    className='remove-btn'
+                                                    onClick={() => this.removeTag(tag)}
+                                                >{''}
+                                            </button>
+                                        </span>
+                                    )
+                                }
+                            </div>
+                    }
+                    {roomDisplay}
+                </React.Fragment>
+
+            }
+
+            default:
+                return <p
+                    className='info-paragraph'
+                >
+                    {this.getErrorLayout()}
+                </p>;
+        }
+    };
 
     rentGiverLink = (room) => {
         const description = room.description;
@@ -198,7 +228,7 @@ class Rooms extends Component {
                         >
                             <label>Это дополнительное помещение к</label>
                             <Link
-                                to={`/${addTo.replace(/ /g, '_')}`}
+                                to={`/rooms/${addTo.replace(/ /g, '_')}`}
                                 className='turquoise-hover'
                             >
                                 {
@@ -224,7 +254,7 @@ class Rooms extends Component {
                 }
 
                 <Link
-                    to={`/${room.getURL()}`}
+                    to={`/rooms/${room.getURL()}`}
                     className='turquoise-hover room-link'
                 >
                     Читать далее

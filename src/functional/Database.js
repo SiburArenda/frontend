@@ -39,11 +39,8 @@ function connectDatabase(
             interaction.forEach(i => {
                 switch (method) {
                     case 'put': {
-                        const delRequest = store.delete(i.componentName);
-                        delRequest.onsuccess = () => {
-                            request = store.add(i);
-                            request.onsuccess = () => onSuccess();
-                        };
+                        const request = store.put(i);
+                        request.onsuccess = () => onSuccess();
                         break;
                     }
 

@@ -1,70 +1,137 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import '../../resource/styles/Main.css'
+import {Route} from 'react-router-dom';
+import ApplicationsList from './ApplicationsList';
+import {checkToken, connectServer} from '../../functional/ServerConnect';
+import SentApplicationView from './SentApplicationView';
 
 class AllApplications extends Component {
 
     state = {
-        applications: []
+        applications: [],
+        oops: '',
+        applicationsGot: false
     };
 
-    render() {
-
-        let inside =
-                <p
-                    className='info-paragraph'
-                >
-                    Данная страница доступна к просмотру или редактированию только авторизовавшимся пользователям!
-                </p>;
-
-        if (this.props.userLogin !== '') {
-            if (this.props.refresh) {
-                const {token} = this.props;
-
-                const request = new XMLHttpRequest();
-
-                request.onreadystatechange = () => {
-
-                    if (request.readyState === 4) {
-                        this.setState({
-                            applications: JSON.parse(request.responseText)
-                        });
-                        this.props.newApplication(false);
-                    }
-                };
-
-                request.open('GET', 'http://siburarenda.publicvm.com/api/user/events?username=' + this.props.userLogin, true);
-                request.setRequestHeader('Authorization', 'Bearer_' + token);
-                request.setRequestHeader('Content-Type', 'application/json');
-                request.send(null)
-            }
-
-            inside =
-                this.state.applications.map(
-                    app =>
-                        <p
-                            className='info-paragraph'
-                            key={app.name + Math.floor(Math.random() * 3000)}
-                        >
-                            {app.name}
-                        </p>
-                );
+    componentDidMount() {
+        sessionStorage.removeItem('SignUp');
+        if (!this.state.applicationsGot && this.props.userLogin !== '') {
+            this.getApplications();
         }
+    }
+
+    render() {
+        const { userLogin, openApplicationForm, showHint, closeHint, sentApplicationRef } = this.props;
+        const { oops, applications } = this.state;
 
         return (
-            <div className='info-container'>
-                <h1>Мои заявки</h1>
-                {inside}
-            </div>
+            userLogin === ''
+                ?
+                <div
+                    className='info-container'
+                >
+                    <p
+                        className='info-paragraph'
+                    >
+                        Эта страница доступна к просмотру только авторизованным пользователям!
+                    </p>
+                </div>
+                :
+                <React.Fragment>
+
+                    <Route
+                        path='/applications'
+                        exact
+                        render={
+                            props => (
+                                <ApplicationsList
+                                    {...props}
+                                    oops={oops}
+                                    applications={applications}
+                                    openApplicationForm={openApplicationForm}
+                                />
+                            )
+                        }
+                    />
+
+                    <Route
+                        path='/applications/:id'
+                        render={
+                            props => (
+                                <SentApplicationView
+                                    {...props}
+                                    applications={applications}
+                                    openApplicationForm={openApplicationForm}
+                                    showHint={showHint}
+                                    closeHint={closeHint}
+                                    ref={sentApplicationRef}
+                                />
+                            )
+                        }
+                    />
+
+                </React.Fragment>
         );
     }
+
+    getApplications = () => {
+        const { userLogin, token, password } = this.props;
+        checkToken(
+            this.onTokenChecked,
+            token,
+            userLogin,
+            password,
+            () => this.onError('response'),
+            () => this.onError('send')
+        )
+    };
+
+    onTokenChecked = responseText => {
+        const { token, userLogin, refreshToken } = this.props;
+        let newToken = token;
+        if (responseText !== 'true') {
+            refreshToken(responseText);
+            newToken = JSON.parse(responseText).token;
+        }
+        const headers = [
+            { name: 'Authorization', value: 'Bearer_' + newToken },
+            { name: 'Content-Type', value: 'application/json' }
+        ];
+        connectServer(
+            null,
+            this.onConnect,
+            'get',
+            headers,
+            'api/user/events?username=' + userLogin,
+            () => this.onError('response'),
+            () => this.onError('send')
+        )
+    };
+
+    onConnect = response => {
+        const appArr = JSON.parse(response);
+        this.setState({
+            applications: appArr,
+            applicationsGot: true
+        });
+    };
+
+    onError = err => {
+        this.setState({
+            oops: err
+        })
+    };
 }
 
 AllApplications.propTypes = {
     token: PropTypes.string.isRequired,
     userLogin: PropTypes.string.isRequired,
-    newApplication: PropTypes.func.isRequired,
-    refresh: PropTypes.bool.isRequired
+    refreshToken: PropTypes.func.isRequired,
+    password: PropTypes.string.isRequired, //TODO: Security!
+    openApplicationForm: PropTypes.func.isRequired,
+    showHint: PropTypes.func.isRequired,
+    closeHint: PropTypes.func.isRequired,
+    sentApplicationRef: PropTypes.object.isRequired
 };
 
 export default AllApplications;

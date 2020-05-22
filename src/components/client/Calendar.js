@@ -6,6 +6,7 @@ import Timing from "../../functional/Timing";
 import '../../resource/styles/Main.css'
 import PropTypes from 'prop-types';
 import Dropdown from "../Dropdown";
+import {leadZero} from "../../functional/Design";
 
 class Calendar extends React.Component {
 
@@ -18,40 +19,72 @@ class Calendar extends React.Component {
         this.endMRef = React.createRef();
         this.checkBoxRef = React.createRef();
 
-        const savedStateStr = sessionStorage.getItem('Calendar');
+        const {initState} = this.props;
+        if (initState !== undefined) {
+            const dates = initState.dates;
+            const datesInState = [];
+            const timesInState = [];
+            let earliestDate = null;
+            for (let i in dates) {
+                const fromTo = dates[i];
+                const from = fromTo.from;
+                const to = fromTo.to;
+                const dayDesc = from.replace(/ \d{2}:\d{2}:\d{2} NOVT/, '');
+                datesInState.push(dayDesc);
+                const sFP = from.split(' ');
 
-        if (savedStateStr!= null) {
+                const monthN = moment.monthsShort().indexOf(sFP[1]);
+                const checkForEarliest = moment.utc(`${sFP[5]}-${leadZero(monthN)}-${sFP[2]}T00:00:00`);
+                if (earliestDate == null || checkForEarliest.isBefore(earliestDate)) {
+                    earliestDate = checkForEarliest;
+                }
 
-            const savedState = JSON.parse(savedStateStr);
-
-            const {
-                dateContext,
-                showYearNav,
-                selectedDays,
-                selectedTimings,
-                lastChosenWithShift,
-                currentlyManagedDayIndex,
-                warning,
-                showTimeSelect
-            } = savedState;
-
-            const len = dateContext.length;
-            const dateContextM = moment.utc(dateContext.substring(0, len - 2));
-
-            const restoredT = [];
-            for (let i in selectedTimings) {
-                const strT = selectedTimings[i];
-                restoredT.push(new Timing(strT.startH, strT.startM, strT.endH, strT.endM))
+                const splitFrom = sFP[3].split(':');
+                const splitTo = to.split(' ')[3].split(':');
+                const time = new Timing(+splitFrom[0], +splitFrom[1], +splitTo[0], +splitTo[1]);
+                timesInState.push(time);
             }
+            this.state.selectedDays = datesInState;
+            this.state.selectedTimings = timesInState;
+            this.state.dateContext.set('month', earliestDate.format('MM'));
+            this.state.dateContext.set('year', earliestDate.format('YYYY'));
+        } else {
 
-            this.state.dateContext = dateContextM;
-            this.state.showYearNav = showYearNav;
-            this.state.selectedDays = selectedDays;
-            this.state.selectedTimings = restoredT;
-            this.state.lastChosenWithShift = lastChosenWithShift;
-            this.state.currentlyManagedDayIndex = currentlyManagedDayIndex;
-            this.state.warning = warning;
-            this.state.showTimeSelect = showTimeSelect;
+            const savedStateStr = sessionStorage.getItem('Calendar');
+
+            if (savedStateStr != null) {
+
+                const savedState = JSON.parse(savedStateStr);
+
+                const {
+                    dateContext,
+                    showYearNav,
+                    selectedDays,
+                    selectedTimings,
+                    lastChosenWithShift,
+                    currentlyManagedDayIndex,
+                    warning,
+                    showTimeSelect
+                } = savedState;
+
+                const len = dateContext.length;
+                const dateContextM = moment.utc(dateContext.substring(0, len - 2));
+
+                const restoredT = [];
+                for (let i in selectedTimings) {
+                    const strT = selectedTimings[i];
+                    restoredT.push(new Timing(strT.startH, strT.startM, strT.endH, strT.endM))
+                }
+
+                this.state.dateContext = dateContextM;
+                this.state.showYearNav = showYearNav;
+                this.state.selectedDays = selectedDays;
+                this.state.selectedTimings = restoredT;
+                this.state.lastChosenWithShift = lastChosenWithShift;
+                this.state.currentlyManagedDayIndex = currentlyManagedDayIndex;
+                this.state.warning = warning;
+                this.state.showTimeSelect = showTimeSelect;
+            }
         }
     }
 
@@ -67,12 +100,16 @@ class Calendar extends React.Component {
     };
 
     componentDidMount() {
-        this.props.chooseSomeDate(this.state.selectedDays.length !== 0);
+        if (this.props.chooseSomeDate !== undefined) {
+            this.props.chooseSomeDate(this.state.selectedDays.length !== 0);
+        }
         window.addEventListener('beforeunload', this.saveState, false);
     };
 
     saveState = () => {
-        sessionStorage.setItem('Calendar', JSON.stringify(this.state));
+        if (!this.props.noEdit) {
+            sessionStorage.setItem('Calendar', JSON.stringify(this.state));
+        }
     };
 
     componentWillUnmount() {
@@ -83,6 +120,10 @@ class Calendar extends React.Component {
     months = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
 
     render() {
+
+        const {selectedDays, dateContext, selectedTimings, currentlyManagedDayIndex} = this.state;
+        const {showHint, closeHint, noEdit, handleKeyUp} = this.props;
+
         const weekdays = this.weekdaysShort.map(day => {
             return (
                 <td key={day} className='weekday drag-detector'>{day}</td>
@@ -97,21 +138,27 @@ class Calendar extends React.Component {
 
         const daysInMonth = [];
         for (let d = 1; d <= this.daysInMonth(); d++) {
+
+            const now = moment();
+            const thenYM = dateContext.format('YYYY-MM-');
+            const thenT = dateContext.format('Thh:mm:ss');
+            const then = moment.utc(thenYM + leadZero(d) + thenT);
+
+            const settable = then.isAfter(now);
+
             let dayClass = 'day';
-            if (this.state.selectedDays.includes(this.exactDayDescription(d))) {
+
+            if ((!noEdit && settable) || (noEdit && selectedDays.includes(this.exactDayDescription(d)))) {
+                dayClass += ' pointer';
+            }
+
+            if (selectedDays.includes(this.exactDayDescription(d))) {
                 dayClass += ' selected-day';
             } else {
                 dayClass += ' non-selected-day';
                 const dayOfWeek = (blanks.length + d) % 7;
                 dayClass += (dayOfWeek === 0 || dayOfWeek === 6) ? ' non-selected-weekend' : ' non-selected-weekday'
             }
-
-            const now = moment();
-            const thenYM = this.state.dateContext.format('YYYY-MM-');
-            const thenT = this.state.dateContext.format('Thh:mm:ss');
-            const then = moment.utc(thenYM + this.leadZero(d) + thenT);
-
-            const settable = then.isAfter(now);
 
             daysInMonth.push(
                 <td
@@ -121,15 +168,13 @@ class Calendar extends React.Component {
                 >
                     {d}
                     {
-                        settable
+                        (!noEdit && settable) || (noEdit && selectedDays.includes(this.exactDayDescription(d)))
                             ?
                             <button
                                 className={this.getTimeSetButtonClass(d)}
                                 onClick={e => this.timeSetButton(e, d)}
-                                onMouseEnter={e => {
-                                    if (!e.shiftKey) this.props.showHint(e, 'timeSet')
-                                }}
-                                onMouseLeave={() => this.props.closeHint()}
+                                onMouseEnter={e => this.timeButtonHint(e)}
+                                onMouseLeave={() => closeHint()}
                             >
                             </button>
                             :
@@ -183,8 +228,8 @@ class Calendar extends React.Component {
                                     onChoose={this.setMonth}
                                     withButton={false}
                                     left={-13}
-                                    showHint={this.props.showHint}
-                                    closeHint={this.props.closeHint}
+                                    showHint={showHint}
+                                    closeHint={closeHint}
                                 />
                                 <this.YearNav/>
                             </div>
@@ -215,21 +260,31 @@ class Calendar extends React.Component {
                     </tbody>
                 </table>
 
-                <p className='flex-container' style={{flexDirection: 'row-reverse'}}>
-                    <label
-                        className='hover-text'
-                        onClick={() => this.clearSelectedDates()}
-                        onMouseEnter={e => this.props.showHint(e, 'clearCalendar')}
-                        onMouseLeave={() => this.props.closeHint()}
-                    >
-                        Очистить
-                    </label>
-                </p>
+                {
+                    noEdit
+                        ?
+                        null
+                        :
+                        <React.Fragment>
 
-                <p className='drag-detector text-display'>
-                    Чтобы выбрать сразу несколько дат, идущих подряд, зажмите клавишу Shift и выберите первый и
-                    последний день интервала
-                </p>
+                            <p className='btn-pusher'>
+                                <button
+                                    className='hover-text transparent-element no-border-element'
+                                    onClick={() => this.clearSelectedDates()}
+                                    onMouseEnter={e => showHint(e, 'clearCalendar')}
+                                    onMouseLeave={() => closeHint()}
+                                >
+                                    Очистить
+                                </button>
+                            </p>
+
+                            <p className='drag-detector text-display'>
+                                Чтобы выбрать сразу несколько дат, идущих подряд, зажмите клавишу Shift и выберите первый и
+                                последний день интервала
+                            </p>
+
+                        </React.Fragment>
+                }
 
                 {this.state.showTimeSelect
                     ?
@@ -243,11 +298,12 @@ class Calendar extends React.Component {
                         endHRef={this.endHRef}
                         endMRef={this.endMRef}
                         checkBoxRef={this.checkBoxRef}
-                        showHint={this.props.showHint}
-                        closeHint={this.props.closeHint}
-                        defaultTiming={this.state.selectedTimings[this.state.currentlyManagedDayIndex]}
+                        showHint={showHint}
+                        closeHint={closeHint}
+                        defaultTiming={selectedTimings[currentlyManagedDayIndex]}
                         header={this.getHeaderForTiming()}
-                        handleKeyUp={this.props.handleKeyUp}
+                        handleKeyUp={handleKeyUp}
+                        noEdit={noEdit}
                     />
                     :
                     null
@@ -256,6 +312,15 @@ class Calendar extends React.Component {
 
         );
     }
+
+    timeButtonHint = e => {
+        const {noEdit, showHint} = this.props;
+        if (noEdit) {
+            showHint(e, 'timeSetNoEdit');
+        } else if (!e.shiftKey){
+            showHint(e, 'timeSet');
+        }
+    };
 
     year = () => this.state.dateContext.format("Y");
 
@@ -372,103 +437,100 @@ class Calendar extends React.Component {
 
     shiftSelect = (e, day) => {
 
-        const {dateContext, selectedDays, selectedTimings, lastChosenWithShift} = this.state;
+        if (!this.props.noEdit) {
 
-        const clickedDayDescription = this.exactDayDescription(day);
-        const additionDays = [];
-        const additionTimings = [];
-        const dateContextStr = dateContext.format('YYYY-MM-%Thh:mm:ss');
-        const chosen = dateContextStr.replace('%', this.leadZero(day));
+            const {dateContext, selectedDays, selectedTimings, lastChosenWithShift} = this.state;
 
-        if (lastChosenWithShift === null) {
-            if (!selectedDays.includes(clickedDayDescription)) {
-                additionDays.push(clickedDayDescription);
-                additionTimings.push(new Timing());
+            const clickedDayDescription = this.exactDayDescription(day);
+            const additionDays = [];
+            const additionTimings = [];
+            const dateContextStr = dateContext.format('YYYY-MM-%Thh:mm:ss');
+            const chosen = dateContextStr.replace('%', leadZero(day));
+
+            if (lastChosenWithShift === null) {
+                if (!selectedDays.includes(clickedDayDescription)) {
+                    additionDays.push(clickedDayDescription);
+                    additionTimings.push(new Timing());
+                }
+                this.setState({
+                    lastChosenWithShift: chosen
+                });
+
+            } else {
+
+                const lcsM = moment.utc(lastChosenWithShift);
+                const cM = moment.utc(chosen);
+                const lcsIsEarlier = lcsM.isSameOrBefore(cM);
+                const startDate = lcsIsEarlier ? lcsM : cM;
+                const endDate = lcsIsEarlier ? cM : lcsM;
+                if (lcsIsEarlier) {
+                    startDate.add(1, 'd');
+                }
+
+                while (startDate.isSameOrBefore(endDate)) {
+                    additionDays.push(startDate.format('ddd MMM D YYYY'));
+                    additionTimings.push(new Timing());
+                    startDate.add(1, 'd');
+                }
+
+                this.setState({
+                    lastChosenWithShift: null
+                })
             }
+
             this.setState({
-                lastChosenWithShift: chosen
+                selectedDays: [...selectedDays, ...additionDays],
+                selectedTimings: [...selectedTimings, ...additionTimings]
             });
 
-        } else {
-
-            const lcsM = moment.utc(lastChosenWithShift);
-            const cM = moment.utc(chosen);
-            const lcsIsEarlier = lcsM.isSameOrBefore(cM);
-            const startDate = lcsIsEarlier ? lcsM : cM;
-            const endDate = lcsIsEarlier ? cM : lcsM;
-            if (lcsIsEarlier) {
-                startDate.add(1, 'd');
-            }
-
-            while (startDate.isSameOrBefore(endDate)) {
-                additionDays.push(startDate.format('ddd MMM D YYYY'));
-                additionTimings.push(new Timing());
-                startDate.add(1, 'd');
-            }
-
-            this.setState({
-                lastChosenWithShift: null
-            })
+            this.props.chooseSomeDate(true);
         }
-
-        this.setState({
-            selectedDays: [...selectedDays, ...additionDays],
-            selectedTimings: [...selectedTimings, ...additionTimings]
-        });
-
-        this.props.chooseSomeDate(true);
-    };
-
-    leadZero = (num) => {
-        let ans = num + "";
-        while (ans.length < 2) {
-            ans = '0' + ans;
-        }
-        return ans;
     };
 
     onDayClick = (e, day) => {
-        const {dateContext, selectedTimings, selectedDays} = this.state;
-        let {showTimeSelect, currentlyManagedDayIndex}= this.state;
-        const now = moment();
-        const thenYM = dateContext.format('YYYY-MM-');
-        const thenT = dateContext.format('Thh:mm:ss');
-        const then = moment.utc(thenYM + this.leadZero(day) + thenT);
-        if (then.isAfter(now) && e.target.className.indexOf('time-set-button') === -1) {
-            this.props.hideSendWarning();
-            const clickedDayDescription = this.exactDayDescription(day);
-            if (e.shiftKey) {
-                this.shiftSelect(e, day);
-            } else {
-                const newSelectedDays = selectedDays.slice();
-                const newSelectedTimings = selectedTimings.slice();
-                const index = newSelectedDays.indexOf(clickedDayDescription);
-                if (index > -1) {
-                    newSelectedDays.splice(index, 1);
-                    newSelectedTimings.splice(index, 1);
-                    if (index === +currentlyManagedDayIndex){
-                        showTimeSelect = false;
-                        currentlyManagedDayIndex = -1;
-                    } else {
-                        currentlyManagedDayIndex -= (index < currentlyManagedDayIndex) ? 1 : 0;
-                    }
-                    if (newSelectedDays.length === 0) {
-                        this.props.chooseSomeDate(false);
-                    }
+        if (!this.props.noEdit) {
+            const {dateContext, selectedTimings, selectedDays} = this.state;
+            let {showTimeSelect, currentlyManagedDayIndex} = this.state;
+            const now = moment();
+            const thenYM = dateContext.format('YYYY-MM-');
+            const thenT = dateContext.format('Thh:mm:ss');
+            const then = moment.utc(thenYM + leadZero(day) + thenT);
+            if (then.isAfter(now) && e.target.className.indexOf('time-set-button') === -1) {
+                this.props.hideSendWarning();
+                const clickedDayDescription = this.exactDayDescription(day);
+                if (e.shiftKey) {
+                    this.shiftSelect(e, day);
                 } else {
-                    newSelectedDays.push(clickedDayDescription);
-                    newSelectedTimings.push(new Timing());
-                    if (newSelectedDays.length === 1) {
-                        this.props.chooseSomeDate(true);
+                    const newSelectedDays = selectedDays.slice();
+                    const newSelectedTimings = selectedTimings.slice();
+                    const index = newSelectedDays.indexOf(clickedDayDescription);
+                    if (index > -1) {
+                        newSelectedDays.splice(index, 1);
+                        newSelectedTimings.splice(index, 1);
+                        if (index === +currentlyManagedDayIndex) {
+                            showTimeSelect = false;
+                            currentlyManagedDayIndex = -1;
+                        } else {
+                            currentlyManagedDayIndex -= (index < currentlyManagedDayIndex) ? 1 : 0;
+                        }
+                        if (newSelectedDays.length === 0) {
+                            this.props.chooseSomeDate(false);
+                        }
+                    } else {
+                        newSelectedDays.push(clickedDayDescription);
+                        newSelectedTimings.push(new Timing());
+                        if (newSelectedDays.length === 1) {
+                            this.props.chooseSomeDate(true);
+                        }
                     }
+                    this.setState({
+                        lastChosenWithShift: null,
+                        selectedDays: newSelectedDays,
+                        selectedTimings: newSelectedTimings,
+                        currentlyManagedDayIndex: currentlyManagedDayIndex,
+                        showTimeSelect: showTimeSelect
+                    });
                 }
-                this.setState({
-                    lastChosenWithShift: null,
-                    selectedDays: newSelectedDays,
-                    selectedTimings: newSelectedTimings,
-                    currentlyManagedDayIndex: currentlyManagedDayIndex,
-                    showTimeSelect: showTimeSelect
-                });
             }
         }
     };
@@ -485,27 +547,32 @@ class Calendar extends React.Component {
         const {currentlyManagedDayIndex, selectedDays} = this.state;
         const day = selectedDays[currentlyManagedDayIndex];
         const split = day.split(' ');
-        const d = this.leadZero(+split[2]);
-        const m = this.leadZero(moment.monthsShort().indexOf(split[1]) + 1);
+        const d = leadZero(+split[2]);
+        const m = leadZero(moment.monthsShort().indexOf(split[1]) + 1);
         const y = split[3];
         return `${d}.${m}.${y}`
     };
 
     timeSetButton = (e, day) => {
-        this.props.hideSendWarning();
+        const {hideSendWarning, chooseSomeDate, noEdit} = this.props;
+        const {selectedTimings, selectedDays} = this.state;
+
+        if (!noEdit) {
+            hideSendWarning();
+        }
         const dayDesc = this.exactDayDescription(day);
-        if (!this.state.selectedDays.includes(dayDesc)) {
+        if (!selectedDays.includes(dayDesc)) {
             this.setState({
-                selectedDays: [...this.state.selectedDays, dayDesc],
-                selectedTimings: [...this.state.selectedTimings, new Timing()]
+                selectedDays: [...selectedDays, dayDesc],
+                selectedTimings: [...selectedTimings, new Timing()]
             });
-            this.props.chooseSomeDate(true);
+            chooseSomeDate(true);
         }
         if (!e.shiftKey) {
-            const prob = this.state.selectedDays.indexOf(dayDesc);
-            const index = prob === -1 ? this.state.selectedDays.length : prob;
+            const prob = selectedDays.indexOf(dayDesc);
+            const index = prob === -1 ? selectedDays.length : prob;
 
-            const newTimingObj = prob === -1 ? new Timing() : this.state.selectedTimings[index];
+            const newTimingObj = prob === -1 ? new Timing() : selectedTimings[index];
 
             if (this.startHRef.current != null) {
                 this.startHRef.current.value = newTimingObj.startH;
@@ -549,7 +616,7 @@ class Calendar extends React.Component {
         })
     };
 
-    setForAll = (e) => {
+    setForAll = e => {
         const newTimings = this.state.selectedTimings.slice();
         const ind = this.state.currentlyManagedDayIndex;
         if (e.target.checked) {
@@ -577,7 +644,7 @@ class Calendar extends React.Component {
         this.setState({
             selectedDays: [],
             selectedTimings: [],
-            timeSelectDialogue: null,
+            showTimeSelect: false,
             currentlyManagedDayIndex: -1,
             lastChosenWithShift: null
         })
@@ -607,19 +674,26 @@ class Calendar extends React.Component {
         }
     };
 
-    handleClickOutside = (e) => {
+    handleClickOutside = e => {
         if (!['year-inp-line', 'ok-year'].includes(e.target.id)) {
             this.okYear();
         }
     };
 }
 
+Calendar.defaultProps = {
+    noEdit: false,
+    handleKeyUp: () => {}
+};
+
 Calendar.propTypes = {
     showHint: PropTypes.func.isRequired,
     closeHint: PropTypes.func.isRequired,
-    hideSendWarning: PropTypes.func.isRequired,
-    chooseSomeDate: PropTypes.func.isRequired,
-    handleKeyUp: PropTypes.func.isRequired
+    hideSendWarning: PropTypes.func,
+    chooseSomeDate: PropTypes.func,
+    handleKeyUp: PropTypes.func,
+    initState: PropTypes.object,
+    noEdit: PropTypes.bool
 };
 
 export default Calendar;

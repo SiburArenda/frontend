@@ -1,0 +1,56 @@
+.application-in-list{
+    color: #efefef;
+    border-top: #efefef 1px solid;
+    display: block;
+    line-height: 1.7em;
+    padding: 20px 0;
+}
+
+.application-in-list h2{
+    text-transform: uppercase;
+    font-size: 16px;
+}
+
+.application-in-list h3{
+    font-size: 16px;
+    margin-bottom: 5px;
+    color: #727272;
+}
+
+.application-in-list p{
+    user-select: auto;
+    margin-bottom: 5px;
+}
+
+.application-in-list button{
+    margin-left: 8px;
+}
+
+.sent-application h2{
+    text-transform: uppercase;
+    font-size: 16px;
+    padding-top: 10px;
+}
+
+#type{
+    padding-top: 0;
+    padding-bottom: 12px;
+    color: #727272;
+}
+
+.sent-application h3{
+    padding-top: 12px;
+    font-size: 16px;
+}
+
+.sent-application a{
+    user-select: auto;
+}
+
+.sent-application .btn-pusher{
+    margin: 12px 0;
+}
+
+.sent-application .block-container{
+    margin-top: 12px;
+}

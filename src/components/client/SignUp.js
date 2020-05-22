@@ -1,9 +1,9 @@
 import React, {Component} from 'react';
 import '../../resource/styles/SignUp.css'
 import '../../resource/styles/Main.css'
-import {connectServer} from "../../functional/ServerConnect";
+import {connectServer} from '../../functional/ServerConnect';
 import PropTypes from 'prop-types';
-import {waiting} from "../../functional/Design";
+import {inputsToDefaults, waiting} from '../../functional/Design';
 
 class SignUp extends Component {
 
@@ -40,7 +40,7 @@ class SignUp extends Component {
     }
 
     saveState = () => {
-        const {firstName, fatherName, surname, isOrg, orgName, email} = this.state;
+        const { firstName, fatherName, surname, isOrg, orgName, email } = this.state;
         const toSave = {
             firstName: firstName,
             fatherName: fatherName,
@@ -58,19 +58,56 @@ class SignUp extends Component {
     }
 
     render() {
+
+        const { edit, closeHint, showHint, userLogin, userName } = this.props; //TODO: orgName!
+        const { isOrg, orgName, email, surname, firstName, fatherName, waiting, oops } = this.state;
+
+        if (edit && userLogin === '') {
+            return (
+                <div
+                    className='info-container'
+                >
+                    <p
+                        className='info-paragraph'
+                    >
+                        Эта страница доступна к просмотру только авторизованным пользователям!
+                    </p>
+                </div>
+            )
+        }
+
+        const split = edit ? userName.split(' ') : null;
+        const prevSurname = edit ? split[0] : null;
+        const prevFirstName = edit ? split[1] : null;
+        const prevFatherName = edit && split != null && split.length === 3 ? split[2] : null;
+
         return (
             <div
                 className='info-container'
                 id='sign-up-page'
             >
 
-                <h1>Регистрация</h1>
+                <h1>
+                    {
+                        edit
+                            ?
+                            'Редактирование профиля'
+                            :
+                            'Регистрация'
+                    }
+                </h1>
 
-                <p
-                    className='info-paragraph'
-                >
-                    Поля, помеченные <span className='red-star'>*</span>, обязательны к заполнению
-                </p>
+                {
+                    edit
+                        ?
+                        null
+                        :
+                        <p
+                            className='info-paragraph'
+                        >
+                            Поля, помеченные <span className='red-star'>*</span>, обязательны к заполнению
+                        </p>
+                }
 
                 <div
                     className='flex-100'
@@ -80,25 +117,70 @@ class SignUp extends Component {
                         className='block-col'
                     >
 
-                        <p>Фамилия <span className='red-star'>*</span></p>
+                        <p>
+                            Фамилия
+                            {
+                                edit
+                                    ?
+                                    null
+                                    :
+                                    <span className='red-star'>*</span>
+                            }
+                        </p>
 
-                        <p>Имя <span className='red-star'>*</span></p>
+                        <p>
+                            Имя
+                            {
+                                edit
+                                    ?
+                                    null
+                                    :
+                                    <span className='red-star'>*</span>
+                            }
+                        </p>
 
                         <p>Отчество (при наличии)</p>
 
                         <p>Вы представляете некую организацию?</p>
 
                         {
-                            this.state.isOrg === 'true'
+                            isOrg === 'true'
                                 ?
-                                <p>Организация, которую Вы представляете <span className='red-star'>*</span></p>
+                                <p>
+                                    Организация, которую Вы представляете
+                                    {
+                                        edit
+                                            ?
+                                            null
+                                            :
+                                            <span className='red-star'>*</span>
+                                    }
+                                </p>
                                 :
                                 null
                         }
 
-                        <p>Адрес электронной почты <span className='red-star'>*</span></p>
+                        <p>
+                            Адрес электронной почты
+                            {
+                                edit
+                                    ?
+                                    null
+                                    :
+                                    <span className='red-star'>*</span>
+                            }
+                        </p>
 
-                        <p>Пароль <span className='red-star'>*</span></p>
+                        <p>
+                            Пароль
+                            {
+                                edit
+                                    ?
+                                    null
+                                    :
+                                    <span className='red-star'>*</span>
+                            }
+                        </p>
 
                     </div>
 
@@ -111,7 +193,7 @@ class SignUp extends Component {
                             name='surname'
                             onChange={e => this.handleInput(e)}
                             onKeyUp={e => this.handleKeyUp(e)}
-                            defaultValue={this.state.surname}
+                            defaultValue={surname || prevSurname}
                         />
 
                         <input
@@ -119,7 +201,7 @@ class SignUp extends Component {
                             name='firstName'
                             onChange={e => this.handleInput(e)}
                             onKeyUp={e => this.handleKeyUp(e)}
-                            defaultValue={this.state.firstName}
+                            defaultValue={firstName || prevFirstName}
                         />
 
                         <input
@@ -127,7 +209,7 @@ class SignUp extends Component {
                             name='fatherName'
                             onChange={e => this.handleInput(e)}
                             onKeyUp={e => this.handleKeyUp(e)}
-                            defaultValue={this.state.fatherName}
+                            defaultValue={fatherName || prevFatherName}
                         />
 
                         <div className='flex-container'>
@@ -139,7 +221,7 @@ class SignUp extends Component {
                                 className='hidden-radio'
                                 value={true}
                                 onChange={e => this.handleInput(e)}
-                                checked={this.state.isOrg === 'true'}
+                                checked={isOrg === 'true'}
                             />
                             <label htmlFor='yes-org-radio'>
                             </label>
@@ -152,7 +234,7 @@ class SignUp extends Component {
                                 className='hidden-radio'
                                 value={false}
                                 onChange={e => this.handleInput(e)}
-                                checked={this.state.isOrg === 'false'}
+                                checked={isOrg === 'false'}
                             />
                             <label htmlFor='no-org-radio'>
                             </label>
@@ -160,14 +242,14 @@ class SignUp extends Component {
                         </div>
 
                         {
-                            this.state.isOrg === 'true'
+                            isOrg === 'true'
                                 ?
                                 <input
                                     type='text'
                                     name='orgName'
                                     onChange={e => this.handleInput(e)}
                                     onKeyUp={e => this.handleKeyUp(e)}
-                                    defaultValue={this.state.orgName}
+                                    defaultValue={orgName} //TODO: orgName!
                                 />
                                 :
                                 null
@@ -178,7 +260,7 @@ class SignUp extends Component {
                             name='email'
                             onChange={e => this.handleInput(e)}
                             onKeyUp={e => this.handleKeyUp(e)}
-                            defaultValue={this.state.email}
+                            defaultValue={email || userLogin}
                         />
 
                         <input
@@ -186,13 +268,15 @@ class SignUp extends Component {
                             name='password'
                             onChange={e => this.handleInput(e)}
                             onKeyUp={e => this.handleKeyUp(e)}
+                            defaultValue={''}
                         />
 
                         <div className='btn-pusher'>
 
                             {
-                                this.state.waiting
+                                waiting
                                     ?
+
                                     <div
                                         id='waiting-for-sign-up-confirm'
                                         className='waiting'
@@ -200,20 +284,40 @@ class SignUp extends Component {
                                         {''}
                                     </div>
                                     :
+
                                     <React.Fragment>
 
                                         {
-                                            this.state.oops !== ''
+                                            edit
+                                                ?
+                                                <button
+                                                    onClick={() => this.clearEdits()}
+                                                    onMouseEnter={e => showHint(e, 'clearAccEdit')}
+                                                    onMouseLeave={() => closeHint()}
+                                                    className='hover-text no-border-element transparent-element'
+                                                >
+                                                    Сбросить
+                                                </button>
+                                                :
+                                                null
+                                        }
+
+                                        {
+                                            oops !== ''
                                                 ?
                                                 <div
                                                     className='warning'
                                                     id='w2'
-                                                    onMouseEnter={e => this.props.showHint(e, this.state.oops)}
-                                                    onMouseLeave={() => this.props.closeHint()}
+                                                    onMouseEnter={e => showHint(e, oops)}
+                                                    onMouseLeave={() => closeHint()}
                                                 >
                                                 </div>
                                                 :
-                                                null
+                                                <div
+                                                    className='empty-warning'
+                                                >
+                                                    {''}
+                                                </div>
                                         }
 
                                         <button
@@ -222,7 +326,13 @@ class SignUp extends Component {
                                             onClick={() => this.signUp()}
                                             disabled={this.sendDisabled()}
                                         >
-                                            Зарегистрироваться
+                                            {
+                                                edit
+                                                    ?
+                                                    'Сохранить изменения'
+                                                    :
+                                                    'Зарегистрироваться'
+                                            }
                                         </button>
 
                                     </React.Fragment>
@@ -238,8 +348,8 @@ class SignUp extends Component {
 
     handleKeyUp = e => {
         if (e.which === 13) {
+            const { firstName, surname, email, isOrg, orgName, password } = this.state;
 
-            const {firstName, surname, email, isOrg, orgName, password} = this.state;
             if (firstName !== '' && surname !== '' && email !== '' && (!isOrg || orgName !== '') && password !== '') {
                 this.signUp();
             } else {
@@ -267,7 +377,7 @@ class SignUp extends Component {
         }
     };
 
-    handleInput = (e) => {
+    handleInput = e => {
         this.setState({
             [e.target.name]: e.target.value,
             oops: ['email', 'password'].includes(e.target.name) ? '' : this.state.oops
@@ -276,7 +386,7 @@ class SignUp extends Component {
 
     signUp = () => {
 
-        const {firstName, fatherName, surname, email, password, orgName, isOrg} = this.state;
+        const { firstName, fatherName, surname, email, password, orgName, isOrg } = this.state;
 
         const toSend = JSON.stringify(
             {
@@ -289,7 +399,7 @@ class SignUp extends Component {
             }
         );
 
-        const headers = [{name: 'Content-Type', value: 'application/json'}];
+        const headers = [{ name: 'Content-Type', value: 'application/json' }];
 
         this.setState({
             waiting: true,
@@ -352,15 +462,39 @@ class SignUp extends Component {
     };
 
     sendDisabled = () => {
-        const {firstName, surname, isOrg, orgName, email, password} = this.state;
+        if (this.props.edit){
+            return false;
+        }
+        const { firstName, surname, isOrg, orgName, email, password } = this.state;
         return firstName === '' || surname === '' || (isOrg === 'true' && orgName === '') || email === '' || password === '';
+    };
+
+    clearEdits = () => {
+        this.props.closeHint();
+        const { userLogin, userName } = this.props; //TODO: orgName!
+        const split = userName.split(' ');
+        this.setState({
+            firstName: split[1],
+            fatherName: split.length === 3 ? split[2] : '',
+            surname: split[0],
+            email: userLogin,
+            oops: ''
+        });
+        inputsToDefaults(['input'], 'sign-up-page')
     }
 }
+
+SignUp.defaultProps = {
+    edit: false
+};
 
 SignUp.propTypes = {
     sendBird: PropTypes.func.isRequired,
     showHint: PropTypes.func.isRequired,
-    closeHint: PropTypes.func.isRequired
+    closeHint: PropTypes.func.isRequired,
+    edit: PropTypes.bool,
+    userName: PropTypes.string,
+    userLogin: PropTypes.string
 };
 
 export default SignUp;

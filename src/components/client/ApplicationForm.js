@@ -1,14 +1,15 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import Calendar from "./Calendar";
+import Calendar from './Calendar';
 import '../../resource/styles/ApplicationForm.css'
 import '../../resource/styles/Main.css'
-import {Link} from "react-router-dom";
-import MinifiedApplicationForm from "./MinifiedApplicationForm";
-import Dropdown from "../Dropdown";
-import moment from "moment";
-import {connectServer, checkToken} from "../../functional/ServerConnect";
-import {waiting} from "../../functional/Design";
+import {Link} from 'react-router-dom';
+import MinifiedApplicationForm from './MinifiedApplicationForm';
+import Dropdown from '../Dropdown';
+import moment from 'moment';
+import {connectServer, checkToken} from '../../functional/ServerConnect';
+import {waiting, leadZero, inputsToDefaults} from '../../functional/Design';
+import {roomArrayFormation} from '../../functional/RoomInfo';
 
 class FromTo {
     constructor(from, to) {
@@ -23,39 +24,71 @@ class ApplicationForm extends Component {
     constructor(props) {
         super(props);
 
-        const sessionState = sessionStorage.getItem('ApplicationForm');
-        if (sessionState != null) {
-            const sessionStateParsed = JSON.parse(sessionState);
-            const {
-                eventName,
-                eventType,
-                rooms,
-                viewersExpected,
-                viewers,
-                comment,
-                minimized,
-                warning,
-                y,
-                x,
-                someDatesChosen
-            } = sessionStateParsed;
-            this.state.eventName = eventName;
-            this.state.eventType = eventType;
-            this.state.rooms = rooms;
-            this.state.viewersExpected = viewersExpected;
-            this.state.viewers = viewers;
-            this.state.comment = comment;
-            this.state.minimized = minimized;
-            this.state.warning = warning;
-            this.state.y = y;
-            this.state.x = x;
-            this.state.someDatesChosen = someDatesChosen;
+        const { initState } = this.props;
+        if (initState !== undefined) {
+            const {roomArray} = this.props;
+            this.state.id = initState.id;
+            this.state.eventName = initState.name;
+            this.state.eventType = initState.type;
+
+            const pseudoRooms = initState.rooms;
+            const almostRooms = roomArrayFormation(pseudoRooms, true);
+            for (let i in almostRooms) {
+                const name = almostRooms[i].name;
+                for (let j in roomArray) {
+                    if (roomArray[j].name === name) {
+                        almostRooms[i].maxAmount = roomArray[j].amount;
+                        break;
+                    }
+                }
+            }
+            this.state.rooms = almostRooms;
+
+            this.state.viewersExpected = initState.auditory !== 0;
+            this.state.viewers = initState.auditory;
+            this.state.comment = initState.description;
+            this.state.someDatesChosen = true;
+            this.state.editing = true;
+        } else {
+            const sessionState = sessionStorage.getItem('ApplicationForm');
+            if (sessionState != null) {
+                const sessionStateParsed = JSON.parse(sessionState);
+                const {
+                    id,
+                    eventName,
+                    eventType,
+                    rooms,
+                    viewersExpected,
+                    viewers,
+                    comment,
+                    minimized,
+                    warning,
+                    y,
+                    x,
+                    someDatesChosen,
+                    editing
+                } = sessionStateParsed;
+                this.state.id = id;
+                this.state.eventName = eventName;
+                this.state.eventType = eventType;
+                this.state.rooms = rooms;
+                this.state.viewersExpected = viewersExpected;
+                this.state.viewers = viewers;
+                this.state.comment = comment;
+                this.state.minimized = minimized;
+                this.state.warning = warning;
+                this.state.y = y;
+                this.state.x = x;
+                this.state.someDatesChosen = someDatesChosen;
+                this.state.editing = editing;
+            }
         }
 
         this.calendarRef = React.createRef();
     }
 
     state = {
+        id: null,
         eventName: '',
         eventType: 'PARTY',
         rooms: [],
@@ -72,7 +105,8 @@ class ApplicationForm extends Component {
         y: 50,
         x: 400,
         someDatesChosen: false,
-        waiting: false
+        waiting: false,
+        editing: false
     };
 
     componentDidMount() {
@@ -81,8 +115,23 @@ class ApplicationForm extends Component {
     }
 
     saveState = () => {
-        const {eventName, eventType, rooms, viewersExpected, viewers, comment, minimized, warning, y, x, someDatesChosen} = this.state;
+        const {
+            eventName,
+            eventType,
+            rooms,
+            viewersExpected,
+            viewers,
+            comment,
+            minimized,
+            warning,
+            y,
+            x,
+            someDatesChosen,
+            editing,
+            id
+        } = this.state;
         const toSave = {
+            id: id,
             eventName: eventName,
             eventType: eventType,
             rooms: rooms,
@@ -93,7 +142,8 @@ class ApplicationForm extends Component {
             warning: warning,
             y: y,
             x: x,
-            someDatesChosen: someDatesChosen
+            someDatesChosen: someDatesChosen,
+            editing: editing
         };
         sessionStorage.setItem('ApplicationForm', JSON.stringify(toSave));
     };
@@ -124,10 +174,10 @@ class ApplicationForm extends Component {
     }
 
     eventTypeOptions = [
-        {rusName: 'Концерт, представление', additional: null},
-        {rusName: 'Корпоратив, семинар, собрание', additional: null},
-        {rusName: 'Спорт', additional: null},
-        {rusName: 'Другое', additional: null}
+        { rusName: 'Концерт, представление', additional: null },
+        { rusName: 'Корпоратив, семинар, собрание', additional: null },
+        { rusName: 'Спорт', additional: null },
+        { rusName: 'Другое', additional: null }
     ];
 
     goToRooms =
@@ -147,11 +197,34 @@ class ApplicationForm extends Component {
 
     render() {
 
-        const roomOptions = this.props.roomArray.map(roomInfo => {
+        const {
+            roomArray,
+            showHint,
+            closeHint,
+            closeAppWindow,
+            initState
+        } = this.props;
+        const {
+            rooms,
+            minimized,
+            x,
+            y,
+            eventName,
+            eventType,
+            viewersExpected,
+            viewers,
+            warning,
+            waiting,
+            comment,
+            editing,
+            badTimings
+        } = this.state;
+
+        const roomOptions = roomArray.map(roomInfo => {
             let parentChosenOrIndependent = roomInfo.isAdditionTo === 'independent';
             if (!parentChosenOrIndependent) {
-                for (let roomIndex in this.state.rooms) {
-                    if (this.state.rooms[roomIndex].name.startsWith(roomInfo.isAdditionTo)) {
+                for (let roomIndex in rooms) {
+                    if (rooms[roomIndex].name.startsWith(roomInfo.isAdditionTo)) {
                         parentChosenOrIndependent = true;
                         break;
                     }
@@ -163,32 +236,33 @@ class ApplicationForm extends Component {
                 const additional =
                     <p className='room-info'>
                         <Link
-                            to={`/${url}`}
+                            to={`/rooms/${url}`}
                             style={{color: 'transparent'}}
-                            onMouseEnter={e => this.props.showHint(e, 'exactRoomAbout')}
-                            onMouseLeave={() => this.props.closeHint()}
-                            onClick={() => this.props.closeHint()}
+                            onMouseEnter={e => showHint(e, 'exactRoomAbout')}
+                            onMouseLeave={() => closeHint()}
+                            onClick={() => closeHint()}
                         >
                             link
                         </Link>
                     </p>;
 
-                return {rusName: rusName, additional: additional}
-            } else return null;
+                return { rusName: rusName, additional: additional }
+            }
+            return null;
         });
 
         return (
             <React.Fragment>
                 {
-                    this.state.minimized
+                    minimized
                         ?
                         <MinifiedApplicationForm
-                            showHint={this.props.showHint}
-                            closeHint={this.props.closeHint}
-                            closeAppWindow={this.props.closeAppWindow}
+                            showHint={showHint}
+                            closeHint={closeHint}
+                            closeAppWindow={closeAppWindow}
                             expand={this.expand}
-                            posX={this.state.x}
-                            posY={this.state.y}
+                            posX={x}
+                            posY={y}
                         />
                         :
                         <div id='application-form'
@@ -197,47 +271,67 @@ class ApplicationForm extends Component {
                              onMouseMove={e => this.dragForm(e)}
                              onMouseUp={() => this.stopDrag()}
                              onMouseLeave={() => this.stopDrag()}
-                             style={{top: this.state.y, left: this.state.x}}
+                             style={{top: y, left: x}}
                         >
                             <div className='btn-pusher drag-detector'>
                                 <button
                                     onClick={() => this.minimize()}
-                                    onMouseEnter={e => this.props.showHint(e, 'minAppFormBtn')}
-                                    onMouseLeave={() => this.props.closeHint()}
+                                    onMouseEnter={e => showHint(e, 'minAppFormBtn')}
+                                    onMouseLeave={() => closeHint()}
                                     id='minimize-btn'
                                 >
                                 </button>
                                 <button
                                     onClick={() => {
-                                        this.props.closeHint();
-                                        this.props.closeAppWindow()
+                                        closeHint();
+                                        closeAppWindow()
                                     }}
-                                    onMouseEnter={e => this.props.showHint(e, 'closeAppFormBtn')}
-                                    onMouseLeave={() => this.props.closeHint()}
+                                    onMouseEnter={e => showHint(e, 'closeAppFormBtn')}
+                                    onMouseLeave={() => closeHint()}
                                     className='close-btn'
                                 >
                                 </button>
                             </div>
 
-                            <div className='block-container ninety-container drag-detector'>
-                                <p>
-                                    Поля, помеченные <span className='red-star'>*</span>, обязательны к заполнению
-                                </p>
-                            </div>
+                            {
+                                !editing
+                                    ?
+                                    <div className='block-container ninety-container drag-detector'>
+                                        <p>
+                                            Поля, помеченные <span className='red-star'>*</span>, обязательны к заполнению
+                                        </p>
+                                    </div>
+                                    :
+                                    null
+                            }
 
                             <div className='block-container ninety-container drag-detector'>
 
                                 <div className='block-col drag-detector'>
 
                                     <p className='drag-detector'>
-                                        Название мероприятия<span className='red-star'>*</span>
+                                        Название мероприятия
+                                        {
+                                            !editing
+                                                ?
+                                                <span className='red-star'>*</span>
+                                                :
+                                                null
+                                        }
                                     </p>
 
                                     <p className='drag-detector'>
-                                        Тип мероприятия<span className='red-star'>*</span>
+                                        Тип мероприятия
+                                        {
+                                            !editing
+                                                ?
+                                                <span className='red-star'>*</span>
+                                                :
+                                                null
+                                        }
                                     </p>
 
-                                    {['MATCH', 'TRAINING'].includes(this.state.eventType)
+                                    {['MATCH', 'TRAINING'].includes(eventType)
                                         ?
                                         <p className='drag-detector' style={{height: '1.7em'}}>{''}</p>
                                         :
@@ -245,7 +339,14 @@ class ApplicationForm extends Component {
                                     }
 
                                     <p className='drag-detector'>
-                                        Помещения<span className='red-star'>*</span>
+                                        Помещения
+                                        {
+                                            !editing
+                                                ?
+                                                <span className='red-star'>*</span>
+                                                :
+                                                null
+                                        }
                                     </p>
 
                                 </div>
@@ -258,7 +359,7 @@ class ApplicationForm extends Component {
                                         onChange={e => this.handleInput(e)}
                                         onKeyUp={e => this.handleKeyUp(e)}
                                         className='medium-text-input'
-                                        defaultValue={this.state.eventName}
+                                        defaultValue={eventName}
                                     />
 
                                     <Dropdown
@@ -268,13 +369,13 @@ class ApplicationForm extends Component {
                                         withButton={true}
                                         left={0}
                                         top={16}
-                                        showHint={this.props.showHint}
-                                        closeHint={this.props.closeHint}
+                                        showHint={showHint}
+                                        closeHint={closeHint}
                                         width={213}
                                     />
 
                                     {
-                                        ['MATCH', 'TRAINING'].includes(this.state.eventType)
+                                        ['MATCH', 'TRAINING'].includes(eventType)
                                             ?
                                             <div className='flex-container'>
 
@@ -285,7 +386,7 @@ class ApplicationForm extends Component {
                                                     className='hidden-radio'
                                                     value='TRAINING'
                                                     onChange={e => this.handleInput(e)}
-                                                    checked={this.state.eventType === 'TRAINING'}
+                                                    checked={eventType === 'TRAINING'}
                                                 />
                                                 <label htmlFor='training-radio'>
                                                 </label>
@@ -298,7 +399,7 @@ class ApplicationForm extends Component {
                                                     className='hidden-radio'
                                                     value='MATCH'
                                                     onChange={e => this.handleInput(e)}
-                                                    checked={this.state.eventType === 'MATCH'}
+                                                    checked={eventType === 'MATCH'}
                                                 />
                                                 <label htmlFor='match-radio'>
                                                 </label>
@@ -315,12 +416,14 @@ class ApplicationForm extends Component {
                                             onChoose={this.addRoom}
                                             withButton={false}
                                             marginRight={8}
-                                            showHint={this.props.showHint}
-                                            closeHint={this.props.closeHint}
+                                            showHint={showHint}
+                                            closeHint={closeHint}
                                             extraOption={this.goToRooms}
                                             width={213}
                                         />
-                                        {this.state.rooms.map(room => <this.RoomSpan key={room.name} room={room}/>)}
+                                        {
+                                            rooms.map(room => <this.RoomSpan key={room.name} room={room}/>)
+                                        }
                                     </div>
 
                                 </div>
@@ -332,30 +435,45 @@ class ApplicationForm extends Component {
                                 <div className='block-col drag-detector'>
 
                                     {
-                                        ['DRINKING_PARTY', 'OTHER'].includes(this.state.eventType)
+                                        ['DRINKING_PARTY', 'OTHER'].includes(eventType)
                                             ?
                                             <p className='drag-detector'>
-                                                Ожидается ли на Вашем мероприятии зрительская аудитория?<span className='red-star'>*</span>
+                                                Ожидается ли на Вашем мероприятии зрительская аудитория?
+                                                {
+                                                    !editing
+                                                        ?
+                                                        <span className='red-star'>*</span>
+                                                        :
+                                                        null
+                                                }
                                             </p>
                                             :
                                             null
                                     }
 
                                     {
-                                        ['MATCH', 'PARTY'].includes(this.state.eventType)
-                                        || (this.state.eventType !== 'TRAINING' && this.state.viewersExpected === 'true')
+                                        ['MATCH', 'PARTY'].includes(eventType)
+                                        || (eventType !== 'TRAINING' && viewersExpected === 'true')
                                             ?
                                             <p className='drag-detector'>
-                                                Количество зрителей<span className='red-star'>*</span>
+                                                Количество зрителей
+                                                {
+                                                    !editing
+                                                        ?
+                                                        <span className='red-star'>*</span>
+                                                        :
+                                                        null
+                                                }
                                             </p>
-                                            : null
+                                            :
+                                            null
                                     }
                                 </div>
 
                                 <div className='block-col drag-detector'>
 
                                     {
-                                        ['DRINKING_PARTY', 'OTHER'].includes(this.state.eventType)
+                                        ['DRINKING_PARTY', 'OTHER'].includes(eventType)
                                             ?
                                             <React.Fragment>
                                                 <p className='drag-detector' style={{height: '1.7em'}}>{''}</p>
@@ -369,7 +487,7 @@ class ApplicationForm extends Component {
                                                         className='hidden-radio'
                                                         value={true}
                                                         onChange={e => this.handleInput(e)}
-                                                        checked={this.state.viewersExpected === 'true'}
+                                                        checked={viewersExpected === 'true'}
                                                     />
                                                     <label htmlFor='yes-viewers-radio'>
                                                     </label>
@@ -382,7 +500,7 @@ class ApplicationForm extends Component {
                                                         className='hidden-radio'
                                                         value={false}
                                                         onChange={e => this.handleInput(e)}
-                                                        checked={this.state.viewersExpected === 'false'}
+                                                        checked={viewersExpected === 'false'}
                                                     />
                                                     <label htmlFor='no-viewers-radio'>
                                                     </label>
@@ -396,8 +514,8 @@ class ApplicationForm extends Component {
                                     }
 
                                     {
-                                        ['MATCH', 'PARTY'].includes(this.state.eventType)
-                                        || (this.state.eventType !== 'TRAINING' && this.state.viewersExpected === 'true')
+                                        ['MATCH', 'PARTY'].includes(eventType)
+                                        || (eventType !== 'TRAINING' && viewersExpected === 'true')
                                             ?
                                             <div style={{display: 'flex', alignItems: 'center'}}>
 
@@ -407,16 +525,16 @@ class ApplicationForm extends Component {
                                                     onChange={e => this.invalidInput(e, 'viewers')}
                                                     onKeyUp={e => this.handleKeyUp(e)}
                                                     className='small-text-input'
-                                                    defaultValue={this.state.viewers === 0 ? '' : this.state.viewers}
+                                                    defaultValue={viewers === 0 ? '' : viewers}
                                                 />
 
                                                 {
-                                                    this.state.warning.includes('viewers')
+                                                    warning.includes('viewers')
                                                         ?
                                                         <div
                                                             className='warning'
-                                                            onMouseEnter={e => this.props.showHint(e, 'intPosNum')}
-                                                            onMouseLeave={() => this.props.closeHint()}
+                                                            onMouseEnter={e => showHint(e, 'intPosNum')}
+                                                            onMouseLeave={() => closeHint()}
                                                         >
                                                         </div>
                                                         :
@@ -427,7 +545,8 @@ class ApplicationForm extends Component {
                                                 }
 
                                             </div>
-                                            : null
+                                            :
+                                            null
                                     }
 
                                 </div>
@@ -436,11 +555,12 @@ class ApplicationForm extends Component {
 
                             <Calendar
                                 ref={this.calendarRef}
-                                showHint={this.props.showHint}
-                                closeHint={this.props.closeHint}
+                                showHint={showHint}
+                                closeHint={closeHint}
                                 hideSendWarning={this.hideSendWarning}
                                 chooseSomeDate={this.chooseSomeDate}
                                 handleKeyUp={this.handleKeyUp}
+                                initState={initState}
                             />
 
                             <div className='block-container ninety-container drag-detector'>
@@ -455,13 +575,13 @@ class ApplicationForm extends Component {
                                     name='comment'
                                     onChange={e => this.handleInput(e)}
                                     className='big-text-input'
-                                    defaultValue={this.state.comment}
+                                    defaultValue={comment}
                                 />
                             </div>
                             <div className='btn-pusher drag-detector'>
 
                                 {
-                                    this.state.waiting
+                                    waiting
                                         ?
                                         <div
                                             id='waiting-for-app-confirm'
@@ -471,14 +591,28 @@ class ApplicationForm extends Component {
                                         </div>
                                         :
                                         <React.Fragment>
+
                                             {
-                                                this.state.warning.includes('badTimings')
+                                                editing
+                                                    ?
+                                                    <button
+                                                        className='hover-text no-border-element transparent-element'
+                                                        onClick={() => closeAppWindow()}
+                                                    >
+                                                        Отмена
+                                                    </button>
+                                                    :
+                                                    null
+                                            }
+
+                                            {
+                                                warning.includes('badTimings')
                                                     ?
                                                     <div
                                                         className='warning'
                                                         id='w3'
-                                                        onMouseEnter={e => this.props.showHint(e, this.state.badTimings)}
-                                                        onMouseLeave={() => this.props.closeHint()}
+                                                        onMouseEnter={e => showHint(e, badTimings)}
+                                                        onMouseLeave={() => closeHint()}
                                                     >
                                                     </div>
                                                     :
@@ -487,16 +621,24 @@ class ApplicationForm extends Component {
                                                     >
                                                     </div>
                                             }
+
                                             <button
                                                 id='send-btn'
                                                 className='hover-text'
                                                 onClick={e => this.sendApplication(e)}
-                                                onMouseEnter={e => this.props.showHint(e, 'sendAppBtn')}
-                                                onMouseLeave={() => this.props.closeHint()}
+                                                onMouseEnter={e => showHint(e, 'sendAppBtn')}
+                                                onMouseLeave={() => closeHint()}
                                                 disabled={this.getSendDisabled()}
                                             >
-                                                Отправить заявку
+                                                {
+                                                    editing
+                                                        ?
+                                                        'Сохранить изменения'
+                                                        :
+                                                        'Отправить заявку'
+                                                }
                                             </button>
+
                                         </React.Fragment>
                                 }
                             </div>
@@ -510,7 +652,7 @@ class ApplicationForm extends Component {
     handleKeyUp = e => {
         if (e.which === 13) {
 
-            const {eventName, rooms, viewersExpected, viewers, someDatesChosen} = this.state;
+            const { eventName, rooms, viewersExpected, viewers, someDatesChosen } = this.state;
             if (eventName !== '' && rooms.length !== 0 && (!viewersExpected || viewers !== 0) && someDatesChosen) {
                 this.sendApplication();
             } else {
@@ -570,9 +712,11 @@ class ApplicationForm extends Component {
 
     sendApplication = () => {
 
-        this.props.closeHint();
-        const {eventName, eventType, viewersNeeded, viewers, comment, warning} = this.state;
-        const {selectedDays, selectedTimings} = this.calendarRef.current.state;
+        const { token, userLogin, password, closeHint, refreshToken } = this.props; // TODO: Security!
+
+        closeHint();
+        const { eventName, eventType, viewersExpected, viewers, comment, warning, id } = this.state;
+        const { selectedDays, selectedTimings } = this.calendarRef.current.state;
 
         let badTimings = 'badTimings';
         for (let i in selectedTimings) {
@@ -582,7 +726,7 @@ class ApplicationForm extends Component {
                 const correlatedDay = selectedDays[i];
                 const split = correlatedDay.split(' ');
                 const monthNum = moment.monthsShort().indexOf(split[1]) + 1;
-                badTimings += `&${split[2]}.${this.leadZero(monthNum)}.${split[3]}`;
+                badTimings += `&${split[2]}.${leadZero(monthNum)}.${split[3]}`;
             }
         }
 
@@ -592,20 +736,19 @@ class ApplicationForm extends Component {
                 badTimings: badTimings
             })
         } else {
-            const nameJSON = `"name":"${eventName}",`;
+            const nameJSON = `"name":${JSON.stringify(eventName)},`;
+            const viewersNeeded = viewersExpected === 'true' || ['PARTY', 'MATCH'].includes(eventType);
             const audJSON = `"auditory":${viewersNeeded ? +viewers : 0},`;
             const typeJSON = `"type":"${eventType}",`;
             const roomsJSON = this.getRoomJSON();
-            const userJSON = `"user":"${this.props.userLogin}",`;
+            const userJSON = `"user":"${userLogin}",`;
 
             const dateArrJSON = JSON.stringify(JSON.stringify(this.dateTimeJSON(selectedDays, selectedTimings)));
             const dateJSON = `"dates":${dateArrJSON},`;
 
-            const commentJSON = `"comment":"${comment}"`;
+            const commentJSON = `"comment":${JSON.stringify(comment)}`;
 
             const toSend = '{' + nameJSON + audJSON + typeJSON + roomsJSON + userJSON + dateJSON + commentJSON + '}';
-
-            const {token, userLogin, password} = this.props; // TODO: Security!
 
             const newWarning = warning.slice();
             const i = newWarning.indexOf('badTimings');
@@ -618,25 +761,25 @@ class ApplicationForm extends Component {
             });
             setTimeout(() => waiting('waiting-for-app-confirm'), 1);
 
+            const urlEnding = this.state.editing ? 'events/modify?id=' + id : 'order';
+
             checkToken(
                 responseText => {
-                    console.log('Now actually sending an application');
-                    console.log(responseText);
                     let newToken = token;
                     if (responseText !== 'true') {
-                        this.props.refreshToken(responseText);
+                        refreshToken(responseText);
                         newToken = JSON.parse(responseText).token;
                     }
                     const headers = [
-                        {name: 'Authorization', value: 'Bearer_' + newToken},
-                        {name: 'Content-Type', value: 'application/json'}
+                        { name: 'Authorization', value: 'Bearer_' + newToken },
+                        { name: 'Content-Type', value: 'application/json' }
                     ];
                     connectServer(
                         toSend,
                         this.cleanUp,
                         'post',
                         headers,
-                        'api/user/order',
+                        'api/user/' + urlEnding,
                         this.onResponseError,
                         this.onSendError);
                 },
@@ -666,19 +809,12 @@ class ApplicationForm extends Component {
                 waiting: false
             });
 
-            const inputs = appForm.getElementsByTagName('input');
-            for (let i = 0; i < inputs.length; i++) {
-                inputs.item(i).value = inputs.item(i).defaultValue;
-            }
-
-            const textArea = appForm.getElementsByTagName('textarea');
-            for (let i = 0; i < textArea.length; i++) {
-                textArea.item(i).value = textArea.item(i).defaultValue;
-            }
+            inputsToDefaults(['input', 'textarea'], 'application-form');
 
             const btn = document.getElementById('send-btn');
+            const addLeft = this.state.editing ? 53 : 41;
             const top = btn.getBoundingClientRect().top + document.body.scrollTop - 18;
-            const left = btn.getBoundingClientRect().left + document.body.scrollLeft + 41;
+            const left = btn.getBoundingClientRect().left + document.body.scrollLeft + addLeft;
             this.props.sendBird('sign-up', left, top);
 
             this.calendarRef.current.clearSelectedDates();
@@ -686,6 +822,14 @@ class ApplicationForm extends Component {
 
         sessionStorage.removeItem('ApplicationForm');
         sessionStorage.removeItem('Calendar');
+
+        if (this.props.allApplicationsRef.current != null) {
+            this.props.allApplicationsRef.current.getApplications();
+        }
+
+        if (this.props.sentApplicationRef.current != null) {
+            this.props.sentApplicationRef.current.decideApplication();
+        }
     };
 
     onResponseError = () => {
@@ -712,8 +856,8 @@ class ApplicationForm extends Component {
         for (let i = 0; i < datesArray.length; i++) {
             const dividedDate = datesArray[i].split(' ');
             const t = timesArray[i];
-            const stringRepFrom = `${dividedDate[0]} ${dividedDate[1]} ${dividedDate[2]} ${this.leadZero(t.startH)}:${this.leadZero(t.startM)}:00 NOVT ${dividedDate[3]}`;
-            const stringRepTo = `${dividedDate[0]} ${dividedDate[1]} ${dividedDate[2]} ${this.leadZero(t.endH)}:${this.leadZero(t.endM)}:00 NOVT ${dividedDate[3]}`;
+            const stringRepFrom = `${dividedDate[0]} ${dividedDate[1]} ${dividedDate[2]} ${leadZero(t.startH)}:${leadZero(t.startM)}:00 NOVT ${dividedDate[3]}`;
+            const stringRepTo = `${dividedDate[0]} ${dividedDate[1]} ${dividedDate[2]} ${leadZero(t.endH)}:${leadZero(t.endM)}:00 NOVT ${dividedDate[3]}`;
             datesTimesArrayFrom.push(stringRepFrom);
             dateTimesArrayTo.push(stringRepTo);
         }
@@ -729,20 +873,18 @@ class ApplicationForm extends Component {
         return res;
     };
 
-    leadZero = num => {
-        let ans = num + "";
-        while (ans.length < 2) {
-            ans = '0' + ans;
-        }
-        return ans;
-    };
-
     addRoom = room => {
         this.props.closeHint();
 
         let toAdd = null;
 
-        const {roomArray} = this.props;
+        const { rooms } = this.state;
+        const { roomArray } = this.props;
+        for (let i in rooms) {
+            if (rooms[i].name === room.name) {
+                return;
+            }
+        }
 
         for (let roomIndex in roomArray) {
             const arrItem = roomArray[roomIndex];
@@ -758,7 +900,7 @@ class ApplicationForm extends Component {
             }
         }
 
-        if (toAdd != null && !this.state.rooms.includes(toAdd)) {
+        if (toAdd != null) {
             this.setState({
                 rooms: [...this.state.rooms, toAdd]
             })
@@ -827,22 +969,23 @@ class ApplicationForm extends Component {
 
     PlusMinus = props => {
         const room = props.room;
-        const {amount, maxAmount} = room;
+        const { amount, maxAmount } = room;
+        const { closeHint, showHint} = this.props;
         return(
             <span className='flex-container'>
 
                 <button
                     className='plus-minus-btn'
-                    onMouseEnter={e => this.props.showHint(e, 'minus')}
-                    onMouseLeave={() => this.props.closeHint()}
+                    onMouseEnter={e => showHint(e, 'minus')}
+                    onMouseLeave={() => closeHint()}
                     onClick={() => this.changeRoomAmount(room, -1)}
                 >
                     -
                 </button>
 
                 <label
-                    onMouseEnter={e => this.props.showHint(e, `roomAmount%${maxAmount}%${amount}`)}
-                    onMouseLeave={() => this.props.closeHint()}
+                    onMouseEnter={e => showHint(e, `roomAmount%${maxAmount}%${amount}`)}
+                    onMouseLeave={() => closeHint()}
                     style={{margin: '0 8px'}}
                 >
                     {amount}
@@ -850,8 +993,8 @@ class ApplicationForm extends Component {
 
                 <button
                     className='plus-minus-btn'
-                    onMouseEnter={e => this.props.showHint(e, 'plus')}
-                    onMouseLeave={() => this.props.closeHint()}
+                    onMouseEnter={e => showHint(e, 'plus')}
+                    onMouseLeave={() => closeHint()}
                     onClick={() => this.changeRoomAmount(room, 1)}
                 >
                     +
@@ -900,7 +1043,12 @@ class ApplicationForm extends Component {
                             ? null
                             : <this.PlusMinus room={room}/>
                 }
-                <button onClick={() => this.removeRoom(props.room)} className='remove-btn'>{''}</button>
+                <button
+                    onClick={() => this.removeRoom(props.room)}
+                    className='remove-btn'
+                >
+                    {''}
+                </button>
             </span>
         );
     };
@@ -1031,9 +1179,9 @@ class ApplicationForm extends Component {
     }
 
     getSendDisabled = () => {
-        const {eventName, rooms, viewersExpected, viewers, someDatesChosen} = this.state;
-
-        return eventName === '' || rooms.length === 0 || (viewersExpected === 'true' && viewers === 0) || !someDatesChosen;
+        const {eventName, rooms, viewersExpected, viewers, someDatesChosen, eventType} = this.state;
+        const viewersNeeded = viewersExpected === 'true' || ['MATCH', 'PARTY'].includes(eventType);
+        return eventName === '' || rooms.length === 0 || (viewersNeeded && viewers === 0) || !someDatesChosen;
     }
 }
 
@@ -1044,9 +1192,11 @@ ApplicationForm.propTypes = {
     showHint: PropTypes.func.isRequired,
     closeHint: PropTypes.func.isRequired,
     roomArray: PropTypes.array.isRequired,
-    newApplication: PropTypes.func.isRequired,
     refreshToken: PropTypes.func.isRequired,
-    sendBird: PropTypes.func.isRequired
+    sendBird: PropTypes.func.isRequired,
+    allApplicationsRef: PropTypes.object.isRequired,
+    initState: PropTypes.object,
+    sentApplicationRef: PropTypes.object.isRequired
 };
 
 export default ApplicationForm;
