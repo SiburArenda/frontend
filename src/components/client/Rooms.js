@@ -7,22 +7,6 @@ import {waiting} from "../../functional/Design";
 
 class Rooms extends Component {
 
-    constructor(props) {
-        super(props);
-
-        const {roomArray} = this.props;
-        if (roomArray.length === 11 && this.allTags.length === 0) {
-            for (let i in roomArray) {
-                const tags = roomArray[i].tags;
-                for (let j in tags) {
-                    if (!this.allTags.includes(tags[j])) {
-                        this.allTags.push(tags[j]);
-                    }
-                }
-            }
-        }
-    }
-
     state = {
         tags: [],
         searchString: ''
@@ -34,7 +18,21 @@ class Rooms extends Component {
         }
     }
 
-    allTags = [];
+    compileTags = () => {
+        const {roomArray} = this.props;
+        const allTags = [];
+
+        for (let i in roomArray) {
+            const tags = roomArray[i].tags;
+            for (let j in tags) {
+                if (!allTags.includes(tags[j])) {
+                    allTags.push(tags[j]);
+                }
+            }
+        }
+
+        return allTags;
+    };
 
     render() {
 
@@ -112,7 +110,7 @@ class Rooms extends Component {
                         <label id='divider'>|</label>
                         <Dropdown
                             header='Искать по тэгам'
-                            options={this.allTags.map(tag => {
+                            options={this.compileTags().map(tag => {
                                 return {rusName: tag, additional: null}
                             })}
                             onChoose={this.addTag}
@@ -187,7 +185,7 @@ class Rooms extends Component {
         const noP = room.description.replace(/<\/?p>/g, '');
         const dots = noP.split(/\. ?(?=[А-ЯЁ])/);
 
-        let descriptionPreview = '';
+        let descriptionPreview;
 
         let firstSentence = dots[0];
         if (firstSentence.length <= 180 && firstSentence.length >= 100) {

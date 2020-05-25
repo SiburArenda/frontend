@@ -23,6 +23,7 @@ class ClientMainContent extends Component {
     };
 
     componentDidMount() {
+
         if (this.state.roomArray.length < 11) {
             const headers = [
                 {name: 'Content-Type', value: 'application/json'}

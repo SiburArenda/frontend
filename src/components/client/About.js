@@ -15,6 +15,7 @@ class About extends Component {
                     <img
                         src='http://siburarenda.publicvm.com/img/frontPage.png'
                         alt='niceSiburPhoto'
+                        style={{width: '100%'}}
                     />
                     <p
                         className='info-paragraph'

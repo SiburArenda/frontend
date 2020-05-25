@@ -881,7 +881,7 @@ class ApplicationForm extends Component {
         const { rooms } = this.state;
         const { roomArray } = this.props;
         for (let i in rooms) {
-            if (rooms[i].name === room.name) {
+            if (rooms[i].name === room.rusName) {
                 return;
             }
         }
@@ -889,6 +889,7 @@ class ApplicationForm extends Component {
         for (let roomIndex in roomArray) {
             const arrItem = roomArray[roomIndex];
             if (room.rusName === arrItem.name) {
+                console.log(arrItem);
                 toAdd = {
                     serverName: arrItem.serverName,
                     name: room.rusName,
@@ -1029,8 +1030,8 @@ class ApplicationForm extends Component {
     };
 
     RoomSpan = (props) => {
-        const {room} = props;
-        const {name, maxAmount} = room;
+        const { room } = props;
+        const { name, maxAmount } = room;
         return(
             <span className='map-span' style={{order: name.length}}>
                 {name}
