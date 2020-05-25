@@ -7,7 +7,7 @@ import SignUp from './SignUp';
 import ApplicationForm from './ApplicationForm';
 import AllApplications from './AllApplications';
 import RoomsSection from './RoomsSection';
-import {roomArrayFormation, RoomInfo} from '../../functional/RoomInfo';
+import {roomArrayFormation} from '../../functional/RoomInfo';
 import {connectServer} from '../../functional/ServerConnect';
 
 class ClientMainContent extends Component {
@@ -16,16 +16,6 @@ class ClientMainContent extends Component {
         super(props);
 
         this.sentApplicationRef = React.createRef();
-
-        const localState = localStorage.getItem('ClientMainContent');
-        if (localState != null) {
-            const roomArray = JSON.parse(localState);
-
-            if (roomArray.length !== 0) {
-                this.state.roomArray = roomArray
-                    .map(r => new RoomInfo(r.serverName, r.name, r.auditory, r.description, r.tags, r.isAdditionTo));
-            }
-        }
     }
 
     state = {
@@ -50,12 +40,6 @@ class ClientMainContent extends Component {
         }
     }
 
-    saveState = () => {
-        const { roomArray } = this.state;
-        const toSave =  (roomArray.length === 11) ? roomArray : [];
-        localStorage.setItem('ClientMainContent', JSON.stringify(toSave));
-    };
-
     // get rooms if they are not saved from last session
     getRoomsFromServer = responseText => {
         const pureResponse = JSON.parse(responseText);
@@ -71,10 +55,6 @@ class ClientMainContent extends Component {
             roomArray: [code]
         })
     };
-
-    componentWillUnmount() {
-        window.removeEventListener('beforeunload', this.saveState, false);
-    }
 
     render() {
 
