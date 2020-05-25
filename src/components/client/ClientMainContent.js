@@ -23,8 +23,6 @@ class ClientMainContent extends Component {
     };
 
     componentDidMount() {
-        window.addEventListener('beforeunload', this.saveState, false);
-
         if (this.state.roomArray.length < 11) {
             const headers = [
                 {name: 'Content-Type', value: 'application/json'}
