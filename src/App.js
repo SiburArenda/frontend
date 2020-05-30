@@ -129,6 +129,11 @@ class App extends Component {
             <div
                 style={{overflowX: {scroll}}}
             >
+                <div
+                    id='nice-background'
+                >
+                    {''}
+                </div>
                 <Router>
 
                     <header

@@ -8,8 +8,8 @@
 }
 
 #sign-up-page input{
-    margin-bottom: 5px;
     display: block;
+    line-height: 1.7em;
 }
 
 #flex-for-sign-up{
@@ -26,4 +26,8 @@
 
 #sign-up-page .btn-pusher button{
     margin-top: 20px;
+}
+
+#sign-up-page .flex-container{
+    padding-top: 5px;
 }
