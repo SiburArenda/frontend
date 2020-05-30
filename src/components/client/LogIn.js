@@ -150,7 +150,7 @@ class LogIn extends Component {
                             </div>
 
                             <Link
-                                to='/signUp'
+                                to='/signup'
                                 className='turquoise-hover log-in-inside'
                             >
                                 У меня ещё нет аккаунта
@@ -172,7 +172,7 @@ class LogIn extends Component {
                             </Link>
 
                             <Link
-                                to='/accountSettings'
+                                to='/accountsettings'
                                 className='hover-text log-in-inside'
                             >
                                 Редактировать профиль

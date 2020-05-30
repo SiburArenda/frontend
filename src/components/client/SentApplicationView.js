@@ -81,6 +81,20 @@ class SentApplicationView extends Component {
         const { name, type, auditory, description } = application;
         const { closeHint, showHint, openApplicationForm } = this.props;
 
+        const splitDescription = description.split(' ');
+        let cutDescription = '';
+        for (let wordInd in splitDescription) {
+            let word = splitDescription[wordInd];
+            while (word.length > 70) {
+                cutDescription += `${word.substring(0, 70)}- `;
+                word = word.substring(70)
+            }
+            cutDescription += word;
+            if (+wordInd !== splitDescription.length - 1) {
+                cutDescription += ' '
+            }
+        }
+
         return (
             <div
                 className='info-container sent-application'
@@ -129,7 +143,7 @@ class SentApplicationView extends Component {
                             <p
                                 className='info-paragraph'
                             >
-                                {description}
+                                {cutDescription}
                             </p>
                         </React.Fragment>
                         :

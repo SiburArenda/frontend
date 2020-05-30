@@ -750,6 +750,7 @@ class ApplicationForm extends Component {
 
             const toSend = '{' + nameJSON + audJSON + typeJSON + roomsJSON + userJSON + dateJSON + commentJSON + '}';
 
+
             const newWarning = warning.slice();
             const i = newWarning.indexOf('badTimings');
             if (i !== -1) {
@@ -889,7 +890,6 @@ class ApplicationForm extends Component {
         for (let roomIndex in roomArray) {
             const arrItem = roomArray[roomIndex];
             if (room.rusName === arrItem.name) {
-                console.log(arrItem);
                 toAdd = {
                     serverName: arrItem.serverName,
                     name: room.rusName,

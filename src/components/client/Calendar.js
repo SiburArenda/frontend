@@ -46,8 +46,8 @@ class Calendar extends React.Component {
             }
             this.state.selectedDays = datesInState;
             this.state.selectedTimings = timesInState;
-            this.state.dateContext.set('month', earliestDate.format('MM'));
-            this.state.dateContext.set('year', earliestDate.format('YYYY'));
+            this.state.dateContext.set('month', +earliestDate.format('MM'));
+            this.state.dateContext.set('year', +earliestDate.format('YYYY'));
         } else {
 
             const savedStateStr = sessionStorage.getItem('Calendar');

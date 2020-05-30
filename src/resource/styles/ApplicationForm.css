@@ -80,6 +80,7 @@ select{
     width: 462px;
     margin: auto;
     height: 60px;
+    max-lines: 120;
 }
 
 #send-btn{

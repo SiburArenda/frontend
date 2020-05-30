@@ -31,7 +31,7 @@ img{
 }
 
 nav{
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 10%;
     text-align: center;
@@ -115,10 +115,10 @@ header{
 
 #main-content{
     box-sizing: border-box;
-    padding-left: 480px;
     padding-top: 80px;
     padding-bottom: 80px;
-    width: 1320px;
+    width: 88%;
+    min-width: 1300px;
     line-height: 1.7em;
     z-index: 1;
     height: 100%;

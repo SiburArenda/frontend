@@ -119,7 +119,7 @@ class ClientMainContent extends Component {
                 />
 
                 <Route
-                    path='/accountSettings'
+                    path='/accountsettings'
                     render={
                         props => (
                             <SignUp //TODO: pass organization as prop

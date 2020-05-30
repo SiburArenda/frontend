@@ -56,7 +56,8 @@ class App extends Component {
         token: '',
         role: ['USER'],
         bird: [],
-        applicationFormState: undefined
+        applicationFormState: undefined,
+        paddingLeft: '32%'
     };
 
     // happens once after constructor, right after the first render
@@ -68,8 +69,11 @@ class App extends Component {
     // tweak the header width so that the LogIn button is positioned nicely
     headerWidth = () => {
         const screen = window.innerWidth;
+        const leftPartNice = screen * 0.1 + 273 + 20;
+        const percent = screen * 0.32;
         this.setState({
-            headerWidth: screen > 1090 ? screen - 20 : 1430
+            headerWidth: screen > 1090 ? screen - 20 : 1430,
+            paddingLeft: percent >= leftPartNice ? '32%' : leftPartNice
         })
     };
 
@@ -117,7 +121,8 @@ class App extends Component {
             hintY,
             password,
             bird,
-            applicationFormState
+            applicationFormState,
+            paddingLeft
         } = this.state;
 
         return (
@@ -188,6 +193,7 @@ class App extends Component {
 
                     <section
                         id='main-content'
+                        style={{paddingLeft: paddingLeft}}
                     >
                         {
                             role.includes('USER')

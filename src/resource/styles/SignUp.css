@@ -7,8 +7,9 @@
     margin-bottom: 2px;
 }
 
-input{
+#sign-up-page input{
     margin-bottom: 5px;
+    display: block;
 }
 
 #flex-for-sign-up{
